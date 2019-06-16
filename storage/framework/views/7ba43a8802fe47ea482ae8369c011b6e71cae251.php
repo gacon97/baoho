@@ -1,0 +1,134 @@
+<?php $__env->startSection('content-bill'); ?>
+
+<div class="grid-sýtem">
+
+    <div class="horz-grid">
+
+        <div class="grid-hor">
+
+            <h3>Hóa đơn chi tiết</h3>
+
+        </div>
+
+        <div class="row show-grid">
+
+            <h4>Thông tin khách hàng</h4>
+
+        </div>
+
+        <div class="row show-grid">
+
+            <div class="col-md-6">
+
+                <h4>Tên khách hàng: <?php echo e($customer->name); ?></h4>
+
+
+                <ul class="ul-bill">
+
+                    <li class="li-bill">Địa chỉ:<span><?php echo e($customer->address); ?></span></li>
+
+                    <li class="li-bill">Số điện thoại:<span><?php echo e($customer->phone); ?></span></li>
+
+                    <li class="li-bill">Lưu ý:<span><?php echo e($customer->note); ?></span></li>
+
+                </ul>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <h4>Thông tin hóa đơn</h4>
+
+                <ul class="ul-bill">
+
+                    <li class="li-bill">Ngày đặt hàng:<span><?php echo e($bill->date_order); ?></span></li>
+
+                    <li class="li-bill">Tổng tiền:<span><?php echo e($bill->total); ?></span></li>
+
+                    <li class="li-bill">Trạng thái:<span><?php echo e($bill->status); ?></span></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <div class="row show-grid">
+
+            <h4>Thông tin sản phẩm trong hóa đơn</h4>
+
+        </div>
+
+        <div class="row show-grid">
+
+            <div class="table" style="padding: 10px 55px 10px 10px; margin-left: 15px; background-color: #e9e9e9;">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                    <tr>
+
+                        <th scope="col">#</th>
+
+                        <th scope="col">Ảnh</th>
+
+                        <th scope="col">Tên sản phẩm</th>
+
+                        <th scope="col">Số lượng</th>
+
+                        <th scope="col">Giá</th>
+
+                        <th scope="col">Tổng tiền</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <?php $__currentLoopData = $billDetails;
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $index => $billDetail): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
+
+                        <tr>
+
+                            <th scope="row"><?php echo e($index + 1); ?></th>
+
+                            <th scope="row" class="table-image"><img
+                                        src="<?php echo e(asset($billDetail->product->images[0]->image)); ?>"
+                                        class="img"></th>
+
+                            <th scope="row"><?php echo e($billDetail->product->name); ?></th>
+
+                            <th scope="row"><?php echo e($billDetail->qty); ?></th>
+
+                            <th scope="row"><?php echo e($billDetail->product->price); ?></th>
+
+                            <th scope="row"><?php echo e($billDetail->product->price * $billDetail->qty); ?></th>
+
+                            <th scope="row"><a href="<?php echo e(route('admin.bill.edit', $billDetail->id)); ?>"
+                                               class="btn btn-primary">Sửa</a></th>
+
+                        </tr>
+
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('admin.bill.home', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
