@@ -23,16 +23,16 @@ class RedirectResponse extends Response
     /**
      * Creates a redirect response so that it conforms to the rules defined for a redirect status code.
      *
-     * @param string $url The URL to redirect to. The URL should be a full URL, with schema etc.,
+     * @param string $url     The URL to redirect to. The URL should be a full URL, with schema etc.,
      *                        but practically every browser redirects on paths only as well
-     * @param int $status The status code (302 by default)
-     * @param array $headers The headers (Location is always set to the given URL)
+     * @param int    $status  The status code (302 by default)
+     * @param array  $headers The headers (Location is always set to the given URL)
      *
      * @throws \InvalidArgumentException
      *
-     * @see http://tools.ietf.org/html/rfc2616#section-10.3
+     * @see https://tools.ietf.org/html/rfc2616#section-10.3
      */
-    public function __construct(?string $url, int $status = 302, array $headers = array())
+    public function __construct(?string $url, int $status = 302, array $headers = [])
     {
         parent::__construct('', $status, $headers);
 
@@ -42,7 +42,7 @@ class RedirectResponse extends Response
             throw new \InvalidArgumentException(sprintf('The HTTP status code is not a redirect ("%s" given).', $status));
         }
 
-        if (301 == $status && !array_key_exists('cache-control', $headers)) {
+        if (301 == $status && !\array_key_exists('cache-control', array_change_key_case($headers, \CASE_LOWER))) {
             $this->headers->remove('cache-control');
         }
     }
@@ -50,13 +50,13 @@ class RedirectResponse extends Response
     /**
      * Factory method for chainability.
      *
-     * @param string $url The url to redirect to
-     * @param int $status The response status code
-     * @param array $headers An array of response headers
+     * @param string $url     The url to redirect to
+     * @param int    $status  The response status code
+     * @param array  $headers An array of response headers
      *
      * @return static
      */
-    public static function create($url = '', $status = 302, $headers = array())
+    public static function create($url = '', $status = 302, $headers = [])
     {
         return new static($url, $status, $headers);
     }

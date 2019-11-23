@@ -7,10 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\Test;
+use PHPUnit\Util\Filesystem;
 
 class TestResultCache implements \Serializable, TestResultCacheInterface
 {
@@ -64,9 +64,14 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
      */
     private $times = [];
 
-    public function __construct($filename = null)
+    public function __construct($filepath = null)
     {
-        $this->cacheFilename = $filename ?? $_ENV['PHPUNIT_RESULT_CACHE'] ?? self::DEFAULT_RESULT_CACHE_FILENAME;
+        if ($filepath !== null && \is_dir($filepath)) {
+            // cache path provided, use default cache filename in that location
+            $filepath = $filepath . \DIRECTORY_SEPARATOR . self::DEFAULT_RESULT_CACHE_FILENAME;
+        }
+
+        $this->cacheFilename = $filepath ?? $_ENV['PHPUNIT_RESULT_CACHE'] ?? self::DEFAULT_RESULT_CACHE_FILENAME;
     }
 
     public function persist(): void
@@ -80,7 +85,7 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
             return;
         }
 
-        if (!$this->createDirectory(\dirname($this->cacheFilename))) {
+        if (!Filesystem::createDirectory(\dirname($this->cacheFilename))) {
             throw new Exception(
                 \sprintf(
                     'Cannot create directory "%s" for result cache file',
@@ -159,14 +164,14 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
     public function clear(): void
     {
         $this->defects = [];
-        $this->times = [];
+        $this->times   = [];
     }
 
     public function serialize(): string
     {
         return \serialize([
             'defects' => $this->defects,
-            'times' => $this->times,
+            'times'   => $this->times,
         ]);
     }
 
@@ -176,7 +181,7 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
 
         if (isset($data['times'])) {
             foreach ($data['times'] as $testName => $testTime) {
-                $this->times[$testName] = (float)$testTime;
+                $this->times[$testName] = (float) $testTime;
             }
         }
 
@@ -187,10 +192,5 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
                 }
             }
         }
-    }
-
-    private function createDirectory(string $directory): bool
-    {
-        return !(!\is_dir($directory) && !@\mkdir($directory, 0777, true) && !\is_dir($directory));
     }
 }

@@ -12,7 +12,6 @@
 namespace Prophecy\Call;
 
 use Prophecy\Exception\Prophecy\MethodProphecyException;
-use Prophecy\Prophecy\MethodProphecy;
 use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Argument\ArgumentsWildcard;
 use Prophecy\Util\StringUtil;
@@ -46,8 +45,8 @@ class CallCenter
      * Makes and records specific method call for object prophecy.
      *
      * @param ObjectProphecy $prophecy
-     * @param string $methodName
-     * @param array $arguments
+     * @param string         $methodName
+     * @param array          $arguments
      *
      * @return mixed Returns null if no promise for prophecy found or promise return value.
      *
@@ -94,15 +93,13 @@ class CallCenter
         }
 
         // Sort matches by their score value
-        @usort($matches, function ($match1, $match2) {
-            return $match2[0] - $match1[0];
-        });
+        @usort($matches, function ($match1, $match2) { return $match2[0] - $match1[0]; });
 
         $score = $matches[0][0];
         // If Highest rated method prophecy has a promise - execute it or return null instead
         $methodProphecy = $matches[0][1];
         $returnValue = null;
-        $exception = null;
+        $exception   = null;
         if ($promise = $methodProphecy->getPromise()) {
             try {
                 $returnValue = $promise->execute($arguments, $prophecy, $methodProphecy);
@@ -133,7 +130,7 @@ class CallCenter
     /**
      * Searches for calls by method name & arguments wildcard.
      *
-     * @param string $methodName
+     * @param string            $methodName
      * @param ArgumentsWildcard $wildcard
      *
      * @return Call[]
@@ -143,7 +140,8 @@ class CallCenter
         return array_values(
             array_filter($this->recordedCalls, function (Call $call) use ($methodName, $wildcard) {
                 return $methodName === $call->getMethodName()
-                    && 0 < $call->getScore($wildcard);
+                    && 0 < $call->getScore($wildcard)
+                ;
             })
         );
     }
@@ -181,39 +179,17 @@ class CallCenter
 
         return new UnexpectedCallException(
             sprintf(
-                "Unexpected method call on %s:\n" .
-                "  - %s(\n" .
-                "%s\n" .
-                "    )\n" .
-                "expected calls were:\n" .
+                "Unexpected method call on %s:\n".
+                "  - %s(\n".
+                "%s\n".
+                "    )\n".
+                "expected calls were:\n".
                 "%s",
 
                 $classname, $methodName, $argstring, implode("\n", $expected)
             ),
             $prophecy, $methodName, $arguments
 
-        );
-    }
-
-    private function formatExceptionMessage(MethodProphecy $methodProphecy)
-    {
-        return sprintf(
-            "  - %s(\n" .
-            "%s\n" .
-            "    )",
-            $methodProphecy->getMethodName(),
-            implode(
-                ",\n",
-                $this->indentArguments(
-                    array_map(
-                        function ($token) {
-                            return (string)$token;
-                        },
-                        $methodProphecy->getArgumentsWildcard()->getTokens()
-                    ),
-                    $indentationLength
-                )
-            )
         );
     }
 

@@ -21,7 +21,7 @@
 
 namespace tests\Mockery\Adapter\Phpunit;
 
-use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\TestResult;
 use Mockery\Adapter\Phpunit\TestListener;
 
@@ -33,8 +33,36 @@ if (class_exists('PHPUnit_Runner_Version') && version_compare(\PHPUnit_Runner_Ve
     class_alias('test\Mockery\Fixtures\EmptyTestCaseV7', 'tests\Mockery\Adapter\Phpunit\EmptyTestCase');
 }
 
-class TestListenerTest extends TestCase
+class TestListenerTest extends MockeryTestCase
 {
+    protected function mockeryTestSetUp()
+    {
+        /**
+         * Skip all tests here if PHPUnit is less than 6.0.0
+         */
+        if (class_exists('\PHPUnit\Runner\Version')) {
+            $ver = \PHPUnit\Runner\Version::series();
+        } else {
+            $ver = \PHPUnit_Runner_Version::series();
+        }
+
+        if (intval($ver) < 6) {
+            $this->markTestSkipped('The TestListener is only supported with PHPUnit 6+.');
+            return;
+        }
+        // We intentionally test the static container here. That is what the
+        // listener will check.
+        $this->container = \Mockery::getContainer();
+        $this->listener = new TestListener();
+        $this->testResult = new TestResult();
+        $this->test = new EmptyTestCase();
+
+        $this->test->setTestResultObject($this->testResult);
+        $this->testResult->addListener($this->listener);
+
+        $this->assertTrue($this->testResult->wasSuccessful(), 'sanity check: empty test results should be considered successful');
+    }
+
     public function testSuccessOnClose()
     {
         $mock = $this->container->mock();
@@ -71,33 +99,5 @@ class TestListenerTest extends TestCase
         $this->assertArrayNotHasKey(\Mockery::class, \PHPUnit\Util\Blacklist::$blacklistedClassNames);
         $this->listener->startTestSuite($suite);
         $this->assertSame(1, \PHPUnit\Util\Blacklist::$blacklistedClassNames[\Mockery::class]);
-    }
-
-    protected function setUp()
-    {
-        /**
-         * Skip all tests here if PHPUnit is less than 6.0.0
-         */
-        if (class_exists('\PHPUnit\Runner\Version')) {
-            $ver = \PHPUnit\Runner\Version::series();
-        } else {
-            $ver = \PHPUnit_Runner_Version::series();
-        }
-
-        if (intval($ver) < 6) {
-            $this->markTestSkipped('The TestListener is only supported with PHPUnit 6+.');
-            return;
-        }
-        // We intentionally test the static container here. That is what the
-        // listener will check.
-        $this->container = \Mockery::getContainer();
-        $this->listener = new TestListener();
-        $this->testResult = new TestResult();
-        $this->test = new EmptyTestCase();
-
-        $this->test->setTestResultObject($this->testResult);
-        $this->testResult->addListener($this->listener);
-
-        $this->assertTrue($this->testResult->wasSuccessful(), 'sanity check: empty test results should be considered successful');
     }
 }

@@ -30,17 +30,17 @@ class UndefinedFunctionFatalErrorHandler implements FatalErrorHandlerInterface
         $notFoundSuffix = '()';
         $notFoundSuffixLen = \strlen($notFoundSuffix);
         if ($notFoundSuffixLen > $messageLen) {
-            return;
+            return null;
         }
 
         if (0 !== substr_compare($error['message'], $notFoundSuffix, -$notFoundSuffixLen)) {
-            return;
+            return null;
         }
 
         $prefix = 'Call to undefined function ';
         $prefixLen = \strlen($prefix);
         if (0 !== strpos($error['message'], $prefix)) {
-            return;
+            return null;
         }
 
         $fullyQualifiedFunctionName = substr($error['message'], $prefixLen, -$notFoundSuffixLen);
@@ -53,7 +53,7 @@ class UndefinedFunctionFatalErrorHandler implements FatalErrorHandlerInterface
             $message = sprintf('Attempted to call function "%s" from the global namespace.', $functionName);
         }
 
-        $candidates = array();
+        $candidates = [];
         foreach (get_defined_functions() as $type => $definedFunctionNames) {
             foreach ($definedFunctionNames as $definedFunctionName) {
                 if (false !== $namespaceSeparatorIndex = strrpos($definedFunctionName, '\\')) {
@@ -63,20 +63,20 @@ class UndefinedFunctionFatalErrorHandler implements FatalErrorHandlerInterface
                 }
 
                 if ($definedFunctionNameBasename === $functionName) {
-                    $candidates[] = '\\' . $definedFunctionName;
+                    $candidates[] = '\\'.$definedFunctionName;
                 }
             }
         }
 
         if ($candidates) {
             sort($candidates);
-            $last = array_pop($candidates) . '"?';
+            $last = array_pop($candidates).'"?';
             if ($candidates) {
-                $candidates = 'e.g. "' . implode('", "', $candidates) . '" or "' . $last;
+                $candidates = 'e.g. "'.implode('", "', $candidates).'" or "'.$last;
             } else {
-                $candidates = '"' . $last;
+                $candidates = '"'.$last;
             }
-            $message .= "\nDid you mean to call " . $candidates;
+            $message .= "\nDid you mean to call ".$candidates;
         }
 
         return new UndefinedFunctionException($message, $exception);

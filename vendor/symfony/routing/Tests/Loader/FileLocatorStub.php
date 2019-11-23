@@ -12,6 +12,6 @@ class FileLocatorStub implements FileLocatorInterface
             return $name;
         }
 
-        return rtrim($currentPath, '/') . '/' . $name;
+        return rtrim($currentPath, '/').'/'.$name;
     }
 }

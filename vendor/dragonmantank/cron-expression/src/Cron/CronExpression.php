@@ -4,6 +4,7 @@ namespace Cron;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
@@ -29,34 +30,26 @@ class CronExpression
     const MONTH = 3;
     const WEEKDAY = 4;
     const YEAR = 5;
-    /**
-     * @var array Order in which to test of cron parts
-     */
-    private static $order = array(self::YEAR, self::MONTH, self::DAY, self::WEEKDAY, self::HOUR, self::MINUTE);
+
     /**
      * @var array CRON expression parts
      */
     private $cronParts;
+
     /**
      * @var FieldFactory CRON field factory
      */
     private $fieldFactory;
+
     /**
      * @var int Max iteration count when searching for next run date
      */
     private $maxIterationCount = 1000;
 
     /**
-     * Parse a CRON expression
-     *
-     * @param string $expression CRON expression (e.g. '8 * * * *')
-     * @param FieldFactory $fieldFactory Factory to create cron fields
+     * @var array Order in which to test of cron parts
      */
-    public function __construct($expression, FieldFactory $fieldFactory)
-    {
-        $this->fieldFactory = $fieldFactory;
-        $this->setExpression($expression);
-    }
+    private static $order = array(self::YEAR, self::MONTH, self::DAY, self::WEEKDAY, self::HOUR, self::MINUTE);
 
     /**
      * Factory method to create a new CronExpression.
@@ -70,7 +63,7 @@ class CronExpression
      *      `@weekly` - Run once a week, midnight on Sun - 0 0 * * 0
      *      `@daily` - Run once a day, midnight - 0 0 * * *
      *      `@hourly` - Run once an hour, first minute - 0 * * * *
-     * @param FieldFactory $fieldFactory Field factory to use
+     * @param FieldFactory|null $fieldFactory Field factory to use
      *
      * @return CronExpression
      */
@@ -112,6 +105,18 @@ class CronExpression
     }
 
     /**
+     * Parse a CRON expression
+     *
+     * @param string       $expression   CRON expression (e.g. '8 * * * *')
+     * @param FieldFactory|null $fieldFactory Factory to create cron fields
+     */
+    public function __construct($expression, FieldFactory $fieldFactory = null)
+    {
+        $this->fieldFactory = $fieldFactory;
+        $this->setExpression($expression);
+    }
+
+    /**
      * Set or change the CRON expression
      *
      * @param string $value CRON expression (e.g. 8 * * * *)
@@ -138,8 +143,8 @@ class CronExpression
     /**
      * Set part of the CRON expression
      *
-     * @param int $position The position of the CRON expression to set
-     * @param string $value The value to set
+     * @param int    $position The position of the CRON expression to set
+     * @param string $value    The value to set
      *
      * @return CronExpression
      * @throws \InvalidArgumentException if the value is not valid for the part
@@ -174,16 +179,17 @@ class CronExpression
     /**
      * Get a next run date relative to the current date or a specific date
      *
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param int $nth Number of matches to skip before returning a
-     *                                           matching next run date.  0, the default, will return the current
-     *                                           date and time if the next run date falls on the current date and
-     *                                           time.  Setting this value to 1 will skip the first match and go to
-     *                                           the second match.  Setting this value to 2 will skip the first 2
-     *                                           matches and so on.
-     * @param bool $allowCurrentDate Set to TRUE to return the current date if
-     *                                           it matches the cron expression.
-     * @param null|string $timeZone TimeZone to use instead of the system default
+     * @param string|\DateTimeInterface $currentTime      Relative calculation date
+     * @param int                       $nth              Number of matches to skip before returning a
+     *                                                    matching next run date.  0, the default, will return the
+     *                                                    current date and time if the next run date falls on the
+     *                                                    current date and time.  Setting this value to 1 will
+     *                                                    skip the first match and go to the second match.
+     *                                                    Setting this value to 2 will skip the first 2
+     *                                                    matches and so on.
+     * @param bool                      $allowCurrentDate Set to TRUE to return the current date if
+     *                                                    it matches the cron expression.
+     * @param null|string               $timeZone         TimeZone to use instead of the system default
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
@@ -196,11 +202,11 @@ class CronExpression
     /**
      * Get a previous run date relative to the current date or a specific date
      *
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param int $nth Number of matches to skip before returning
-     * @param bool $allowCurrentDate Set to TRUE to return the
-     *                                           current date if it matches the cron expression
-     * @param null|string $timeZone TimeZone to use instead of the system default
+     * @param string|\DateTimeInterface $currentTime      Relative calculation date
+     * @param int                       $nth              Number of matches to skip before returning
+     * @param bool                      $allowCurrentDate Set to TRUE to return the
+     *                                                    current date if it matches the cron expression
+     * @param null|string               $timeZone         TimeZone to use instead of the system default
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
@@ -214,14 +220,14 @@ class CronExpression
     /**
      * Get multiple run dates starting at the current date or a specific date
      *
-     * @param int $total Set the total number of dates to calculate
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param bool $invert Set to TRUE to retrieve previous dates
-     * @param bool $allowCurrentDate Set to TRUE to return the
-     *                                           current date if it matches the cron expression
-     * @param null|string $timeZone TimeZone to use instead of the system default
+     * @param int                       $total            Set the total number of dates to calculate
+     * @param string|\DateTimeInterface $currentTime      Relative calculation date
+     * @param bool                      $invert           Set to TRUE to retrieve previous dates
+     * @param bool                      $allowCurrentDate Set to TRUE to return the
+     *                                                    current date if it matches the cron expression
+     * @param null|string               $timeZone         TimeZone to use instead of the system default
      *
-     * @return array Returns an array of run dates
+     * @return \DateTime[] Returns an array of run dates
      */
     public function getMultipleRunDates($total, $currentTime = 'now', $invert = false, $allowCurrentDate = false, $timeZone = null)
     {
@@ -272,8 +278,8 @@ class CronExpression
      * specific date.  This method assumes that the current number of
      * seconds are irrelevant, and should be called once per minute.
      *
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param null|string $timeZone TimeZone to use instead of the system default
+     * @param string|\DateTimeInterface $currentTime Relative calculation date
+     * @param null|string               $timeZone    TimeZone to use instead of the system default
      *
      * @return bool Returns TRUE if the cron is due to run or FALSE if not
      */
@@ -305,12 +311,12 @@ class CronExpression
     /**
      * Get the next or previous run date of the expression relative to a date
      *
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param int $nth Number of matches to skip before returning
-     * @param bool $invert Set to TRUE to go backwards in time
-     * @param bool $allowCurrentDate Set to TRUE to return the
-     *                                           current date if it matches the cron expression
-     * @param string|null $timeZone TimeZone to use instead of the system default
+     * @param string|\DateTimeInterface $currentTime      Relative calculation date
+     * @param int                       $nth              Number of matches to skip before returning
+     * @param bool                      $invert           Set to TRUE to go backwards in time
+     * @param bool                      $allowCurrentDate Set to TRUE to return the
+     *                                                    current date if it matches the cron expression
+     * @param string|null               $timeZone         TimeZone to use instead of the system default
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
@@ -330,7 +336,7 @@ class CronExpression
         $currentDate->setTimeZone(new DateTimeZone($timeZone));
         $currentDate->setTime($currentDate->format('H'), $currentDate->format('i'), 0);
         $nextRun = clone $currentDate;
-        $nth = (int)$nth;
+        $nth = (int) $nth;
 
         // We don't have to satisfy * or null fields
         $parts = array();
@@ -387,18 +393,18 @@ class CronExpression
     /**
      * Workout what timeZone should be used.
      *
-     * @param string|\DateTime $currentTime Relative calculation date
-     * @param string|null $timeZone TimeZone to use instead of the system default
+     * @param string|\DateTimeInterface $currentTime      Relative calculation date
+     * @param string|null               $timeZone         TimeZone to use instead of the system default
      *
      * @return string
      */
     protected function determineTimeZone($currentTime, $timeZone)
     {
-        if (!is_null($timeZone)) {
+        if (! is_null($timeZone)) {
             return $timeZone;
         }
 
-        if ($currentTime instanceOf Datetime) {
+        if ($currentTime instanceOf DateTimeInterface) {
             return $currentTime->getTimeZone()->getName();
         }
 

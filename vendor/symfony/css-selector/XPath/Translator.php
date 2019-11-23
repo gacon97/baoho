@@ -35,18 +35,18 @@ class Translator implements TranslatorInterface
     /**
      * @var ParserInterface[]
      */
-    private $shortcutParsers = array();
+    private $shortcutParsers = [];
 
     /**
      * @var Extension\ExtensionInterface[]
      */
-    private $extensions = array();
+    private $extensions = [];
 
-    private $nodeTranslators = array();
-    private $combinationTranslators = array();
-    private $functionTranslators = array();
-    private $pseudoClassTranslators = array();
-    private $attributeMatchingTranslators = array();
+    private $nodeTranslators = [];
+    private $combinationTranslators = [];
+    private $functionTranslators = [];
+    private $pseudoClassTranslators = [];
+    private $attributeMatchingTranslators = [];
 
     public function __construct(ParserInterface $parser = null)
     {
@@ -57,21 +57,22 @@ class Translator implements TranslatorInterface
             ->registerExtension(new Extension\CombinationExtension())
             ->registerExtension(new Extension\FunctionExtension())
             ->registerExtension(new Extension\PseudoClassExtension())
-            ->registerExtension(new Extension\AttributeMatchingExtension());
+            ->registerExtension(new Extension\AttributeMatchingExtension())
+        ;
     }
 
     public static function getXpathLiteral(string $element): string
     {
         if (false === strpos($element, "'")) {
-            return "'" . $element . "'";
+            return "'".$element."'";
         }
 
         if (false === strpos($element, '"')) {
-            return '"' . $element . '"';
+            return '"'.$element.'"';
         }
 
         $string = $element;
-        $parts = array();
+        $parts = [];
         while (true) {
             if (false !== $pos = strpos($string, "'")) {
                 $parts[] = sprintf("'%s'", substr($string, 0, $pos));
@@ -110,9 +111,12 @@ class Translator implements TranslatorInterface
      */
     public function selectorToXPath(SelectorNode $selector, string $prefix = 'descendant-or-self::'): string
     {
-        return ($prefix ?: '') . $this->nodeToXPath($selector);
+        return ($prefix ?: '').$this->nodeToXPath($selector);
     }
 
+    /**
+     * @return $this
+     */
     public function registerExtension(Extension\ExtensionInterface $extension): self
     {
         $this->extensions[$extension->getName()] = $extension;
@@ -138,6 +142,9 @@ class Translator implements TranslatorInterface
         return $this->extensions[$name];
     }
 
+    /**
+     * @return $this
+     */
     public function registerParserShortcut(ParserInterface $shortcut): self
     {
         $this->shortcutParsers[] = $shortcut;

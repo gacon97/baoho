@@ -23,6 +23,22 @@ abstract class Helper implements HelperInterface
     protected $helperSet = null;
 
     /**
+     * {@inheritdoc}
+     */
+    public function setHelperSet(HelperSet $helperSet = null)
+    {
+        $this->helperSet = $helperSet;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHelperSet()
+    {
+        return $this->helperSet;
+    }
+
+    /**
      * Returns the length of a string, using mb_strwidth if it is available.
      *
      * @param string $string The string to check its length
@@ -41,8 +57,8 @@ abstract class Helper implements HelperInterface
     /**
      * Returns the subset of a string, using mb_substr if it is available.
      *
-     * @param string $string String to subset
-     * @param int $from Start offset
+     * @param string   $string String to subset
+     * @param int      $from   Start offset
      * @param int|null $length Length to read
      *
      * @return string The string subset
@@ -58,17 +74,17 @@ abstract class Helper implements HelperInterface
 
     public static function formatTime($secs)
     {
-        static $timeFormats = array(
-            array(0, '< 1 sec'),
-            array(1, '1 sec'),
-            array(2, 'secs', 1),
-            array(60, '1 min'),
-            array(120, 'mins', 60),
-            array(3600, '1 hr'),
-            array(7200, 'hrs', 3600),
-            array(86400, '1 day'),
-            array(172800, 'days', 86400),
-        );
+        static $timeFormats = [
+            [0, '< 1 sec'],
+            [1, '1 sec'],
+            [2, 'secs', 1],
+            [60, '1 min'],
+            [120, 'mins', 60],
+            [3600, '1 hr'],
+            [7200, 'hrs', 3600],
+            [86400, '1 day'],
+            [172800, 'days', 86400],
+        ];
 
         foreach ($timeFormats as $index => $format) {
             if ($secs >= $format[0]) {
@@ -79,7 +95,7 @@ abstract class Helper implements HelperInterface
                         return $format[1];
                     }
 
-                    return floor($secs / $format[2]) . ' ' . $format[1];
+                    return floor($secs / $format[2]).' '.$format[1];
                 }
             }
         }
@@ -118,21 +134,5 @@ abstract class Helper implements HelperInterface
         $formatter->setDecorated($isDecorated);
 
         return $string;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHelperSet()
-    {
-        return $this->helperSet;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setHelperSet(HelperSet $helperSet = null)
-    {
-        $this->helperSet = $helperSet;
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\TestDox;
 
 use PHPUnit\Framework\AssertionFailedError;
@@ -104,7 +103,7 @@ abstract class ResultPrinter extends Printer implements TestListener
     {
         parent::__construct($out);
 
-        $this->groups = $groups;
+        $this->groups        = $groups;
         $this->excludeGroups = $excludeGroups;
 
         $this->prettifier = new NamePrettifier;
@@ -233,8 +232,8 @@ abstract class ResultPrinter extends Printer implements TestListener
             }
 
             $this->currentTestClassPrettified = $this->prettifier->prettifyTestClass($class);
-            $this->testClass = $class;
-            $this->tests = [];
+            $this->testClass                  = $class;
+            $this->tests                      = [];
 
             $this->startClass($class);
         }
@@ -257,7 +256,7 @@ abstract class ResultPrinter extends Printer implements TestListener
 
         $this->tests[] = [$this->currentTestMethodPrettified, $this->testStatus];
 
-        $this->currentTestClassPrettified = null;
+        $this->currentTestClassPrettified  = null;
         $this->currentTestMethodPrettified = null;
     }
 

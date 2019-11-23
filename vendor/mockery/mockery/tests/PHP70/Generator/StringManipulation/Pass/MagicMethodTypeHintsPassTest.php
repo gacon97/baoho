@@ -24,38 +24,11 @@ declare(strict_types=1);
 namespace Mockery\Test\Generator\StringManipulation\Pass;
 
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Generator\DefinedTargetClass;
 use Mockery\Generator\StringManipulation\Pass\MagicMethodTypeHintsPass;
-use PHPUnit\Framework\TestCase;
 
-interface MagicInterfaceDummy
-{
-    public static function __callStatic(string $name, array $arguments): int;
-
-    public function __isset(string $name): bool;
-
-    public function __toString(): string;
-
-    public function __wakeup();
-
-    public function __destruct();
-
-    public function __call(string $name, array $arguments): string;
-
-    public function nonMagicMethod();
-}
-
-interface MagicReturnInterfaceDummy
-{
-    public function __isset(string $name);
-}
-
-interface MagicUnsetInterfaceDummy
-{
-    public function __unset(string $name);
-}
-
-class MagicMethodTypeHintsPassTest extends TestCase
+class MagicMethodTypeHintsPassTest extends MockeryTestCase
 {
     /**
      * @var MagicMethodTypeHintsPass
@@ -71,7 +44,7 @@ class MagicMethodTypeHintsPassTest extends TestCase
      * Setup method
      * @return void
      */
-    public function setup()
+    public function mockeryTestSetUp()
     {
         $this->pass = new MagicMethodTypeHintsPass;
         $this->mockedConfiguration = m::mock(
@@ -125,14 +98,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __isset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $name', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $name') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public function __isset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $name', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $name') !== false);
     }
 
     /**
@@ -148,12 +121,12 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __isset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $name', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $name') !== false);
         $code = $this->pass->apply(
             'public function __unset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $name', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $name') !== false);
     }
 
     /**
@@ -166,14 +139,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __isset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(' : bool', $code);
+        $this->assertTrue(\mb_strpos($code, ' : bool') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public function __isset($name) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(' : bool', $code);
+        $this->assertTrue(\mb_strpos($code, ' : bool') !== false);
     }
 
     /**
@@ -186,14 +159,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __toString() {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(' : string', $code);
+        $this->assertTrue(\mb_strpos($code, ' : string') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public function __toString() {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(' : string', $code);
+        $this->assertTrue(\mb_strpos($code, ' : string') !== false);
     }
 
     /**
@@ -206,14 +179,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __call($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $method', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $method') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public function __call($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $method', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $method') !== false);
     }
 
     /**
@@ -226,14 +199,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public static function __callStatic($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $method', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $method') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public static function __callStatic($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('string $method', $code);
+        $this->assertTrue(\mb_strpos($code, 'string $method') !== false);
     }
 
     /**
@@ -246,14 +219,14 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public static function __isset($parameter) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(') {', $code);
+        $this->assertTrue(\mb_strpos($code, ') {') !== false);
 
         $this->configureForInterface('Mockery\Test\Generator\StringManipulation\Pass\MagicReturnInterfaceDummy');
         $code = $this->pass->apply(
             'public static function __isset($parameter) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains(') {', $code);
+        $this->assertTrue(\mb_strpos($code, ') {') !== false);
     }
 
     /**
@@ -265,7 +238,7 @@ class MagicMethodTypeHintsPassTest extends TestCase
             '\StdClass'
         );
         $magicMethods = $this->pass->getMagicMethods($targetClass);
-        $this->assertInternalType('array', $magicMethods);
+        $this->assertTrue(is_array($magicMethods));
         $this->assertEmpty($magicMethods);
     }
 
@@ -275,7 +248,7 @@ class MagicMethodTypeHintsPassTest extends TestCase
     public function itShouldReturnEmptyArrayIfClassTypeIsNotExpected()
     {
         $magicMethods = $this->pass->getMagicMethods(null);
-        $this->assertInternalType('array', $magicMethods);
+        $this->assertTrue(is_array($magicMethods));
         $this->assertEmpty($magicMethods);
     }
 
@@ -295,16 +268,16 @@ class MagicMethodTypeHintsPassTest extends TestCase
             'public function __call($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('$method', $code);
-        $this->assertContains('array $args', $code);
+        $this->assertTrue(\mb_strpos($code, '$method') !== false);
+        $this->assertTrue(\mb_strpos($code, 'array $args') !== false);
 
         $this->configureForInterface();
         $code = $this->pass->apply(
             'public function __call($method, array $args) {}',
             $this->mockedConfiguration
         );
-        $this->assertContains('$method', $code);
-        $this->assertContains('array $args', $code);
+        $this->assertTrue(\mb_strpos($code, '$method') !== false);
+        $this->assertTrue(\mb_strpos($code, 'array $args') !== false);
     }
 
     protected function configureForClass(string $className = 'Mockery\Test\Generator\StringManipulation\Pass\MagicDummy')
@@ -352,16 +325,12 @@ class MagicMethodTypeHintsPassTest extends TestCase
 
 class MagicDummy
 {
-    public static function __callStatic(string $name, array $arguments): int
-    {
-    }
-
-    public function __isset(string $name): bool
+    public function __isset(string $name) : bool
     {
         return false;
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         return '';
     }
@@ -374,7 +343,11 @@ class MagicDummy
     {
     }
 
-    public function __call(string $name, array $arguments): string
+    public function __call(string $name, array $arguments) : string
+    {
+    }
+
+    public static function __callStatic(string $name, array $arguments) : int
     {
     }
 
@@ -389,4 +362,31 @@ class MagicReturnDummy
     {
         return false;
     }
+}
+
+interface MagicInterfaceDummy
+{
+    public function __isset(string $name) : bool;
+
+    public function __toString() : string;
+
+    public function __wakeup();
+
+    public function __destruct();
+
+    public function __call(string $name, array $arguments) : string;
+
+    public static function __callStatic(string $name, array $arguments) : int;
+
+    public function nonMagicMethod();
+}
+
+interface MagicReturnInterfaceDummy
+{
+    public function __isset(string $name);
+}
+
+interface MagicUnsetInterfaceDummy
+{
+    public function __unset(string $name);
 }

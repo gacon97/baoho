@@ -12,6 +12,7 @@
 namespace Monolog\Handler\Slack;
 
 use Monolog\Logger;
+use Monolog\Utils;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Formatter\FormatterInterface;
 
@@ -122,12 +123,12 @@ class SlackRecord
 
         if ($this->useAttachment) {
             $attachment = array(
-                'fallback' => $message,
-                'text' => $message,
-                'color' => $this->getAttachmentColor($record['level']),
-                'fields' => array(),
+                'fallback'  => $message,
+                'text'      => $message,
+                'color'     => $this->getAttachmentColor($record['level']),
+                'fields'    => array(),
                 'mrkdwn_in' => array('fields'),
-                'ts' => $record['datetime']->getTimestamp()
+                'ts'        => $record['datetime']->getTimestamp()
             );
 
             if ($this->useShortAttachment) {
@@ -179,7 +180,7 @@ class SlackRecord
      * Returned a Slack message attachment color associated with
      * provided level.
      *
-     * @param  int $level
+     * @param  int    $level
      * @return string
      */
     public function getAttachmentColor($level)
@@ -207,13 +208,17 @@ class SlackRecord
     {
         $normalized = $this->normalizerFormatter->format($fields);
         $prettyPrintFlag = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 128;
+        $flags = 0;
+        if (PHP_VERSION_ID >= 50400) {
+            $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        }
 
         $hasSecondDimension = count(array_filter($normalized, 'is_array'));
         $hasNonNumericKeys = !count(array_filter(array_keys($normalized), 'is_numeric'));
 
         return $hasSecondDimension || $hasNonNumericKeys
-            ? json_encode($normalized, $prettyPrintFlag)
-            : json_encode($normalized);
+            ? Utils::jsonEncode($normalized, $prettyPrintFlag | $flags)
+            : Utils::jsonEncode($normalized, $flags);
     }
 
     /**
@@ -229,7 +234,7 @@ class SlackRecord
     /**
      * Generates attachment field
      *
-     * @param string $title
+     * @param string       $title
      * @param string|array $value
      *
      * @return array

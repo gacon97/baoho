@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use MyTestListener;
@@ -23,6 +22,14 @@ final class TestListenerTest extends TestCase
      * @var MyTestListener
      */
     private $listener;
+
+    protected function setUp(): void
+    {
+        $this->result   = new TestResult;
+        $this->listener = new MyTestListener;
+
+        $this->result->addListener($this->listener);
+    }
 
     public function testError(): void
     {
@@ -49,13 +56,5 @@ final class TestListenerTest extends TestCase
 
         $this->assertEquals(1, $this->listener->startCount());
         $this->assertEquals(1, $this->listener->endCount());
-    }
-
-    protected function setUp(): void
-    {
-        $this->result = new TestResult;
-        $this->listener = new MyTestListener;
-
-        $this->result->addListener($this->listener);
     }
 }

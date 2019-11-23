@@ -49,15 +49,16 @@ class ControllerArgumentValueResolverPass implements CompilerPassInterface
 
         if ($container->getParameter('kernel.debug') && class_exists(Stopwatch::class) && $container->has($this->traceableResolverStopwatch)) {
             foreach ($resolvers as $resolverReference) {
-                $id = (string)$resolverReference;
+                $id = (string) $resolverReference;
                 $container->register("debug.$id", TraceableValueResolver::class)
                     ->setDecoratedService($id)
-                    ->setArguments(array(new Reference("debug.$id.inner"), new Reference($this->traceableResolverStopwatch)));
+                    ->setArguments([new Reference("debug.$id.inner"), new Reference($this->traceableResolverStopwatch)]);
             }
         }
 
         $container
             ->getDefinition($this->argumentResolverService)
-            ->replaceArgument(1, new IteratorArgument($resolvers));
+            ->replaceArgument(1, new IteratorArgument($resolvers))
+        ;
     }
 }

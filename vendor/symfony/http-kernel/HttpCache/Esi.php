@@ -85,7 +85,7 @@ class Esi extends AbstractSurrogate
 
         $i = 1;
         while (isset($chunks[$i])) {
-            $options = array();
+            $options = [];
             preg_match_all('/(src|onerror|alt)="([^"]*?)"/', $chunks[$i], $matches, PREG_SET_ORDER);
             foreach ($matches as $set) {
                 $options[$set[1]] = $set[2];
@@ -95,7 +95,7 @@ class Esi extends AbstractSurrogate
                 throw new \RuntimeException('Unable to process an ESI tag without a "src" attribute.');
             }
 
-            $chunks[$i] = sprintf('<?php echo $this->surrogate->handle($this, %s, %s, %s) ?>' . "\n",
+            $chunks[$i] = sprintf('<?php echo $this->surrogate->handle($this, %s, %s, %s) ?>'."\n",
                 var_export($options['src'], true),
                 var_export(isset($options['alt']) ? $options['alt'] : '', true),
                 isset($options['onerror']) && 'continue' === $options['onerror'] ? 'true' : 'false'
@@ -111,5 +111,7 @@ class Esi extends AbstractSurrogate
 
         // remove ESI/1.0 from the Surrogate-Control header
         $this->removeFromControl($response);
+
+        return $response;
     }
 }

@@ -21,11 +21,13 @@ namespace Faker;
  * @property string $city
  * @property string $streetName
  * @property string $streetAddress
+ * @property string $secondaryAddress
  * @property string $postcode
  * @property string $address
+ * @property string $state
  * @property string $country
- * @property float $latitude
- * @property float $longitude
+ * @property float  $latitude
+ * @property float  $longitude
  *
  * @property string $ean13
  * @property string $ean8
@@ -33,6 +35,7 @@ namespace Faker;
  * @property string $isbn10
  *
  * @property string $phoneNumber
+ * @property string $e164PhoneNumber
  *
  * @property string $company
  * @property string $companySuffix
@@ -52,6 +55,7 @@ namespace Faker;
  * @property string $word
  * @property string|array $words
  * @method string|array words($nb = 3, $asText = false)
+ * @method string word()
  * @property string $sentence
  * @method string sentence($nbWords = 6, $variableNbWords = true)
  * @property string|array $sentences
@@ -85,22 +89,22 @@ namespace Faker;
  * @property string $localIpv4
  * @property string $macAddress
  *
- * @property int $unixTime
+ * @property int       $unixTime
  * @property \DateTime $dateTime
  * @property \DateTime $dateTimeAD
- * @property string $iso8601
+ * @property string    $iso8601
  * @property \DateTime $dateTimeThisCentury
  * @property \DateTime $dateTimeThisDecade
  * @property \DateTime $dateTimeThisYear
  * @property \DateTime $dateTimeThisMonth
- * @property string $amPm
- * @property string $dayOfMonth
- * @property string $dayOfWeek
- * @property string $month
- * @property string $monthName
- * @property string $year
- * @property string $century
- * @property string $timezone
+ * @property string    $amPm
+ * @property string    $dayOfMonth
+ * @property string    $dayOfWeek
+ * @property string    $month
+ * @property string    $monthName
+ * @property string    $year
+ * @property string    $century
+ * @property string    $timezone
  * @method string amPm($max = 'now')
  * @method string date($format = 'Y-m-d', $max = 'now')
  * @method string dayOfMonth($max = 'now')
@@ -113,7 +117,7 @@ namespace Faker;
  * @method string year($max = 'now')
  * @method \DateTime dateTime($max = 'now', $timezone = null)
  * @method \DateTime dateTimeAd($max = 'now', $timezone = null)
- * @method \DateTime dateTimeBetween($startDate = '-30 years', $endDate = 'now')
+ * @method \DateTime dateTimeBetween($startDate = '-30 years', $endDate = 'now', $timezone = null)
  * @method \DateTime dateTimeInInterval($date = '-30 years', $interval = '+5 days', $timezone = null)
  * @method \DateTime dateTimeThisCentury($max = 'now', $timezone = null)
  * @method \DateTime dateTimeThisDecade($max = 'now', $timezone = null)
@@ -131,8 +135,9 @@ namespace Faker;
  * @property boolean $boolean
  * @method boolean boolean($chanceOfGettingTrue = 50)
  *
- * @property int $randomDigit
- * @property int $randomDigitNotNull
+ * @property int    $randomDigit
+ * @property int    $randomDigitNot
+ * @property int    $randomDigitNotNull
  * @property string $randomLetter
  * @property string $randomAscii
  * @method int randomNumber($nbDigits = null, $strict = false)
@@ -154,6 +159,7 @@ namespace Faker;
  * @method Generator optional($weight = 0.5, $default = null)
  * @method Generator unique($reset = false, $maxRetries = 10000)
  * @method Generator valid($validator = null, $maxRetries = 10000)
+ * @method mixed passthrough($passthrough)
  *
  * @method integer biasedNumberBetween($min = 0, $max = 100, $function = 'sqrt')
  *
@@ -210,9 +216,9 @@ class Generator
             mt_srand();
         } else {
             if (PHP_VERSION_ID < 70100) {
-                mt_srand((int)$seed);
+                mt_srand((int) $seed);
             } else {
-                mt_srand((int)$seed, MT_RAND_PHP);
+                mt_srand((int) $seed, MT_RAND_PHP);
             }
         }
     }
@@ -253,6 +259,11 @@ class Generator
         return preg_replace_callback('/\{\{\s?(\w+)\s?\}\}/u', array($this, 'callFormatWithMatches'), $string);
     }
 
+    protected function callFormatWithMatches($matches)
+    {
+        return $this->format($matches[1]);
+    }
+
     /**
      * @param string $attribute
      *
@@ -274,8 +285,8 @@ class Generator
         return $this->format($method, $attributes);
     }
 
-    protected function callFormatWithMatches($matches)
+    public function __destruct()
     {
-        return $this->format($matches[1]);
+        $this->seed();
     }
 }

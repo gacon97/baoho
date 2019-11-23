@@ -22,15 +22,18 @@ namespace Symfony\Component\Routing\Annotation;
 class Route
 {
     private $path;
-    private $localizedPaths = array();
+    private $localizedPaths = [];
     private $name;
-    private $requirements = array();
-    private $options = array();
-    private $defaults = array();
+    private $requirements = [];
+    private $options = [];
+    private $defaults = [];
     private $host;
-    private $methods = array();
-    private $schemes = array();
+    private $methods = [];
+    private $schemes = [];
     private $condition;
+    private $locale;
+    private $format;
+    private $utf8;
 
     /**
      * @param array $data An array of key/value parameters
@@ -53,8 +56,23 @@ class Route
             unset($data['path']);
         }
 
+        if (isset($data['locale'])) {
+            $data['defaults']['_locale'] = $data['locale'];
+            unset($data['locale']);
+        }
+
+        if (isset($data['format'])) {
+            $data['defaults']['_format'] = $data['format'];
+            unset($data['format']);
+        }
+
+        if (isset($data['utf8'])) {
+            $data['options']['utf8'] = filter_var($data['utf8'], FILTER_VALIDATE_BOOLEAN) ?: false;
+            unset($data['utf8']);
+        }
+
         foreach ($data as $key => $value) {
-            $method = 'set' . str_replace('_', '', $key);
+            $method = 'set'.str_replace('_', '', $key);
             if (!method_exists($this, $method)) {
                 throw new \BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, \get_class($this)));
             }
@@ -62,19 +80,14 @@ class Route
         }
     }
 
-    public function getPath()
-    {
-        return $this->path;
-    }
-
     public function setPath($path)
     {
         $this->path = $path;
     }
 
-    public function getLocalizedPaths(): array
+    public function getPath()
     {
-        return $this->localizedPaths;
+        return $this->path;
     }
 
     public function setLocalizedPaths(array $localizedPaths)
@@ -82,9 +95,9 @@ class Route
         $this->localizedPaths = $localizedPaths;
     }
 
-    public function getHost()
+    public function getLocalizedPaths(): array
     {
-        return $this->host;
+        return $this->localizedPaths;
     }
 
     public function setHost($pattern)
@@ -92,9 +105,9 @@ class Route
         $this->host = $pattern;
     }
 
-    public function getName()
+    public function getHost()
     {
-        return $this->name;
+        return $this->host;
     }
 
     public function setName($name)
@@ -102,9 +115,9 @@ class Route
         $this->name = $name;
     }
 
-    public function getRequirements()
+    public function getName()
     {
-        return $this->requirements;
+        return $this->name;
     }
 
     public function setRequirements($requirements)
@@ -112,9 +125,9 @@ class Route
         $this->requirements = $requirements;
     }
 
-    public function getOptions()
+    public function getRequirements()
     {
-        return $this->options;
+        return $this->requirements;
     }
 
     public function setOptions($options)
@@ -122,9 +135,9 @@ class Route
         $this->options = $options;
     }
 
-    public function getDefaults()
+    public function getOptions()
     {
-        return $this->defaults;
+        return $this->options;
     }
 
     public function setDefaults($defaults)
@@ -132,14 +145,24 @@ class Route
         $this->defaults = $defaults;
     }
 
+    public function getDefaults()
+    {
+        return $this->defaults;
+    }
+
+    public function setSchemes($schemes)
+    {
+        $this->schemes = \is_array($schemes) ? $schemes : [$schemes];
+    }
+
     public function getSchemes()
     {
         return $this->schemes;
     }
 
-    public function setSchemes($schemes)
+    public function setMethods($methods)
     {
-        $this->schemes = \is_array($schemes) ? $schemes : array($schemes);
+        $this->methods = \is_array($methods) ? $methods : [$methods];
     }
 
     public function getMethods()
@@ -147,18 +170,13 @@ class Route
         return $this->methods;
     }
 
-    public function setMethods($methods)
+    public function setCondition($condition)
     {
-        $this->methods = \is_array($methods) ? $methods : array($methods);
+        $this->condition = $condition;
     }
 
     public function getCondition()
     {
         return $this->condition;
-    }
-
-    public function setCondition($condition)
-    {
-        $this->condition = $condition;
     }
 }

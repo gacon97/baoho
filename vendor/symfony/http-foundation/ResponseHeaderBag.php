@@ -24,11 +24,11 @@ class ResponseHeaderBag extends HeaderBag
     const DISPOSITION_ATTACHMENT = 'attachment';
     const DISPOSITION_INLINE = 'inline';
 
-    protected $computedCacheControl = array();
-    protected $cookies = array();
-    protected $headerNames = array();
+    protected $computedCacheControl = [];
+    protected $cookies = [];
+    protected $headerNames = [];
 
-    public function __construct(array $headers = array())
+    public function __construct(array $headers = [])
     {
         parent::__construct($headers);
 
@@ -49,7 +49,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function allPreserveCase()
     {
-        $headers = array();
+        $headers = [];
         foreach ($this->all() as $name => $value) {
             $headers[isset($this->headerNames[$name]) ? $this->headerNames[$name] : $name] = $value;
         }
@@ -70,9 +70,9 @@ class ResponseHeaderBag extends HeaderBag
     /**
      * {@inheritdoc}
      */
-    public function replace(array $headers = array())
+    public function replace(array $headers = [])
     {
-        $this->headerNames = array();
+        $this->headerNames = [];
 
         parent::replace($headers);
 
@@ -92,7 +92,7 @@ class ResponseHeaderBag extends HeaderBag
     {
         $headers = parent::all();
         foreach ($this->getCookies() as $cookie) {
-            $headers['set-cookie'][] = (string)$cookie;
+            $headers['set-cookie'][] = (string) $cookie;
         }
 
         return $headers;
@@ -107,9 +107,9 @@ class ResponseHeaderBag extends HeaderBag
 
         if ('set-cookie' === $uniqueKey) {
             if ($replace) {
-                $this->cookies = array();
+                $this->cookies = [];
             }
-            foreach ((array)$values as $cookie) {
+            foreach ((array) $values as $cookie) {
                 $this->setCookie(Cookie::fromString($cookie));
             }
             $this->headerNames[$uniqueKey] = $key;
@@ -122,9 +122,8 @@ class ResponseHeaderBag extends HeaderBag
         parent::set($key, $values, $replace);
 
         // ensure the cache-control header has sensible defaults
-        if (\in_array($uniqueKey, array('cache-control', 'etag', 'last-modified', 'expires'), true)) {
-            $computed = $this->computeCacheControlValue();
-            $this->headers['cache-control'] = array($computed);
+        if (\in_array($uniqueKey, ['cache-control', 'etag', 'last-modified', 'expires'], true) && '' !== $computed = $this->computeCacheControlValue()) {
+            $this->headers['cache-control'] = [$computed];
             $this->headerNames['cache-control'] = 'Cache-Control';
             $this->computedCacheControl = $this->parseCacheControl($computed);
         }
@@ -139,7 +138,7 @@ class ResponseHeaderBag extends HeaderBag
         unset($this->headerNames[$uniqueKey]);
 
         if ('set-cookie' === $uniqueKey) {
-            $this->cookies = array();
+            $this->cookies = [];
 
             return;
         }
@@ -147,7 +146,7 @@ class ResponseHeaderBag extends HeaderBag
         parent::remove($key);
 
         if ('cache-control' === $uniqueKey) {
-            $this->computedCacheControl = array();
+            $this->computedCacheControl = [];
         }
 
         if ('date' === $uniqueKey) {
@@ -160,7 +159,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function hasCacheControlDirective($key)
     {
-        return array_key_exists($key, $this->computedCacheControl);
+        return \array_key_exists($key, $this->computedCacheControl);
     }
 
     /**
@@ -168,7 +167,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function getCacheControlDirective($key)
     {
-        return array_key_exists($key, $this->computedCacheControl) ? $this->computedCacheControl[$key] : null;
+        return \array_key_exists($key, $this->computedCacheControl) ? $this->computedCacheControl[$key] : null;
     }
 
     public function setCookie(Cookie $cookie)
@@ -216,15 +215,15 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function getCookies($format = self::COOKIES_FLAT)
     {
-        if (!\in_array($format, array(self::COOKIES_FLAT, self::COOKIES_ARRAY))) {
-            throw new \InvalidArgumentException(sprintf('Format "%s" invalid (%s).', $format, implode(', ', array(self::COOKIES_FLAT, self::COOKIES_ARRAY))));
+        if (!\in_array($format, [self::COOKIES_FLAT, self::COOKIES_ARRAY])) {
+            throw new \InvalidArgumentException(sprintf('Format "%s" invalid (%s).', $format, implode(', ', [self::COOKIES_FLAT, self::COOKIES_ARRAY])));
         }
 
         if (self::COOKIES_ARRAY === $format) {
             return $this->cookies;
         }
 
-        $flattenedCookies = array();
+        $flattenedCookies = [];
         foreach ($this->cookies as $path) {
             foreach ($path as $cookies) {
                 foreach ($cookies as $cookie) {
@@ -242,8 +241,8 @@ class ResponseHeaderBag extends HeaderBag
      * @param string $name
      * @param string $path
      * @param string $domain
-     * @param bool $secure
-     * @param bool $httpOnly
+     * @param bool   $secure
+     * @param bool   $httpOnly
      */
     public function clearCookie($name, $path = '/', $domain = null, $secure = false, $httpOnly = true)
     {
@@ -255,7 +254,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function makeDisposition($disposition, $filename, $filenameFallback = '')
     {
-        return HeaderUtils::makeDisposition((string)$disposition, (string)$filename, (string)$filenameFallback);
+        return HeaderUtils::makeDisposition((string) $disposition, (string) $filename, (string) $filenameFallback);
     }
 
     /**
@@ -284,7 +283,7 @@ class ResponseHeaderBag extends HeaderBag
 
         // public if s-maxage is defined, private otherwise
         if (!isset($this->cacheControl['s-maxage'])) {
-            return $header . ', private';
+            return $header.', private';
         }
 
         return $header;
@@ -294,6 +293,6 @@ class ResponseHeaderBag extends HeaderBag
     {
         $now = \DateTime::createFromFormat('U', time());
         $now->setTimezone(new \DateTimeZone('UTC'));
-        $this->set('Date', $now->format('D, d M Y H:i:s') . ' GMT');
+        $this->set('Date', $now->format('D, d M Y H:i:s').' GMT');
     }
 }

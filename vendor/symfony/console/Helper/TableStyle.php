@@ -90,8 +90,8 @@ class TableStyle
      * ╚═══════════════╧══════════════════════════╧══════════════════╝
      * </code>
      *
-     * @param string $outside Outside border char (see #1 of example)
-     * @param string|null $inside Inside border char (see #2 of example), equals $outside if null
+     * @param string      $outside Outside border char (see #1 of example)
+     * @param string|null $inside  Inside border char (see #2 of example), equals $outside if null
      */
     public function setHorizontalBorderChars(string $outside, string $inside = null): self
     {
@@ -146,8 +146,8 @@ class TableStyle
      * ╚═══════════════╧══════════════════════════╧══════════════════╝
      * </code>
      *
-     * @param string $outside Outside border char (see #1 of example)
-     * @param string|null $inside Inside border char (see #2 of example), equals $outside if null
+     * @param string      $outside Outside border char (see #1 of example)
+     * @param string|null $inside  Inside border char (see #2 of example), equals $outside if null
      */
     public function setVerticalBorderChars(string $outside, string $inside = null): self
     {
@@ -194,12 +194,12 @@ class TableStyle
      */
     public function getBorderChars()
     {
-        return array(
+        return [
             $this->horizontalOutsideBorderChar,
             $this->verticalOutsideBorderChar,
             $this->horizontalInsideBorderChar,
             $this->verticalInsideBorderChar,
-        );
+        ];
     }
 
     /**
@@ -218,17 +218,17 @@ class TableStyle
      * 7═══════════════6══════════════════════════6══════════════════5
      * </code>
      *
-     * @param string $cross Crossing char (see #0 of example)
-     * @param string $topLeft Top left char (see #1 of example)
-     * @param string $topMid Top mid char (see #2 of example)
-     * @param string $topRight Top right char (see #3 of example)
-     * @param string $midRight Mid right char (see #4 of example)
-     * @param string $bottomRight Bottom right char (see #5 of example)
-     * @param string $bottomMid Bottom mid char (see #6 of example)
-     * @param string $bottomLeft Bottom left char (see #7 of example)
-     * @param string $midLeft Mid left char (see #8 of example)
-     * @param string|null $topLeftBottom Top left bottom char (see #8' of example), equals to $midLeft if null
-     * @param string|null $topMidBottom Top mid bottom char (see #0' of example), equals to $cross if null
+     * @param string      $cross          Crossing char (see #0 of example)
+     * @param string      $topLeft        Top left char (see #1 of example)
+     * @param string      $topMid         Top mid char (see #2 of example)
+     * @param string      $topRight       Top right char (see #3 of example)
+     * @param string      $midRight       Mid right char (see #4 of example)
+     * @param string      $bottomRight    Bottom right char (see #5 of example)
+     * @param string      $bottomMid      Bottom mid char (see #6 of example)
+     * @param string      $bottomLeft     Bottom left char (see #7 of example)
+     * @param string      $midLeft        Mid left char (see #8 of example)
+     * @param string|null $topLeftBottom  Top left bottom char (see #8' of example), equals to $midLeft if null
+     * @param string|null $topMidBottom   Top mid bottom char (see #0' of example), equals to $cross if null
      * @param string|null $topRightBottom Top right bottom char (see #4' of example), equals to $midRight if null
      */
     public function setCrossingChars(string $cross, string $topLeft, string $topMid, string $topRight, string $midRight, string $bottomRight, string $bottomMid, string $bottomLeft, string $midLeft, string $topLeftBottom = null, string $topMidBottom = null, string $topRightBottom = null): self
@@ -292,7 +292,7 @@ class TableStyle
      */
     public function getCrossingChars(): array
     {
-        return array(
+        return [
             $this->crossingChar,
             $this->crossingTopLeftChar,
             $this->crossingTopMidChar,
@@ -305,7 +305,7 @@ class TableStyle
             $this->crossingTopLeftBottomChar,
             $this->crossingTopMidBottomChar,
             $this->crossingTopRightBottomChar,
-        );
+        ];
     }
 
     /**
@@ -413,7 +413,7 @@ class TableStyle
      */
     public function setPadType($padType)
     {
-        if (!\in_array($padType, array(STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH), true)) {
+        if (!\in_array($padType, [STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH], true)) {
             throw new InvalidArgumentException('Invalid padding type. Expected one of (STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH).');
         }
 

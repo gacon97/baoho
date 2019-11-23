@@ -21,22 +21,17 @@
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
-interface MockeryTest_NameOfInterface
-{
-    public function foo();
-}
-
 /**
  * Ad-hoc unit tests for various scenarios reported by users
  */
 class Mockery_AdhocTest extends MockeryTestCase
 {
-    public function setup()
+    public function mockeryTestSetUp()
     {
         $this->container = new \Mockery\Container(\Mockery::getDefaultGenerator(), \Mockery::getDefaultLoader());
     }
 
-    public function teardown()
+    public function mockeryTestTearDown()
     {
         $this->container->mockery_close();
     }
@@ -101,6 +96,11 @@ class Mockery_AdhocTest extends MockeryTestCase
 
 class MockeryTest_NameOfExistingClass
 {
+}
+
+interface MockeryTest_NameOfInterface
+{
+    public function foo();
 }
 
 abstract class MockeryTest_NameOfAbstract

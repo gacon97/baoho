@@ -67,6 +67,7 @@ class TestHandler extends AbstractProcessingHandler
 {
     protected $records = array();
     protected $recordsByLevel = array();
+    private $skipReset = false;
 
     public function getRecords()
     {
@@ -79,6 +80,18 @@ class TestHandler extends AbstractProcessingHandler
         $this->recordsByLevel = array();
     }
 
+    public function reset()
+    {
+        if (!$this->skipReset) {
+            $this->clear();
+        }
+    }
+
+    public function setSkipReset($skipReset)
+    {
+        $this->skipReset = $skipReset;
+    }
+
     public function hasRecords($level)
     {
         return isset($this->recordsByLevel[$level]);
@@ -86,7 +99,7 @@ class TestHandler extends AbstractProcessingHandler
 
     /**
      * @param string|array $record Either a message string or an array containing message and optionally context keys that will be checked against all records
-     * @param int $level Logger::LEVEL constant value
+     * @param int          $level  Logger::LEVEL constant value
      */
     public function hasRecord($record, $level)
     {
@@ -138,6 +151,15 @@ class TestHandler extends AbstractProcessingHandler
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function write(array $record)
+    {
+        $this->recordsByLevel[$record['level']][] = $record;
+        $this->records[] = $record;
+    }
+
     public function __call($method, $args)
     {
         if (preg_match('/(.*)(Debug|Info|Notice|Warning|Error|Critical|Alert|Emergency)(.*)/', $method, $matches) > 0) {
@@ -151,14 +173,5 @@ class TestHandler extends AbstractProcessingHandler
         }
 
         throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $method . '()');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
-    {
-        $this->recordsByLevel[$record['level']][] = $record;
-        $this->records[] = $record;
     }
 }

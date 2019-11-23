@@ -14,7 +14,7 @@ class Address extends \Faker\Provider\Address
 
     protected static $buildingNumber = array('##');
     protected static $postcode = array('######');
-
+    
     /**
      * @link https://ru.wikipedia.org/wiki/Общероссийский_классификатор_стран_мира#Список_стран_согласно_Классификатору
      */
@@ -90,6 +90,13 @@ class Address extends \Faker\Provider\Address
         return static::numerify(static::randomElement(static::$buildingNumber));
     }
 
+    public function address()
+    {
+        $format = static::randomElement(static::$addressFormats);
+
+        return $this->generator->parse($format);
+    }
+
     public static function country()
     {
         return static::randomElement(static::$country);
@@ -115,6 +122,11 @@ class Address extends \Faker\Provider\Address
         return static::randomElement(static::$cityPrefix);
     }
 
+    public function city()
+    {
+        return static::randomElement(static::$city);
+    }
+
     public static function streetPrefix()
     {
         return static::randomElement(static::$streetPrefix);
@@ -123,17 +135,5 @@ class Address extends \Faker\Provider\Address
     public static function street()
     {
         return static::randomElement(static::$street);
-    }
-
-    public function address()
-    {
-        $format = static::randomElement(static::$addressFormats);
-
-        return $this->generator->parse($format);
-    }
-
-    public function city()
-    {
-        return static::randomElement(static::$city);
     }
 }

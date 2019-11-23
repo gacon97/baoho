@@ -28,13 +28,13 @@ class IcuResFileDumper extends FileDumper
     /**
      * {@inheritdoc}
      */
-    public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = array())
+    public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = [])
     {
         $data = $indexes = $resources = '';
 
         foreach ($messages->all($domain) as $source => $target) {
             $indexes .= pack('v', \strlen($data) + 28);
-            $data .= $source . "\0";
+            $data .= $source."\0";
         }
 
         $data .= $this->writePadding($data);
@@ -45,16 +45,18 @@ class IcuResFileDumper extends FileDumper
             $resources .= pack('V', $this->getPosition($data));
 
             $data .= pack('V', \strlen($target))
-                . mb_convert_encoding($target . "\0", 'UTF-16LE', 'UTF-8')
-                . $this->writePadding($data);
+                .mb_convert_encoding($target."\0", 'UTF-16LE', 'UTF-8')
+                .$this->writePadding($data)
+                  ;
         }
 
         $resOffset = $this->getPosition($data);
 
         $data .= pack('v', \count($messages->all($domain)))
-            . $indexes
-            . $this->writePadding($data)
-            . $resources;
+            .$indexes
+            .$this->writePadding($data)
+            .$resources
+              ;
 
         $bundleTop = $this->getPosition($data);
 
@@ -77,7 +79,19 @@ class IcuResFileDumper extends FileDumper
             1, 4, 0, 0              // Unicode version
         );
 
-        return $header . $root . $data;
+        return $header.$root.$data;
+    }
+
+    private function writePadding($data)
+    {
+        $padding = \strlen($data) % 4;
+
+        return $padding ? str_repeat("\xAA", 4 - $padding) : null;
+    }
+
+    private function getPosition($data)
+    {
+        return (\strlen($data) + 28) / 4;
     }
 
     /**
@@ -86,19 +100,5 @@ class IcuResFileDumper extends FileDumper
     protected function getExtension()
     {
         return 'res';
-    }
-
-    private function writePadding($data)
-    {
-        $padding = \strlen($data) % 4;
-
-        if ($padding) {
-            return str_repeat("\xAA", 4 - $padding);
-        }
-    }
-
-    private function getPosition($data)
-    {
-        return (\strlen($data) + 28) / 4;
     }
 }

@@ -105,34 +105,34 @@ class Payment extends \Faker\Provider\Payment
      * @link http://www.bankswiftcode.org/malaysia/
      */
     protected static $swiftCodes = array(
-        'ABNAMY2AXXX', 'ABNAMYKLPNG', 'ABNAMYKLXXX', 'AFBQMYKLXXX', 'AIBBMYKLXXX',
-        'AISLMYKLXXX', 'AMMBMYKLXXX', 'ARBKMYKLXXX',
-        'BIMBMYKLXXX', 'BISLMYKAXXX', 'BKCHMYKLXXX', 'BKKBMYKLXXX', 'BMMBMYKLXXX',
-        'BNMAMYKLXXX', 'BNPAMYKAXXX', 'BOFAMY2XLBN', 'BOFAMY2XXXX', 'BOTKMYKAXXX',
+        'ABNAMY2AXXX','ABNAMYKLPNG','ABNAMYKLXXX','AFBQMYKLXXX','AIBBMYKLXXX',
+        'AISLMYKLXXX','AMMBMYKLXXX','ARBKMYKLXXX',
+        'BIMBMYKLXXX','BISLMYKAXXX','BKCHMYKLXXX','BKKBMYKLXXX','BMMBMYKLXXX',
+        'BNMAMYKLXXX','BNPAMYKAXXX','BOFAMY2XLBN','BOFAMY2XXXX','BOTKMYKAXXX',
         'BOTKMYKXXXX',
-        'CHASMYKXKEY', 'CHASMYKXXXX', 'CIBBMYKAXXX', 'CIBBMYKLXXX', 'CITIMYKLJOD',
-        'CITIMYKLLAB', 'CITIMYKLPEN', 'CITIMYKLXXX', 'COIMMYKLXXX', 'CTBBMYKLXXX',
-        'DABEMYKLXXX', 'DBSSMY2AXXX', 'DEUTMYKLBLB', 'DEUTMYKLGMO', 'DEUTMYKLISB',
+        'CHASMYKXKEY','CHASMYKXXXX','CIBBMYKAXXX','CIBBMYKLXXX','CITIMYKLJOD',
+        'CITIMYKLLAB','CITIMYKLPEN','CITIMYKLXXX','COIMMYKLXXX','CTBBMYKLXXX',
+        'DABEMYKLXXX','DBSSMY2AXXX','DEUTMYKLBLB','DEUTMYKLGMO','DEUTMYKLISB',
         'DEUTMYKLXXX',
-        'EIBBMYKLXXX', 'EOBBMYKLXXX', 'EXMBMYKLXXX',
+        'EIBBMYKLXXX','EOBBMYKLXXX','EXMBMYKLXXX',
         'FEEBMYKAXXX',
-        'HBMBMYKLXXX', 'HDSBMY2PSEL', 'HDSBMY2PXXX', 'HLBBMYKLIBU', 'HLBBMYKLJBU',
-        'HLBBMYKLKCH', 'HLBBMYKLPNG', 'HLBBMYKLXXX', 'HLIBMYKLXXX', 'HMABMYKLXXX',
-        'HSBCMYKAXXX', 'HSTMMYKLGWS', 'HSTMMYKLXXX',
-        'KAFBMYKLXXX', 'KFHOMYKLXXX',
-        'MBBEMYKAXXX', 'MBBEMYKLBAN', 'MBBEMYKLBBG', 'MBBEMYKLBWC', 'MBBEMYKLCSD',
-        'MBBEMYKLIPH', 'MBBEMYKLJOB', 'MBBEMYKLKEP', 'MBBEMYKLKIN', 'MBBEMYKLKLC',
-        'MBBEMYKLMAL', 'MBBEMYKLPEN', 'MBBEMYKLPGC', 'MBBEMYKLPJC', 'MBBEMYKLPJY',
-        'MBBEMYKLPKG', 'MBBEMYKLPSG', 'MBBEMYKLPUD', 'MBBEMYKLSAC', 'MBBEMYKLSBN',
-        'MBBEMYKLSHA', 'MBBEMYKLSUB', 'MBBEMYKLWSD', 'MBBEMYKLXXX', 'MBBEMYKLYSL',
-        'MFBBMYKLXXX', 'MHCBMYKAXXX',
-        'NOSCMY2LXXX', 'NOSCMYKLXXX',
-        'OABBMYKLXXX', 'OCBCMYKLXXX', 'OSKIMYKLXXX',
-        'PBBEMYKLXXX', 'PBLLMYKAXXX', 'PCGLMYKLXXX', 'PERMMYKLXXX', 'PHBMMYKLXXX',
-        'PTRDMYKLXXX', 'PTROMYKLFSD', 'PTROMYKLXXX',
-        'RHBAMYKLXXX', 'RHBBMYKAXXX', 'RHBBMYKLXXX', 'RJHIMYKLXXX',
-        'SCBLMYKXLAB', 'SCBLMYKXXXX', 'SMBCMYKAXXX',
-        'UIIBMYKLXXX', 'UOVBMYKLCND', 'UOVBMYKLXXX',
+        'HBMBMYKLXXX','HDSBMY2PSEL','HDSBMY2PXXX','HLBBMYKLIBU','HLBBMYKLJBU',
+        'HLBBMYKLKCH','HLBBMYKLPNG','HLBBMYKLXXX','HLIBMYKLXXX','HMABMYKLXXX',
+        'HSBCMYKAXXX','HSTMMYKLGWS','HSTMMYKLXXX',
+        'KAFBMYKLXXX','KFHOMYKLXXX',
+        'MBBEMYKAXXX','MBBEMYKLBAN','MBBEMYKLBBG','MBBEMYKLBWC','MBBEMYKLCSD',
+        'MBBEMYKLIPH','MBBEMYKLJOB','MBBEMYKLKEP','MBBEMYKLKIN','MBBEMYKLKLC',
+        'MBBEMYKLMAL','MBBEMYKLPEN','MBBEMYKLPGC','MBBEMYKLPJC','MBBEMYKLPJY',
+        'MBBEMYKLPKG','MBBEMYKLPSG','MBBEMYKLPUD','MBBEMYKLSAC','MBBEMYKLSBN',
+        'MBBEMYKLSHA','MBBEMYKLSUB','MBBEMYKLWSD','MBBEMYKLXXX','MBBEMYKLYSL',
+        'MFBBMYKLXXX','MHCBMYKAXXX',
+        'NOSCMY2LXXX','NOSCMYKLXXX',
+        'OABBMYKLXXX','OCBCMYKLXXX','OSKIMYKLXXX',
+        'PBBEMYKLXXX','PBLLMYKAXXX','PCGLMYKLXXX','PERMMYKLXXX','PHBMMYKLXXX',
+        'PTRDMYKLXXX','PTROMYKLFSD','PTROMYKLXXX',
+        'RHBAMYKLXXX','RHBBMYKAXXX','RHBBMYKLXXX','RJHIMYKLXXX',
+        'SCBLMYKXLAB','SCBLMYKXXXX','SMBCMYKAXXX',
+        'UIIBMYKLXXX','UOVBMYKLCND','UOVBMYKLXXX',
     );
 
     /**
@@ -141,6 +141,34 @@ class Payment extends \Faker\Provider\Payment
     protected static $currencySymbol = array(
         'RM'
     );
+
+    /**
+     * Return a Malaysian Bank
+     *
+     * @example 'Maybank'
+     *
+     * @return @string
+     */
+    public function bank()
+    {
+        $formats = static::randomElement(static::$bankFormats);
+
+        return $this->generator->parse($formats);
+    }
+
+    /**
+     * Return a Malaysian Bank account number
+     *
+     * @example '1234567890123456'
+     *
+     * @return @string
+     */
+    public function bankAccountNumber()
+    {
+        $formats = static::randomElement(static::$bankAccountNumberFormats);
+
+        return static::numerify($formats);
+    }
 
     /**
      * Return a Malaysian Local Bank
@@ -212,33 +240,5 @@ class Payment extends \Faker\Provider\Payment
     public static function currencySymbol()
     {
         return static::randomElement(static::$currencySymbol);
-    }
-
-    /**
-     * Return a Malaysian Bank
-     *
-     * @example 'Maybank'
-     *
-     * @return @string
-     */
-    public function bank()
-    {
-        $formats = static::randomElement(static::$bankFormats);
-
-        return $this->generator->parse($formats);
-    }
-
-    /**
-     * Return a Malaysian Bank account number
-     *
-     * @example '1234567890123456'
-     *
-     * @return @string
-     */
-    public function bankAccountNumber()
-    {
-        $formats = static::randomElement(static::$bankAccountNumberFormats);
-
-        return static::numerify($formats);
     }
 }

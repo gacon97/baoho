@@ -45,16 +45,6 @@ class ExampleFinder
     }
 
     /**
-     * Returns the project's root directory where an 'examples' folder can be expected.
-     *
-     * @return string
-     */
-    public function getSourceDirectory()
-    {
-        return $this->sourceDirectory;
-    }
-
-    /**
      * Registers the project's root directory where an 'examples' folder can be expected.
      *
      * @param string $directory
@@ -67,13 +57,13 @@ class ExampleFinder
     }
 
     /**
-     * Returns a series of directories that may contain examples.
+     * Returns the project's root directory where an 'examples' folder can be expected.
      *
-     * @return string[]
+     * @return string
      */
-    public function getExampleDirectories()
+    public function getSourceDirectory()
     {
-        return $this->exampleDirectories;
+        return $this->sourceDirectory;
     }
 
     /**
@@ -84,6 +74,16 @@ class ExampleFinder
     public function setExampleDirectories(array $directories)
     {
         $this->exampleDirectories = $directories;
+    }
+
+    /**
+     * Returns a series of directories that may contain examples.
+     *
+     * @return string[]
+     */
+    public function getExampleDirectories()
+    {
+        return $this->exampleDirectories;
     }
 
     /**

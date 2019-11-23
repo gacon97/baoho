@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 class DataProviderTestSuite extends TestSuite
@@ -17,11 +16,6 @@ class DataProviderTestSuite extends TestSuite
      */
     private $dependencies = [];
 
-    public function getDependencies(): array
-    {
-        return $this->dependencies;
-    }
-
     /**
      * @param string[] $dependencies
      */
@@ -30,8 +24,17 @@ class DataProviderTestSuite extends TestSuite
         $this->dependencies = $dependencies;
 
         foreach ($this->tests as $test) {
+            if (!$test instanceof TestCase) {
+                continue;
+            }
+
             $test->setDependencies($dependencies);
         }
+    }
+
+    public function getDependencies(): array
+    {
+        return $this->dependencies;
     }
 
     public function hasDependencies(): bool

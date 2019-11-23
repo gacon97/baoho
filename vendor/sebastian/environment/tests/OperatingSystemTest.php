@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Environment;
 
 use PHPUnit\Framework\TestCase;
@@ -22,6 +21,11 @@ final class OperatingSystemTest extends TestCase
      */
     private $os;
 
+    protected function setUp(): void
+    {
+        $this->os = new OperatingSystem;
+    }
+
     /**
      * @requires OS Linux
      */
@@ -30,8 +34,19 @@ final class OperatingSystemTest extends TestCase
         $this->assertEquals('Linux', $this->os->getFamily());
     }
 
-    protected function setUp(): void
+    /**
+     * @requires OS Windows
+     */
+    public function testGetFamilyReturnsWindowsWhenRunningOnWindows(): void
     {
-        $this->os = new OperatingSystem;
+        $this->assertSame('Windows', $this->os->getFamily());
+    }
+
+    /**
+     * @requires PHP 7.2.0
+     */
+    public function testGetFamilyReturnsPhpOsFamilyWhenRunningOnPhp72AndGreater(): void
+    {
+        $this->assertSame(\PHP_OS_FAMILY, $this->os->getFamily());
     }
 }

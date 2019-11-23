@@ -89,7 +89,7 @@ class CompositeExpectation implements ExpectationInterface
     /**
      * Return the parent mock of the first expectation
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public function getMock()
     {
@@ -101,7 +101,7 @@ class CompositeExpectation implements ExpectationInterface
     /**
      * Mockery API alias to getMock
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\LegacyMockInterface|\Mockery\MockInterface
      */
     public function mock()
     {
@@ -146,7 +146,7 @@ class CompositeExpectation implements ExpectationInterface
         $return = '[';
         $parts = array();
         foreach ($this->_expectations as $exp) {
-            $parts[] = (string)$exp;
+            $parts[] = (string) $exp;
         }
         $return .= implode(', ', $parts) . ']';
         return $return;

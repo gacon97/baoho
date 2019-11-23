@@ -15,15 +15,15 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \PHPUnit\Framework\MockObject\Generator
  *
- * @uses   \PHPUnit\Framework\MockObject\InvocationMocker
- * @uses   \PHPUnit\Framework\MockObject\Builder\InvocationMocker
- * @uses   \PHPUnit\Framework\MockObject\Invocation\ObjectInvocation
- * @uses   \PHPUnit\Framework\MockObject\Invocation\StaticInvocation
- * @uses   \PHPUnit\Framework\MockObject\Matcher
- * @uses   \PHPUnit\Framework\MockObject\Matcher\InvokedRecorder
- * @uses   \PHPUnit\Framework\MockObject\Matcher\MethodName
- * @uses   \PHPUnit\Framework\MockObject\Stub\ReturnStub
- * @uses   \PHPUnit\Framework\MockObject\Matcher\InvokedCount
+ * @uses \PHPUnit\Framework\MockObject\InvocationMocker
+ * @uses \PHPUnit\Framework\MockObject\Builder\InvocationMocker
+ * @uses \PHPUnit\Framework\MockObject\Invocation\ObjectInvocation
+ * @uses \PHPUnit\Framework\MockObject\Invocation\StaticInvocation
+ * @uses \PHPUnit\Framework\MockObject\Matcher
+ * @uses \PHPUnit\Framework\MockObject\Matcher\InvokedRecorder
+ * @uses \PHPUnit\Framework\MockObject\Matcher\MethodName
+ * @uses \PHPUnit\Framework\MockObject\Stub\ReturnStub
+ * @uses \PHPUnit\Framework\MockObject\Matcher\InvokedCount
  */
 class GeneratorTest extends TestCase
 {
@@ -31,6 +31,11 @@ class GeneratorTest extends TestCase
      * @var Generator
      */
     private $generator;
+
+    protected function setUp(): void
+    {
+        $this->generator = new Generator;
+    }
 
     public function testGetMockFailsWhenInvalidFunctionNameIsPassedInAsAFunctionToMock(): void
     {
@@ -97,8 +102,8 @@ class GeneratorTest extends TestCase
         $mock = $this->generator->getMockForAbstractClass(AbstractMockTestClass::class);
 
         $mock->expects($this->any())
-            ->method('doSomething')
-            ->willReturn('testing');
+             ->method('doSomething')
+             ->willReturn('testing');
 
         $this->assertEquals('testing', $mock->doSomething());
         $this->assertEquals(1, $mock->returnAnything());
@@ -124,7 +129,7 @@ class GeneratorTest extends TestCase
     public function getMockForAbstractClassExpectsInvalidArgumentExceptionDataprovider(): array
     {
         return [
-            'className not a string' => [[], ''],
+            'className not a string'     => [[], ''],
             'mockClassName not a string' => [Countable::class, new stdClass],
         ];
     }
@@ -197,13 +202,28 @@ class GeneratorTest extends TestCase
         $this->assertNull($mock->someMethod());
     }
 
-    public function testMockingOfThrowable(): void
+    public function testMockingOfExceptionWithThrowable(): void
     {
         $stub = $this->generator->getMock(ExceptionWithThrowable::class);
 
         $this->assertInstanceOf(ExceptionWithThrowable::class, $stub);
         $this->assertInstanceOf(Exception::class, $stub);
         $this->assertInstanceOf(MockObject::class, $stub);
+    }
+
+    public function testMockingOfThrowable(): void
+    {
+        $stub = $this->generator->getMock(Throwable::class);
+
+        $this->assertInstanceOf(Throwable::class, $stub);
+        $this->assertInstanceOf(Exception::class, $stub);
+        $this->assertInstanceOf(MockObject::class, $stub);
+    }
+
+    public function testMockingOfThrowableConstructorArguments(): void
+    {
+        $mock = $this->generator->getMock(Throwable::class, null, ['It works']);
+        $this->assertSame('It works', $mock->getMessage());
     }
 
     public function testVariadicArgumentsArePassedToOriginalMethod()
@@ -236,10 +256,5 @@ class GeneratorTest extends TestCase
             ->with(...$arguments);
 
         $mock->foo(...$arguments);
-    }
-
-    protected function setUp(): void
-    {
-        $this->generator = new Generator;
     }
 }

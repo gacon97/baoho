@@ -41,7 +41,7 @@ class MultipleValidationWithAnd implements EmailValidation
 
     /**
      * @param EmailValidation[] $validations The validations.
-     * @param int $mode The validation mode (one of the constants).
+     * @param int               $mode        The validation mode (one of the constants).
      */
     public function __construct(array $validations, $mode = self::ALLOW_ALL_ERRORS)
     {
@@ -79,6 +79,20 @@ class MultipleValidationWithAnd implements EmailValidation
         return $result;
     }
 
+    private function addNewError($possibleError, array $errors)
+    {
+        if (null !== $possibleError) {
+            $errors[] = $possibleError;
+        }
+
+        return $errors;
+    }
+
+    private function shouldStop($result)
+    {
+        return !$result && $this->mode === self::STOP_ON_ERROR;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -93,19 +107,5 @@ class MultipleValidationWithAnd implements EmailValidation
     public function getWarnings()
     {
         return $this->warnings;
-    }
-
-    private function addNewError($possibleError, array $errors)
-    {
-        if (null !== $possibleError) {
-            $errors[] = $possibleError;
-        }
-
-        return $errors;
-    }
-
-    private function shouldStop($result)
-    {
-        return !$result && $this->mode === self::STOP_ON_ERROR;
     }
 }

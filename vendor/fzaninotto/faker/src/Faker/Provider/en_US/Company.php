@@ -75,20 +75,6 @@ class Company extends \Faker\Provider\Company
     );
 
     /**
-     * Employer Identification Number (EIN)
-     *
-     * @link https://en.wikipedia.org/wiki/Employer_Identification_Number
-     * @example '12-3456789'
-     */
-    public static function ein()
-    {
-        $prefix = static::randomElement(static::$einPrefixes);
-        $suffix = static::numberBetween(0, 9999999);
-
-        return sprintf("%02d-%07d", $prefix, $suffix);
-    }
-
-    /**
      * @example 'Robust full-range hub'
      */
     public function catchPhrase()
@@ -98,7 +84,7 @@ class Company extends \Faker\Provider\Company
             $result[] = static::randomElement($word);
         }
 
-        return join($result, ' ');
+        return join(' ', $result);
     }
 
     /**
@@ -111,6 +97,20 @@ class Company extends \Faker\Provider\Company
             $result[] = static::randomElement($word);
         }
 
-        return join($result, ' ');
+        return join(' ', $result);
+    }
+
+    /**
+     * Employer Identification Number (EIN)
+     *
+     * @link https://en.wikipedia.org/wiki/Employer_Identification_Number
+     * @example '12-3456789'
+     */
+    public static function ein()
+    {
+        $prefix = static::randomElement(static::$einPrefixes);
+        $suffix = static::numberBetween(0, 9999999);
+
+        return sprintf("%02d-%07d", $prefix, $suffix);
     }
 }

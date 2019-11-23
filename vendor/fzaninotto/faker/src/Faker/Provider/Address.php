@@ -48,11 +48,51 @@ class Address extends Base
     }
 
     /**
+     * @example 'Sashabury'
+     */
+    public function city()
+    {
+        $format = static::randomElement(static::$cityFormats);
+
+        return $this->generator->parse($format);
+    }
+
+    /**
+     * @example 'Crist Parks'
+     */
+    public function streetName()
+    {
+        $format = static::randomElement(static::$streetNameFormats);
+
+        return $this->generator->parse($format);
+    }
+
+    /**
+     * @example '791 Crist Parks'
+     */
+    public function streetAddress()
+    {
+        $format = static::randomElement(static::$streetAddressFormats);
+
+        return $this->generator->parse($format);
+    }
+
+    /**
      * @example 86039-9874
      */
     public static function postcode()
     {
         return static::toUpper(static::bothify(static::randomElement(static::$postcode)));
+    }
+
+    /**
+     * @example '791 Crist Parks, Sashabury, IL 86039-9874'
+     */
+    public function address()
+    {
+        $format = static::randomElement(static::$addressFormats);
+
+        return $this->generator->parse($format);
     }
 
     /**
@@ -95,45 +135,5 @@ class Address extends Base
             'latitude' => static::latitude(),
             'longitude' => static::longitude()
         );
-    }
-
-    /**
-     * @example 'Sashabury'
-     */
-    public function city()
-    {
-        $format = static::randomElement(static::$cityFormats);
-
-        return $this->generator->parse($format);
-    }
-
-    /**
-     * @example 'Crist Parks'
-     */
-    public function streetName()
-    {
-        $format = static::randomElement(static::$streetNameFormats);
-
-        return $this->generator->parse($format);
-    }
-
-    /**
-     * @example '791 Crist Parks'
-     */
-    public function streetAddress()
-    {
-        $format = static::randomElement(static::$streetAddressFormats);
-
-        return $this->generator->parse($format);
-    }
-
-    /**
-     * @example '791 Crist Parks, Sashabury, IL 86039-9874'
-     */
-    public function address()
-    {
-        $format = static::randomElement(static::$addressFormats);
-
-        return $this->generator->parse($format);
     }
 }

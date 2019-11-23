@@ -21,7 +21,7 @@ class Person extends \Faker\Provider\Person
      * @link https://andela-celisha-wigwe.github.io/names.html
      */
     protected static $firstNameMale = array(
-        'Abimbola', 'Abisola', 'Abisoye', 'Adeboye', 'Adedayo', 'Adegoke', 'Akande', 'Akanni', 'Alade', 'Ayinde', 'Azubuike',
+        'Abimbola','Abisola','Abisoye','Adeboye','Adedayo','Adegoke', 'Akande', 'Akanni', 'Alade', 'Ayinde', 'Azubuike',
         'Banji', 'Bankole', 'Buchi', 'Bukola',
         'Chinedu', 'Chisom', 'Chukwu',
         'Damilare', 'Damilola', 'Danjuma',
@@ -74,7 +74,7 @@ class Person extends \Faker\Provider\Person
         'Funmilayo',
         'Gbadamosi', 'Gbogboade', 'Grace',
         'Habeeb', 'Hanifat', 'Isaac',
-        'Ismail', 'Isokun', 'Isreal', 'Iyalla',
+        'Ismail', 'Isokun', 'Israel', 'Iyalla',
         'Jamiu', 'Jimoh', 'Joshua', 'Justina',
         'Katherine', 'Kayode', 'Kayode', 'Kimberly',
         'Ladega', 'Latifat', 'Lawal', 'Leonard',

@@ -61,15 +61,15 @@ abstract class FileDumper implements DumperInterface
     /**
      * {@inheritdoc}
      */
-    public function dump(MessageCatalogue $messages, $options = array())
+    public function dump(MessageCatalogue $messages, $options = [])
     {
-        if (!array_key_exists('path', $options)) {
+        if (!\array_key_exists('path', $options)) {
             throw new InvalidArgumentException('The file dumper needs a path option.');
         }
 
         // save a file for each domain
         foreach ($messages->getDomains() as $domain) {
-            $fullpath = $options['path'] . '/' . $this->getRelativePath($domain, $messages->getLocale());
+            $fullpath = $options['path'].'/'.$this->getRelativePath($domain, $messages->getLocale());
             if (!file_exists($fullpath)) {
                 $directory = \dirname($fullpath);
                 if (!file_exists($directory) && !@mkdir($directory, 0777, true)) {
@@ -77,14 +77,14 @@ abstract class FileDumper implements DumperInterface
                 }
             }
 
-            $intlDomain = $domain . MessageCatalogue::INTL_DOMAIN_SUFFIX;
+            $intlDomain = $domain.MessageCatalogue::INTL_DOMAIN_SUFFIX;
             $intlMessages = $messages->all($intlDomain);
 
             if ($intlMessages) {
-                $intlPath = $options['path'] . '/' . $this->getRelativePath($intlDomain, $messages->getLocale());
+                $intlPath = $options['path'].'/'.$this->getRelativePath($intlDomain, $messages->getLocale());
                 file_put_contents($intlPath, $this->formatCatalogue($messages, $intlDomain, $options));
 
-                $messages->replace(array(), $intlDomain);
+                $messages->replace([], $intlDomain);
 
                 try {
                     if ($messages->all($domain)) {
@@ -103,13 +103,11 @@ abstract class FileDumper implements DumperInterface
     /**
      * Transforms a domain of a message catalogue to its string representation.
      *
-     * @param MessageCatalogue $messages
      * @param string $domain
-     * @param array $options
      *
      * @return string representation
      */
-    abstract public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = array());
+    abstract public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = []);
 
     /**
      * Gets the file extension of the dumper.
@@ -123,10 +121,10 @@ abstract class FileDumper implements DumperInterface
      */
     private function getRelativePath(string $domain, string $locale): string
     {
-        return strtr($this->relativePathTemplate, array(
+        return strtr($this->relativePathTemplate, [
             '%domain%' => $domain,
             '%locale%' => $locale,
             '%extension%' => $this->getExtension(),
-        ));
+        ]);
     }
 }

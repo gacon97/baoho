@@ -20,13 +20,13 @@ use Symfony\Component\VarDumper\Cloner\Stub;
  */
 class ArgsStub extends EnumStub
 {
-    private static $parameters = array();
+    private static $parameters = [];
 
     public function __construct(array $args, string $function, ?string $class)
     {
         list($variadic, $params) = self::getParameters($function, $class);
 
-        $values = array();
+        $values = [];
         foreach ($args as $k => $v) {
             $values[$k] = !is_scalar($v) && !$v instanceof Stub ? new CutStub($v) : $v;
         }
@@ -41,7 +41,7 @@ class ArgsStub extends EnumStub
             $values[] = new EnumStub(array_splice($values, \count($params)), false);
             $params[] = $variadic;
         }
-        if (array('...') === $params) {
+        if (['...'] === $params) {
             $this->dumpKeys = false;
             $this->value = $values[0]->value;
         } else {
@@ -51,22 +51,22 @@ class ArgsStub extends EnumStub
 
     private static function getParameters($function, $class)
     {
-        if (isset(self::$parameters[$k = $class . '::' . $function])) {
+        if (isset(self::$parameters[$k = $class.'::'.$function])) {
             return self::$parameters[$k];
         }
 
         try {
             $r = null !== $class ? new \ReflectionMethod($class, $function) : new \ReflectionFunction($function);
         } catch (\ReflectionException $e) {
-            return array(null, null);
+            return [null, null];
         }
 
         $variadic = '...';
-        $params = array();
+        $params = [];
         foreach ($r->getParameters() as $v) {
-            $k = '$' . $v->name;
+            $k = '$'.$v->name;
             if ($v->isPassedByReference()) {
-                $k = '&' . $k;
+                $k = '&'.$k;
             }
             if ($v->isVariadic()) {
                 $variadic .= $k;
@@ -75,6 +75,6 @@ class ArgsStub extends EnumStub
             }
         }
 
-        return self::$parameters[$k] = array($variadic, $params);
+        return self::$parameters[$k] = [$variadic, $params];
     }
 }

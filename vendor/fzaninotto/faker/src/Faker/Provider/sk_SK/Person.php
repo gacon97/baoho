@@ -74,9 +74,9 @@ class Person extends \Faker\Provider\Person
         'Cyprich', 'Cíger', 'Dacej', 'Danko', 'Debnár', 'Dej', 'Dekýš', 'Doležal', 'Dostál', 'Dočolomanský', 'Drajna', 'Droppa', 'Dubovský',
         'Dudek', 'Dula', 'Dulla', 'Dusík', 'Dvonč', 'Dzurjanin', 'Dávid', 'Fabian', 'Fabián', 'Fajnor', 'Farkašovský', 'Feldek', 'Fico', 'Filc',
         'Filip', 'Finka', 'Ftorek', 'Galis', 'Gallo', 'Gašpar', 'Gašparovič', 'Gocník', 'Golonka', 'Greguš', 'Grznár', 'Hablák', 'Habšuda',
-        'Haluška', 'Halák', 'Hanko', 'Hanzal', 'Hanzel', 'Hanzel', 'Haščák', 'Heretik', 'Hečko', 'Hečková', 'Hlaváček', 'Hlinka', 'Hochschorner',
+        'Haluška', 'Halák', 'Hanko', 'Hanzal', 'Hanzel', 'Hanzel', 'Haščák', 'Heretik', 'Hečko', 'Hlaváček', 'Hlinka', 'Hochschorner',
         'Holub', 'Holuby', 'Horváth', 'Hossa', 'Hraško', 'Hric', 'Hrmo', 'Hrušovský', 'Huba', 'Hudáček', 'Hála', 'Ihnačák', 'Janoška', 'Jantošovič',
-        'Janík', 'Jonata', 'Jurina', 'Jurinová', 'Jurík', 'Jáni', 'Jánošík', 'Kaliský', 'Karul', 'Karvaš', 'Keníž', 'Klapka', 'Klaus', 'Kolník',
+        'Janík', 'Jonata', 'Jurina', 'Jurík', 'Jáni', 'Jánošík', 'Kaliský', 'Karul', 'Karvaš', 'Keníž', 'Klapka', 'Klaus', 'Kolník',
         'Konstantinidis', 'Korec', 'Kostrec', 'Kováč', 'Kováčik', 'Koza', 'Kubík', 'Kučera', 'Labuda', 'Langoš', 'Lepšík', 'Lexa', 'Lintner',
         'Lubina', 'Lukáč', 'Lupták', 'Líška', 'Majeský', 'Malachovský', 'Malíšek', 'Marián', 'Masaryk', 'Maslo', 'Matiaško', 'Medveď', 'Menyhért',
         'Mečiar', 'Mečíř', 'Mikloško', 'Mikulík', 'Mikuš', 'Mikúš', 'Mišík', 'Mojžiš', 'Mokroš', 'Molnár', 'Moravčík', 'Musil', 'Mydlo', 'Nagy',
@@ -112,6 +112,11 @@ class Person extends \Faker\Provider\Person
         'CSc.', 'DrSc.', 'DSc.', 'Ph.D.', 'Th.D.'
     );
 
+    public function title($gender = null)
+    {
+        return static::titleMale();
+    }
+
     /**
      * replaced by specific unisex slovakian title
      */
@@ -126,6 +131,21 @@ class Person extends \Faker\Provider\Person
     public static function titleFemale()
     {
         return static::titleMale();
+    }
+
+    /**
+     * @param string|null $gender 'male', 'female' or null for any
+     * @example 'Novotný'
+     */
+    public function lastName($gender = null)
+    {
+        if ($gender === static::GENDER_MALE) {
+            return static::lastNameMale();
+        } elseif ($gender === static::GENDER_FEMALE) {
+            return static::lastNameFemale();
+        }
+
+        return $this->generator->parse(static::randomElement(static::$lastNameFormat));
     }
 
     public static function lastNameMale()
@@ -144,25 +164,5 @@ class Person extends \Faker\Provider\Person
     public static function suffix()
     {
         return static::randomElement(static::$suffix);
-    }
-
-    public function title($gender = null)
-    {
-        return static::titleMale();
-    }
-
-    /**
-     * @param string|null $gender 'male', 'female' or null for any
-     * @example 'Novotný'
-     */
-    public function lastName($gender = null)
-    {
-        if ($gender === static::GENDER_MALE) {
-            return static::lastNameMale();
-        } elseif ($gender === static::GENDER_FEMALE) {
-            return static::lastNameFemale();
-        }
-
-        return $this->generator->parse(static::randomElement(static::$lastNameFormat));
     }
 }

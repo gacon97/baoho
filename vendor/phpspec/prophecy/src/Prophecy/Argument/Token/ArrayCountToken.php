@@ -16,6 +16,7 @@ namespace Prophecy\Argument\Token;
  *
  * @author Boris Mikhaylov <kaguxmail@gmail.com>
  */
+
 class ArrayCountToken implements TokenInterface
 {
     private $count;

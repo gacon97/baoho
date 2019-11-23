@@ -98,6 +98,16 @@ class Address extends \Faker\Provider\it_IT\Address
     }
 
     /**
+     * Returns a random city name.
+     * @example Luzern
+     * @return string
+     */
+    public function cityName()
+    {
+        return static::randomElement(static::$cityNames);
+    }
+
+    /**
      * Returns a canton
      * @example array('BE' => 'Bern')
      * @return array
@@ -125,15 +135,5 @@ class Address extends \Faker\Provider\it_IT\Address
     {
         $canton = static::canton();
         return current($canton);
-    }
-
-    /**
-     * Returns a random city name.
-     * @example Luzern
-     * @return string
-     */
-    public function cityName()
-    {
-        return static::randomElement(static::$cityNames);
     }
 }

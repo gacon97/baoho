@@ -31,7 +31,9 @@ abstract class AbstractField implements FieldInterface
      */
     protected $rangeEnd;
 
-
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->fullRange = range($this->rangeStart, $this->rangeEnd);
@@ -41,7 +43,7 @@ abstract class AbstractField implements FieldInterface
      * Check to see if a field is satisfied by a value
      *
      * @param string $dateValue Date value to check
-     * @param string $value Value to test
+     * @param string $value     Value to test
      *
      * @return bool
      */
@@ -84,17 +86,17 @@ abstract class AbstractField implements FieldInterface
      * Test if a value is within a range
      *
      * @param string $dateValue Set date value
-     * @param string $value Value to test
+     * @param string $value     Value to test
      *
      * @return bool
      */
     public function isInRange($dateValue, $value)
     {
-        $parts = array_map(function ($value) {
-            $value = trim($value);
-            $value = $this->convertLiterals($value);
-            return $value;
-        },
+        $parts = array_map(function($value) {
+                $value = trim($value);
+                $value = $this->convertLiterals($value);
+                return $value;
+            },
             explode('-', $value, 2)
         );
 
@@ -106,7 +108,7 @@ abstract class AbstractField implements FieldInterface
      * Test if a value is within an increments of ranges (offset[-to]/step size)
      *
      * @param string $dateValue Set date value
-     * @param string $value Value to test
+     * @param string $value     Value to test
      *
      * @return bool
      */
@@ -153,7 +155,7 @@ abstract class AbstractField implements FieldInterface
      * Returns a range of values for the given cron expression
      *
      * @param string $expression The expression to evaluate
-     * @param int $max Maximum offset for range
+     * @param int $max           Maximum offset for range
      *
      * @return array
      */
@@ -178,7 +180,8 @@ abstract class AbstractField implements FieldInterface
                 $offset = $this->convertLiterals($offset);
                 $to = $this->convertLiterals($to);
                 $stepSize = 1;
-            } else {
+            }
+            else {
                 $range = array_map('trim', explode('/', $expression, 2));
                 $stepSize = isset($range[1]) ? $range[1] : 0;
                 $range = $range[0];
@@ -195,11 +198,30 @@ abstract class AbstractField implements FieldInterface
                 }
             }
             sort($values);
-        } else {
+        }
+        else {
             $values = array($expression);
         }
 
         return $values;
+    }
+
+    /**
+     * Convert literal
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function convertLiterals($value)
+    {
+        if (count($this->literals)) {
+            $key = array_search($value, $this->literals);
+            if ($key !== false) {
+                return (string) $key;
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -257,20 +279,8 @@ abstract class AbstractField implements FieldInterface
         }
 
         // We should have a numeric by now, so coerce this into an integer
-        $value = (int)$value;
+        $value = (int) $value;
 
         return in_array($value, $this->fullRange, true);
-    }
-
-    protected function convertLiterals($value)
-    {
-        if (count($this->literals)) {
-            $key = array_search($value, $this->literals);
-            if ($key !== false) {
-                return $key;
-            }
-        }
-
-        return $value;
     }
 }

@@ -43,6 +43,8 @@ class Dotenv
     /**
      * Load environment file in given directory.
      *
+     * @throws \Dotenv\Exception\InvalidPathException|\Dotenv\Exception\InvalidFileException
+     *
      * @return array
      */
     public function load()
@@ -52,6 +54,8 @@ class Dotenv
 
     /**
      * Load environment file in given directory, suppress InvalidPathException.
+     *
+     * @throws \Dotenv\Exception\InvalidFileException
      *
      * @return array
      */
@@ -68,33 +72,13 @@ class Dotenv
     /**
      * Load environment file in given directory.
      *
+     * @throws \Dotenv\Exception\InvalidPathException|\Dotenv\Exception\InvalidFileException
+     *
      * @return array
      */
     public function overload()
     {
         return $this->loadData(true);
-    }
-
-    /**
-     * Required ensures that the specified variables exist, and returns a new validator object.
-     *
-     * @param string|string[] $variable
-     *
-     * @return \Dotenv\Validator
-     */
-    public function required($variable)
-    {
-        return new Validator((array)$variable, $this->loader);
-    }
-
-    /**
-     * Get the list of environment variables declared inside the 'env' file.
-     *
-     * @return array
-     */
-    public function getEnvironmentVariableNames()
-    {
-        return $this->loader->variableNames;
     }
 
     /**
@@ -111,7 +95,7 @@ class Dotenv
             $file = '.env';
         }
 
-        $filePath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
+        $filePath = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
 
         return $filePath;
     }
@@ -121,10 +105,34 @@ class Dotenv
      *
      * @param bool $overload
      *
+     * @throws \Dotenv\Exception\InvalidPathException|\Dotenv\Exception\InvalidFileException
+     *
      * @return array
      */
     protected function loadData($overload = false)
     {
         return $this->loader->setImmutable(!$overload)->load();
+    }
+
+    /**
+     * Required ensures that the specified variables exist, and returns a new validator object.
+     *
+     * @param string|string[] $variable
+     *
+     * @return \Dotenv\Validator
+     */
+    public function required($variable)
+    {
+        return new Validator((array) $variable, $this->loader);
+    }
+
+    /**
+     * Get the list of environment variables declared inside the 'env' file.
+     *
+     * @return array
+     */
+    public function getEnvironmentVariableNames()
+    {
+        return $this->loader->variableNames;
     }
 }

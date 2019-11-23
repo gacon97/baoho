@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Constraint\Count;
@@ -1302,7 +1301,7 @@ EOF
 
     public function testAttributeNotEqualTo(): void
     {
-        $object = new \ClassWithNonPublicAttributes;
+        $object     = new \ClassWithNonPublicAttributes;
         $constraint = Assert::logicalNot(
             Assert::attributeEqualTo('foo', 2)
         );
@@ -1337,7 +1336,7 @@ EOF
 
     public function testAttributeNotEqualTo2(): void
     {
-        $object = new \ClassWithNonPublicAttributes;
+        $object     = new \ClassWithNonPublicAttributes;
         $constraint = Assert::logicalNot(
             Assert::attributeEqualTo('foo', 1)
         );
@@ -1457,7 +1456,7 @@ EOF
     public function testConstraintException(): void
     {
         $constraint = new Constraint\Exception('FoobarException');
-        $exception = new \DummyException('Test');
+        $exception  = new \DummyException('Test');
         $stackTrace = Filter::getFilteredStacktrace($exception);
 
         try {

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\MockObject;
 
 use Exception;
@@ -26,7 +25,7 @@ use PHPUnit\Framework\MockObject\Stub\MatcherCollection;
  * Keeps track of all expectations and stubs as well as registering
  * identifications for builders.
  */
-class InvocationMocker implements MatcherCollection, Invokable, NamespaceMatch
+class InvocationMocker implements Invokable, MatcherCollection, NamespaceMatch
 {
     /**
      * @var MatcherInvocation[]
@@ -50,7 +49,7 @@ class InvocationMocker implements MatcherCollection, Invokable, NamespaceMatch
 
     public function __construct(array $configurableMethods, bool $returnValueGeneration)
     {
-        $this->configurableMethods = $configurableMethods;
+        $this->configurableMethods   = $configurableMethods;
         $this->returnValueGeneration = $returnValueGeneration;
     }
 
@@ -111,9 +110,9 @@ class InvocationMocker implements MatcherCollection, Invokable, NamespaceMatch
      */
     public function invoke(Invocation $invocation)
     {
-        $exception = null;
+        $exception      = null;
         $hasReturnValue = false;
-        $returnValue = null;
+        $returnValue    = null;
 
         foreach ($this->matchers as $match) {
             try {
@@ -121,7 +120,7 @@ class InvocationMocker implements MatcherCollection, Invokable, NamespaceMatch
                     $value = $match->invoked($invocation);
 
                     if (!$hasReturnValue) {
-                        $returnValue = $value;
+                        $returnValue    = $value;
                         $hasReturnValue = true;
                     }
                 }

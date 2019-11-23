@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\DataProviderTestSuite;
@@ -46,13 +45,13 @@ final class TestSuiteSorter
      * List of sorting weights for all test result codes. A higher number gives higher priority.
      */
     private const DEFECT_SORT_WEIGHT = [
-        BaseTestRunner::STATUS_ERROR => 6,
-        BaseTestRunner::STATUS_FAILURE => 5,
-        BaseTestRunner::STATUS_WARNING => 4,
+        BaseTestRunner::STATUS_ERROR      => 6,
+        BaseTestRunner::STATUS_FAILURE    => 5,
+        BaseTestRunner::STATUS_WARNING    => 4,
         BaseTestRunner::STATUS_INCOMPLETE => 3,
-        BaseTestRunner::STATUS_RISKY => 2,
-        BaseTestRunner::STATUS_SKIPPED => 1,
-        BaseTestRunner::STATUS_UNKNOWN => 0,
+        BaseTestRunner::STATUS_RISKY      => 2,
+        BaseTestRunner::STATUS_SKIPPED    => 1,
+        BaseTestRunner::STATUS_UNKNOWN    => 0,
     ];
 
     /**
@@ -75,11 +74,6 @@ final class TestSuiteSorter
      */
     private $executionOrder = [];
 
-    public function __construct(?TestResultCacheInterface $cache = null)
-    {
-        $this->cache = $cache ?? new NullTestResultCache;
-    }
-
     public static function getTestSorterUID(Test $test): string
     {
         if ($test instanceof PhptTestCase) {
@@ -97,6 +91,11 @@ final class TestSuiteSorter
         }
 
         return $test->getName();
+    }
+
+    public function __construct(?TestResultCacheInterface $cache = null)
+    {
+        $this->cache = $cache ?? new NullTestResultCache;
     }
 
     /**
@@ -178,7 +177,10 @@ final class TestSuiteSorter
         }
 
         if ($resolveDependencies && !($suite instanceof DataProviderTestSuite) && $this->suiteOnlyContainsTests($suite)) {
-            $suite->setTests($this->resolveDependencies($suite->tests()));
+            /** @var TestCase[] $tests */
+            $tests = $suite->tests();
+
+            $suite->setTests($this->resolveDependencies($tests));
         }
     }
 
@@ -190,8 +192,8 @@ final class TestSuiteSorter
             $testname = self::getTestSorterUID($test);
 
             if (!isset($this->defectSortOrder[$testname])) {
-                $this->defectSortOrder[$testname] = self::DEFECT_SORT_WEIGHT[$this->cache->getState($testname)];
-                $max = \max($max, $this->defectSortOrder[$testname]);
+                $this->defectSortOrder[$testname]        = self::DEFECT_SORT_WEIGHT[$this->cache->getState($testname)];
+                $max                                     = \max($max, $this->defectSortOrder[$testname]);
             }
         }
 
@@ -295,7 +297,7 @@ final class TestSuiteSorter
     private function resolveDependencies(array $tests): array
     {
         $newTestOrder = [];
-        $i = 0;
+        $i            = 0;
 
         do {
             $todoNames = \array_map(
@@ -307,7 +309,7 @@ final class TestSuiteSorter
 
             if (!$tests[$i]->hasDependencies() || empty(\array_intersect($this->getNormalizedDependencyNames($tests[$i]), $todoNames))) {
                 $newTestOrder = \array_merge($newTestOrder, \array_splice($tests, $i, 1));
-                $i = 0;
+                $i            = 0;
             } else {
                 $i++;
             }

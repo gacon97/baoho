@@ -24,35 +24,46 @@ use Symfony\Component\HttpFoundation\Cookie;
  */
 class CookieTest extends TestCase
 {
-    public function invalidNames()
+    public function namesWithSpecialCharacters()
     {
-        return array(
-            array(''),
-            array(',MyName'),
-            array(';MyName'),
-            array(' MyName'),
-            array("\tMyName"),
-            array("\rMyName"),
-            array("\nMyName"),
-            array("\013MyName"),
-            array("\014MyName"),
-        );
+        return [
+            [',MyName'],
+            [';MyName'],
+            [' MyName'],
+            ["\tMyName"],
+            ["\rMyName"],
+            ["\nMyName"],
+            ["\013MyName"],
+            ["\014MyName"],
+        ];
     }
 
     /**
-     * @dataProvider invalidNames
-     * @expectedException \InvalidArgumentException
+     * @dataProvider namesWithSpecialCharacters
      */
-    public function testInstantiationThrowsExceptionIfCookieNameContainsInvalidCharacters($name)
+    public function testInstantiationThrowsExceptionIfRawCookieNameContainsSpecialCharacters($name)
     {
-        Cookie::create($name);
+        $this->expectException('InvalidArgumentException');
+        Cookie::create($name, null, 0, null, null, null, false, true);
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @dataProvider namesWithSpecialCharacters
      */
+    public function testInstantiationSucceedNonRawCookieNameContainsSpecialCharacters($name)
+    {
+        $this->assertInstanceOf(Cookie::class, Cookie::create($name));
+    }
+
+    public function testInstantiationThrowsExceptionIfCookieNameIsEmpty()
+    {
+        $this->expectException('InvalidArgumentException');
+        Cookie::create('');
+    }
+
     public function testInvalidExpiration()
     {
+        $this->expectException('InvalidArgumentException');
         Cookie::create('MyCookie', 'foo', 'bar');
     }
 
@@ -118,7 +129,7 @@ class CookieTest extends TestCase
         $cookie = Cookie::create('foo', 'bar', $value);
         $expire = strtotime($value);
 
-        $this->assertEquals($expire, $cookie->getExpiresTime(), '->getExpiresTime() returns the expire date', 1);
+        $this->assertEqualsWithDelta($expire, $cookie->getExpiresTime(), 1, '->getExpiresTime() returns the expire date');
     }
 
     public function testGetDomain()
@@ -171,27 +182,27 @@ class CookieTest extends TestCase
     public function testToString()
     {
         $cookie = Cookie::create('foo', 'bar', $expire = strtotime('Fri, 20-May-2011 15:25:52 GMT'), '/', '.myfoodomain.com', true, true, false, null);
-        $this->assertEquals('foo=bar; expires=Fri, 20-May-2011 15:25:52 GMT; Max-Age=0; path=/; domain=.myfoodomain.com; secure; httponly', (string)$cookie, '->__toString() returns string representation of the cookie');
+        $this->assertEquals('foo=bar; expires=Fri, 20-May-2011 15:25:52 GMT; Max-Age=0; path=/; domain=.myfoodomain.com; secure; httponly', (string) $cookie, '->__toString() returns string representation of the cookie');
 
         $cookie = Cookie::create('foo', 'bar with white spaces', strtotime('Fri, 20-May-2011 15:25:52 GMT'), '/', '.myfoodomain.com', true, true, false, null);
-        $this->assertEquals('foo=bar%20with%20white%20spaces; expires=Fri, 20-May-2011 15:25:52 GMT; Max-Age=0; path=/; domain=.myfoodomain.com; secure; httponly', (string)$cookie, '->__toString() encodes the value of the cookie according to RFC 3986 (white space = %20)');
+        $this->assertEquals('foo=bar%20with%20white%20spaces; expires=Fri, 20-May-2011 15:25:52 GMT; Max-Age=0; path=/; domain=.myfoodomain.com; secure; httponly', (string) $cookie, '->__toString() encodes the value of the cookie according to RFC 3986 (white space = %20)');
 
         $cookie = Cookie::create('foo', null, 1, '/admin/', '.myfoodomain.com', false, true, false, null);
-        $this->assertEquals('foo=deleted; expires=' . gmdate('D, d-M-Y H:i:s T', $expire = time() - 31536001) . '; Max-Age=0; path=/admin/; domain=.myfoodomain.com; httponly', (string)$cookie, '->__toString() returns string representation of a cleared cookie if value is NULL');
+        $this->assertEquals('foo=deleted; expires='.gmdate('D, d-M-Y H:i:s T', $expire = time() - 31536001).'; Max-Age=0; path=/admin/; domain=.myfoodomain.com; httponly', (string) $cookie, '->__toString() returns string representation of a cleared cookie if value is NULL');
 
         $cookie = Cookie::create('foo', 'bar');
-        $this->assertEquals('foo=bar; path=/; httponly; samesite=lax', (string)$cookie);
+        $this->assertEquals('foo=bar; path=/; httponly; samesite=lax', (string) $cookie);
     }
 
     public function testRawCookie()
     {
         $cookie = Cookie::create('foo', 'b a r', 0, '/', null, false, false, false, null);
         $this->assertFalse($cookie->isRaw());
-        $this->assertEquals('foo=b%20a%20r; path=/', (string)$cookie);
+        $this->assertEquals('foo=b%20a%20r; path=/', (string) $cookie);
 
         $cookie = Cookie::create('foo', 'b+a+r', 0, '/', null, false, false, true, null);
         $this->assertTrue($cookie->isRaw());
-        $this->assertEquals('foo=b+a+r; path=/', (string)$cookie);
+        $this->assertEquals('foo=b+a+r; path=/', (string) $cookie);
     }
 
     public function testGetMaxAge()

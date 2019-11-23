@@ -10,7 +10,8 @@ class FooWithoutAliasCommand extends Command
     {
         $this
             ->setName('foo')
-            ->setDescription('The foo command');
+            ->setDescription('The foo command')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

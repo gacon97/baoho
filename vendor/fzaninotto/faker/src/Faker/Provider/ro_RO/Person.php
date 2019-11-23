@@ -1,5 +1,4 @@
 <?php
-
 namespace Faker\Provider\ro_RO;
 
 class Person extends \Faker\Provider\Person
@@ -90,7 +89,7 @@ class Person extends \Faker\Provider\Person
     protected static $titleFemale = array('d-na.', 'd-șoara', 'ing.', 'dr.');
 
     protected static $cnpCountyCodes = array(
-        'AB' => '01', 'AR' => '02', 'AG' => '03', 'B' => '40', 'BC' => '04', 'BH' => '05',
+        'AB' => '01', 'AR' => '02', 'AG' => '03', 'B'  => '40', 'BC' => '04', 'BH' => '05',
         'BN' => '06', 'BT' => '07', 'BV' => '08', 'BR' => '09', 'BZ' => '10', 'CS' => '11',
         'CL' => '51', 'CJ' => '12', 'CT' => '13', 'CV' => '14', 'DB' => '15', 'DJ' => '16',
         'GL' => '17', 'GR' => '52', 'GJ' => '18', 'HR' => '19', 'HD' => '20', 'IL' => '21',
@@ -100,41 +99,6 @@ class Person extends \Faker\Provider\Person
 
         'B1' => '41', 'B2' => '42', 'B3' => '43', 'B4' => '44', 'B5' => '45', 'B6' => '46'
     );
-
-    /**
-     *
-     * https://ro.wikipedia.org/wiki/Cod_numeric_personal#S
-     *
-     * @param \DateTime $dateOfBirth
-     * @param bool $isResident
-     * @param string $gender
-     * @return int
-     */
-    protected static function getGenderDigit(\DateTime $dateOfBirth, $gender, $isResident)
-    {
-        if (!$isResident) {
-            return 9;
-        }
-
-        if ($dateOfBirth->format('Y') < 1900) {
-            if ($gender == Person::GENDER_MALE) {
-                return 3;
-            }
-            return 4;
-        }
-
-        if ($dateOfBirth->format('Y') < 2000) {
-            if ($gender == Person::GENDER_MALE) {
-                return 1;
-            }
-            return 2;
-        }
-
-        if ($gender == Person::GENDER_MALE) {
-            return 5;
-        }
-        return 6;
-    }
 
     /**
      * Personal Numerical Code (CNP)
@@ -170,11 +134,12 @@ class Person extends \Faker\Provider\Person
         $cnp = (string)$this->getGenderDigit($date, $gender, $isResident)
             . $date->format('ymd')
             . $countyCode
-            . static::numerify('##%');
+            . static::numerify('##%')
+        ;
 
         $checksum = $this->getChecksumDigit($cnp);
 
-        return $cnp . $checksum;
+        return $cnp.$checksum;
     }
 
     /**
@@ -215,6 +180,41 @@ class Person extends \Faker\Provider\Person
         }
 
         return $date;
+    }
+
+    /**
+     *
+     * https://ro.wikipedia.org/wiki/Cod_numeric_personal#S
+     *
+     * @param \DateTime $dateOfBirth
+     * @param bool $isResident
+     * @param string $gender
+     * @return int
+     */
+    protected static function getGenderDigit(\DateTime $dateOfBirth, $gender, $isResident)
+    {
+        if (!$isResident) {
+            return 9;
+        }
+
+        if ($dateOfBirth->format('Y') < 1900) {
+            if ($gender == Person::GENDER_MALE) {
+                return 3;
+            }
+            return 4;
+        }
+
+        if ($dateOfBirth->format('Y') < 2000) {
+            if ($gender == Person::GENDER_MALE) {
+                return 1;
+            }
+            return 2;
+        }
+
+        if ($gender == Person::GENDER_MALE) {
+            return 5;
+        }
+        return 6;
     }
 
     /**

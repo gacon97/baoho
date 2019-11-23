@@ -1,4 +1,4 @@
 foo:
-  path: '/{foo}'
-  requirements:
-    - '\d+'
+    path: '/{foo}'
+    requirements:
+        - '\d+'

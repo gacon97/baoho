@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\TextUI;
 
 use PHPUnit\Framework\AssertionFailedError;
@@ -30,19 +29,19 @@ use SebastianBergmann\Timer\Timer;
  */
 class ResultPrinter extends Printer implements TestListener
 {
-    public const EVENT_TEST_START = 0;
+    public const EVENT_TEST_START      = 0;
 
-    public const EVENT_TEST_END = 1;
+    public const EVENT_TEST_END        = 1;
 
     public const EVENT_TESTSUITE_START = 2;
 
-    public const EVENT_TESTSUITE_END = 3;
+    public const EVENT_TESTSUITE_END   = 3;
 
-    public const COLOR_NEVER = 'never';
+    public const COLOR_NEVER   = 'never';
 
-    public const COLOR_AUTO = 'auto';
+    public const COLOR_AUTO    = 'auto';
 
-    public const COLOR_ALWAYS = 'always';
+    public const COLOR_ALWAYS  = 'always';
 
     public const COLOR_DEFAULT = self::COLOR_NEVER;
 
@@ -52,23 +51,23 @@ class ResultPrinter extends Printer implements TestListener
      * @var array
      */
     private static $ansiCodes = [
-        'bold' => 1,
-        'fg-black' => 30,
-        'fg-red' => 31,
-        'fg-green' => 32,
-        'fg-yellow' => 33,
-        'fg-blue' => 34,
+        'bold'       => 1,
+        'fg-black'   => 30,
+        'fg-red'     => 31,
+        'fg-green'   => 32,
+        'fg-yellow'  => 33,
+        'fg-blue'    => 34,
         'fg-magenta' => 35,
-        'fg-cyan' => 36,
-        'fg-white' => 37,
-        'bg-black' => 40,
-        'bg-red' => 41,
-        'bg-green' => 42,
-        'bg-yellow' => 43,
-        'bg-blue' => 44,
+        'fg-cyan'    => 36,
+        'fg-white'   => 37,
+        'bg-black'   => 40,
+        'bg-red'     => 41,
+        'bg-green'   => 42,
+        'bg-yellow'  => 43,
+        'bg-blue'    => 44,
         'bg-magenta' => 45,
-        'bg-cyan' => 46,
-        'bg-white' => 47,
+        'bg-cyan'    => 46,
+        'bg-white'   => 47,
     ];
 
     /**
@@ -139,7 +138,7 @@ class ResultPrinter extends Printer implements TestListener
     /**
      * Constructor.
      *
-     * @param string $colors
+     * @param string     $colors
      * @param int|string $numberOfColumns
      * @param null|mixed $out
      *
@@ -160,7 +159,7 @@ class ResultPrinter extends Printer implements TestListener
             throw InvalidArgumentHelper::factory(5, 'integer or "max"');
         }
 
-        $console = new Console;
+        $console            = new Console;
         $maxNumberOfColumns = $console->getNumberOfColumns();
 
         if ($numberOfColumns === 'max' || ($numberOfColumns !== 80 && $numberOfColumns > $maxNumberOfColumns)) {
@@ -168,9 +167,9 @@ class ResultPrinter extends Printer implements TestListener
         }
 
         $this->numberOfColumns = $numberOfColumns;
-        $this->verbose = $verbose;
-        $this->debug = $debug;
-        $this->reverse = $reverse;
+        $this->verbose         = $verbose;
+        $this->debug           = $debug;
+        $this->reverse         = $reverse;
 
         if ($colors === self::COLOR_AUTO && $console->hasColorSupport()) {
             $this->colors = true;
@@ -255,9 +254,9 @@ class ResultPrinter extends Printer implements TestListener
     public function startTestSuite(TestSuite $suite): void
     {
         if ($this->numTests == -1) {
-            $this->numTests = \count($suite);
-            $this->numTestsWidth = \strlen((string)$this->numTests);
-            $this->maxColumn = $this->numberOfColumns - \strlen('  /  (XXX%)') - (2 * $this->numTestsWidth);
+            $this->numTests      = \count($suite);
+            $this->numTestsWidth = \strlen((string) $this->numTests);
+            $this->maxColumn     = $this->numberOfColumns - \strlen('  /  (XXX%)') - (2 * $this->numTestsWidth);
         }
     }
 
@@ -369,7 +368,7 @@ class ResultPrinter extends Printer implements TestListener
     protected function printDefectTrace(TestFailure $defect): void
     {
         $e = $defect->thrownException();
-        $this->write((string)$e);
+        $this->write((string) $e);
 
         while ($e = $e->getPrevious()) {
             $this->write("\nCaused by\n" . $e);
@@ -534,10 +533,10 @@ class ResultPrinter extends Printer implements TestListener
             return $buffer;
         }
 
-        $codes = \array_map('\trim', \explode(',', $color));
-        $lines = \explode("\n", $buffer);
+        $codes   = \array_map('\trim', \explode(',', $color));
+        $lines   = \explode("\n", $buffer);
         $padding = \max(\array_map('\strlen', $lines));
-        $styles = [];
+        $styles  = [];
 
         foreach ($codes as $code) {
             $styles[] = self::$ansiCodes[$code];

@@ -15,14 +15,14 @@ class Company extends \Faker\Provider\Company
     );
 
     protected static $catchPhraseWords = array(
-        array('الخدمات', 'الحلول', 'الانظمة'),
+        array('الخدمات','الحلول','الانظمة'),
         array(
-            'الذهبية', 'الذكية', 'المتطورة', 'المتقدمة', 'الدولية', 'المتخصصه', 'السريعة',
+            'الذهبية','الذكية','المتطورة','المتقدمة', 'الدولية', 'المتخصصه', 'السريعة',
             'المثلى', 'الابداعية', 'المتكاملة', 'المتغيرة', 'المثالية'
-        ),
+            ),
     );
 
-    protected static $companyPrefix = array('شركة', 'مؤسسة', 'مجموعة', 'مكتب', 'أكاديمية', 'معرض');
+    protected static $companyPrefix = array('شركة','مؤسسة','مجموعة','مكتب','أكاديمية','معرض');
 
     protected static $companySuffix = array('وأولاده', 'للمساهمة المحدودة', ' ذ.م.م', 'مساهمة عامة', 'وشركائه');
 
@@ -45,7 +45,7 @@ class Company extends \Faker\Provider\Company
             $result[] = static::randomElement($word);
         }
 
-        return join($result, ' ');
+        return join(' ', $result);
     }
 
     /**
@@ -58,6 +58,6 @@ class Company extends \Faker\Provider\Company
             $result[] = static::randomElement($word);
         }
 
-        return join($result, ' ');
+        return join(' ', $result);
     }
 }

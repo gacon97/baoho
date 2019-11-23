@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\TestCase;
@@ -35,6 +34,18 @@ class ResultCacheExtensionTest extends TestCase
      */
     protected $result;
 
+    protected function setUp(): void
+    {
+        $this->cache     = new TestResultCache;
+        $this->extension = new ResultCacheExtension($this->cache);
+
+        $listener = new TestListenerAdapter;
+        $listener->add($this->extension);
+
+        $this->result   = new TestResult;
+        $this->result->addListener($listener);
+    }
+
     /**
      * @dataProvider longTestNamesDataprovider
      */
@@ -51,13 +62,13 @@ class ResultCacheExtensionTest extends TestCase
         return [
             'ClassName::testMethod' => [
                 'testSomething',
-                TestCaseTest::class . '::testSomething',],
+                TestCaseTest::class . '::testSomething', ],
             'ClassName::testMethod and data set number and vardump' => [
                 'testMethod with data set #123 (\'a\', "A", 0, false)',
-                TestCaseTest::class . '::testMethod with data set #123',],
+                TestCaseTest::class . '::testMethod with data set #123', ],
             'ClassName::testMethod and data set name and vardump' => [
                 'testMethod with data set "data name" (\'a\', "A\", 0, false)',
-                TestCaseTest::class . '::testMethod with data set "data name"',],
+                TestCaseTest::class . '::testMethod with data set "data name"', ],
         ];
     }
 
@@ -124,17 +135,5 @@ class ResultCacheExtensionTest extends TestCase
         $suite->run($this->result);
 
         $this->assertSame(BaseTestRunner::STATUS_WARNING, $this->cache->getState('Warning'));
-    }
-
-    protected function setUp(): void
-    {
-        $this->cache = new TestResultCache;
-        $this->extension = new ResultCacheExtension($this->cache);
-
-        $listener = new TestListenerAdapter;
-        $listener->add($this->extension);
-
-        $this->result = new TestResult;
-        $this->result->addListener($listener);
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use Countable;
@@ -33,6 +32,10 @@ class IsEmpty extends Constraint
      */
     protected function matches($other): bool
     {
+        if ($other instanceof \EmptyIterator) {
+            return true;
+        }
+
         if ($other instanceof Countable) {
             return \count($other) === 0;
         }

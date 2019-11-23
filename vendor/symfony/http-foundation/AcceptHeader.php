@@ -24,7 +24,7 @@ class AcceptHeader
     /**
      * @var AcceptHeaderItem[]
      */
-    private $items = array();
+    private $items = [];
 
     /**
      * @var bool
@@ -52,7 +52,7 @@ class AcceptHeader
     {
         $index = 0;
 
-        $parts = HeaderUtils::split((string)$headerValue, ',;=');
+        $parts = HeaderUtils::split((string) $headerValue, ',;=');
 
         return new self(array_map(function ($subParts) use (&$index) {
             $part = array_shift($subParts);
@@ -96,7 +96,7 @@ class AcceptHeader
      */
     public function get($value)
     {
-        return $this->items[$value] ?? $this->items[explode('/', $value)[0] . '/*'] ?? $this->items['*/*'] ?? $this->items['*'] ?? null;
+        return $this->items[$value] ?? $this->items[explode('/', $value)[0].'/*'] ?? $this->items['*/*'] ?? $this->items['*'] ?? null;
     }
 
     /**

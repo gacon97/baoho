@@ -22,7 +22,7 @@ class UriSigner
     private $parameter;
 
     /**
-     * @param string $secret A secret
+     * @param string $secret    A secret
      * @param string $parameter Query string parameter to use
      */
     public function __construct(string $secret, string $parameter = '_hash')
@@ -47,7 +47,7 @@ class UriSigner
         if (isset($url['query'])) {
             parse_str($url['query'], $params);
         } else {
-            $params = array();
+            $params = [];
         }
 
         $uri = $this->buildUrl($url, $params);
@@ -69,7 +69,7 @@ class UriSigner
         if (isset($url['query'])) {
             parse_str($url['query'], $params);
         } else {
-            $params = array();
+            $params = [];
         }
 
         if (empty($params[$this->parameter])) {
@@ -79,7 +79,7 @@ class UriSigner
         $hash = $params[$this->parameter];
         unset($params[$this->parameter]);
 
-        return $this->computeHash($this->buildUrl($url, $params)) === $hash;
+        return hash_equals($this->computeHash($this->buildUrl($url, $params)), $hash);
     }
 
     private function computeHash($uri)
@@ -87,21 +87,21 @@ class UriSigner
         return base64_encode(hash_hmac('sha256', $uri, $this->secret, true));
     }
 
-    private function buildUrl(array $url, array $params = array())
+    private function buildUrl(array $url, array $params = [])
     {
         ksort($params, SORT_STRING);
         $url['query'] = http_build_query($params, '', '&');
 
-        $scheme = isset($url['scheme']) ? $url['scheme'] . '://' : '';
+        $scheme = isset($url['scheme']) ? $url['scheme'].'://' : '';
         $host = isset($url['host']) ? $url['host'] : '';
-        $port = isset($url['port']) ? ':' . $url['port'] : '';
+        $port = isset($url['port']) ? ':'.$url['port'] : '';
         $user = isset($url['user']) ? $url['user'] : '';
-        $pass = isset($url['pass']) ? ':' . $url['pass'] : '';
+        $pass = isset($url['pass']) ? ':'.$url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($url['path']) ? $url['path'] : '';
-        $query = isset($url['query']) && $url['query'] ? '?' . $url['query'] : '';
-        $fragment = isset($url['fragment']) ? '#' . $url['fragment'] : '';
+        $query = isset($url['query']) && $url['query'] ? '?'.$url['query'] : '';
+        $fragment = isset($url['fragment']) ? '#'.$url['fragment'] : '';
 
-        return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
+        return $scheme.$user.$pass.$host.$port.$path.$query.$fragment;
     }
 }

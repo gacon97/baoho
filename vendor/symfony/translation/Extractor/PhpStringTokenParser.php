@@ -49,7 +49,7 @@ namespace Symfony\Component\Translation\Extractor;
 
 class PhpStringTokenParser
 {
-    protected static $replacements = array(
+    protected static $replacements = [
         '\\' => '\\',
         '$' => '$',
         'n' => "\n",
@@ -58,7 +58,7 @@ class PhpStringTokenParser
         'f' => "\f",
         'v' => "\v",
         'e' => "\x1B",
-    );
+    ];
 
     /**
      * Parses a string token.
@@ -76,8 +76,8 @@ class PhpStringTokenParser
 
         if ('\'' === $str[$bLength]) {
             return str_replace(
-                array('\\\\', '\\\''),
-                array('\\', '\''),
+                ['\\\\', '\\\''],
+                ['\\', '\''],
                 substr($str, $bLength + 1, -1)
             );
         } else {
@@ -88,7 +88,7 @@ class PhpStringTokenParser
     /**
      * Parses escape sequences in strings (all string types apart from single quoted).
      *
-     * @param string $str String without quotes
+     * @param string      $str   String without quotes
      * @param string|null $quote Quote type
      *
      * @return string String with escape sequences parsed
@@ -96,21 +96,34 @@ class PhpStringTokenParser
     public static function parseEscapeSequences($str, $quote)
     {
         if (null !== $quote) {
-            $str = str_replace('\\' . $quote, $quote, $str);
+            $str = str_replace('\\'.$quote, $quote, $str);
         }
 
         return preg_replace_callback(
             '~\\\\([\\\\$nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3})~',
-            array(__CLASS__, 'parseCallback'),
+            [__CLASS__, 'parseCallback'],
             $str
         );
+    }
+
+    private static function parseCallback($matches)
+    {
+        $str = $matches[1];
+
+        if (isset(self::$replacements[$str])) {
+            return self::$replacements[$str];
+        } elseif ('x' === $str[0] || 'X' === $str[0]) {
+            return \chr(hexdec($str));
+        } else {
+            return \chr(octdec($str));
+        }
     }
 
     /**
      * Parses a constant doc string.
      *
      * @param string $startToken Doc string start token content (<<<SMTHG)
-     * @param string $str String token content
+     * @param string $str        String token content
      *
      * @return string Parsed string
      */
@@ -125,18 +138,5 @@ class PhpStringTokenParser
         }
 
         return self::parseEscapeSequences($str, null);
-    }
-
-    private static function parseCallback($matches)
-    {
-        $str = $matches[1];
-
-        if (isset(self::$replacements[$str])) {
-            return self::$replacements[$str];
-        } elseif ('x' === $str[0] || 'X' === $str[0]) {
-            return \chr(hexdec($str));
-        } else {
-            return \chr(octdec($str));
-        }
     }
 }

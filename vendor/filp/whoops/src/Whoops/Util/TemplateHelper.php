@@ -104,7 +104,7 @@ class TemplateHelper
     {
         $parts = explode($delimiter, $s);
         foreach ($parts as &$part) {
-            $part = '<div class="delimiter">' . $part . '</div>';
+            $part = '<span class="delimiter">' . $part . '</span>';
         }
 
         return implode($delimiter, $parts);
@@ -123,6 +123,33 @@ class TemplateHelper
         }
 
         return $path;
+    }
+
+    private function getDumper()
+    {
+        if (!$this->htmlDumper && class_exists('Symfony\Component\VarDumper\Cloner\VarCloner')) {
+            $this->htmlDumperOutput = new HtmlDumperOutput();
+            // re-use the same var-dumper instance, so it won't re-render the global styles/scripts on each dump.
+            $this->htmlDumper = new HtmlDumper($this->htmlDumperOutput);
+
+            $styles = [
+                'default' => 'color:#FFFFFF; line-height:normal; font:12px "Inconsolata", "Fira Mono", "Source Code Pro", Monaco, Consolas, "Lucida Console", monospace !important; word-wrap: break-word; white-space: pre-wrap; position:relative; z-index:99999; word-break: normal',
+                'num' => 'color:#BCD42A',
+                'const' => 'color: #4bb1b1;',
+                'str' => 'color:#BCD42A',
+                'note' => 'color:#ef7c61',
+                'ref' => 'color:#A0A0A0',
+                'public' => 'color:#FFFFFF',
+                'protected' => 'color:#FFFFFF',
+                'private' => 'color:#FFFFFF',
+                'meta' => 'color:#FFFFFF',
+                'key' => 'color:#BCD42A',
+                'index' => 'color:#ef7c61',
+            ];
+            $this->htmlDumper->setStyles($styles);
+        }
+
+        return $this->htmlDumper;
     }
 
     /**
@@ -178,7 +205,7 @@ class TemplateHelper
         if ($numFrames > 0) {
             $html = '<ol class="linenums">';
             foreach ($frame->getArgs() as $j => $frameArg) {
-                $html .= '<li>' . $this->dump($frameArg) . '</li>';
+                $html .= '<li>'. $this->dump($frameArg) .'</li>';
             }
             $html .= '</ol>';
         }
@@ -205,7 +232,7 @@ class TemplateHelper
      * passed to the template.
      *
      * @param string $template
-     * @param array $additionalVariables
+     * @param array  $additionalVariables
      */
     public function render($template, array $additionalVariables = null)
     {
@@ -225,10 +252,21 @@ class TemplateHelper
     }
 
     /**
+     * Sets the variables to be passed to all templates rendered
+     * by this template helper.
+     *
+     * @param array $variables
+     */
+    public function setVariables(array $variables)
+    {
+        $this->variables = $variables;
+    }
+
+    /**
      * Sets a single template variable, by its name:
      *
      * @param string $variableName
-     * @param mixed $variableValue
+     * @param mixed  $variableValue
      */
     public function setVariable($variableName, $variableValue)
     {
@@ -240,7 +278,7 @@ class TemplateHelper
      * $defaultValue if the variable does not exist
      *
      * @param  string $variableName
-     * @param  mixed $defaultValue
+     * @param  mixed  $defaultValue
      * @return mixed
      */
     public function getVariable($variableName, $defaultValue = null)
@@ -270,14 +308,13 @@ class TemplateHelper
     }
 
     /**
-     * Sets the variables to be passed to all templates rendered
-     * by this template helper.
+     * Set the cloner used for dumping variables.
      *
-     * @param array $variables
+     * @param AbstractCloner $cloner
      */
-    public function setVariables(array $variables)
+    public function setCloner($cloner)
     {
-        $this->variables = $variables;
+        $this->cloner = $cloner;
     }
 
     /**
@@ -294,13 +331,13 @@ class TemplateHelper
     }
 
     /**
-     * Set the cloner used for dumping variables.
+     * Set the application root path.
      *
-     * @param AbstractCloner $cloner
+     * @param string $applicationRootPath
      */
-    public function setCloner($cloner)
+    public function setApplicationRootPath($applicationRootPath)
     {
-        $this->cloner = $cloner;
+        $this->applicationRootPath = $applicationRootPath;
     }
 
     /**
@@ -311,42 +348,5 @@ class TemplateHelper
     public function getApplicationRootPath()
     {
         return $this->applicationRootPath;
-    }
-
-    /**
-     * Set the application root path.
-     *
-     * @param string $applicationRootPath
-     */
-    public function setApplicationRootPath($applicationRootPath)
-    {
-        $this->applicationRootPath = $applicationRootPath;
-    }
-
-    private function getDumper()
-    {
-        if (!$this->htmlDumper && class_exists('Symfony\Component\VarDumper\Cloner\VarCloner')) {
-            $this->htmlDumperOutput = new HtmlDumperOutput();
-            // re-use the same var-dumper instance, so it won't re-render the global styles/scripts on each dump.
-            $this->htmlDumper = new HtmlDumper($this->htmlDumperOutput);
-
-            $styles = [
-                'default' => 'color:#FFFFFF; line-height:normal; font:12px "Inconsolata", "Fira Mono", "Source Code Pro", Monaco, Consolas, "Lucida Console", monospace !important; word-wrap: break-word; white-space: pre-wrap; position:relative; z-index:99999; word-break: normal',
-                'num' => 'color:#BCD42A',
-                'const' => 'color: #4bb1b1;',
-                'str' => 'color:#BCD42A',
-                'note' => 'color:#ef7c61',
-                'ref' => 'color:#A0A0A0',
-                'public' => 'color:#FFFFFF',
-                'protected' => 'color:#FFFFFF',
-                'private' => 'color:#FFFFFF',
-                'meta' => 'color:#FFFFFF',
-                'key' => 'color:#BCD42A',
-                'index' => 'color:#ef7c61',
-            ];
-            $this->htmlDumper->setStyles($styles);
-        }
-
-        return $this->htmlDumper;
     }
 }

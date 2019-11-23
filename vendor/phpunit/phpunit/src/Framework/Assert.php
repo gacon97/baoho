@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use ArrayAccess;
@@ -76,7 +75,7 @@ abstract class Assert
     /**
      * Asserts that an array has a specified key.
      *
-     * @param int|string $key
+     * @param int|string        $key
      * @param array|ArrayAccess $array
      *
      * @throws ExpectationFailedException
@@ -111,6 +110,8 @@ abstract class Assert
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     *
+     * @deprecated https://github.com/sebastianbergmann/phpunit/issues/3494
      */
     public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {
@@ -136,7 +137,7 @@ abstract class Assert
     /**
      * Asserts that an array does not have a specified key.
      *
-     * @param int|string $key
+     * @param int|string        $key
      * @param array|ArrayAccess $array
      *
      * @throws ExpectationFailedException
@@ -334,7 +335,7 @@ abstract class Assert
      * or an attribute of an object contains only values of a given type.
      *
      * @param object|string $haystackClassOrObject
-     * @param bool $isNativeType
+     * @param bool          $isNativeType
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -381,7 +382,7 @@ abstract class Assert
      * type.
      *
      * @param object|string $haystackClassOrObject
-     * @param bool $isNativeType
+     * @param bool          $isNativeType
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -580,9 +581,9 @@ abstract class Assert
      * Asserts that two variables are not equal.
      *
      * @param float $delta
-     * @param int $maxDepth
-     * @param bool $canonicalize
-     * @param bool $ignoreCase
+     * @param int   $maxDepth
+     * @param bool  $canonicalize
+     * @param bool  $ignoreCase
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -1251,7 +1252,7 @@ abstract class Assert
      */
     public static function assertClassHasAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1270,7 +1271,7 @@ abstract class Assert
      */
     public static function assertClassNotHasAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1295,7 +1296,7 @@ abstract class Assert
      */
     public static function assertClassHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1318,7 +1319,7 @@ abstract class Assert
      */
     public static function assertClassNotHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1345,7 +1346,7 @@ abstract class Assert
      */
     public static function assertObjectHasAttribute(string $attributeName, $object, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidObjectAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1370,7 +1371,7 @@ abstract class Assert
      */
     public static function assertObjectNotHasAttribute(string $attributeName, $object, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidObjectAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -2131,7 +2132,7 @@ abstract class Assert
     public static function assertXmlFileEqualsXmlFile(string $expectedFile, string $actualFile, string $message = ''): void
     {
         $expected = Xml::loadFile($expectedFile);
-        $actual = Xml::loadFile($actualFile);
+        $actual   = Xml::loadFile($actualFile);
 
         static::assertEquals($expected, $actual, $message);
     }
@@ -2145,7 +2146,7 @@ abstract class Assert
     public static function assertXmlFileNotEqualsXmlFile(string $expectedFile, string $actualFile, string $message = ''): void
     {
         $expected = Xml::loadFile($expectedFile);
-        $actual = Xml::loadFile($actualFile);
+        $actual   = Xml::loadFile($actualFile);
 
         static::assertNotEquals($expected, $actual, $message);
     }
@@ -2161,7 +2162,7 @@ abstract class Assert
     public static function assertXmlStringEqualsXmlFile(string $expectedFile, $actualXml, string $message = ''): void
     {
         $expected = Xml::loadFile($expectedFile);
-        $actual = Xml::load($actualXml);
+        $actual   = Xml::load($actualXml);
 
         static::assertEquals($expected, $actual, $message);
     }
@@ -2177,7 +2178,7 @@ abstract class Assert
     public static function assertXmlStringNotEqualsXmlFile(string $expectedFile, $actualXml, string $message = ''): void
     {
         $expected = Xml::loadFile($expectedFile);
-        $actual = Xml::load($actualXml);
+        $actual   = Xml::load($actualXml);
 
         static::assertNotEquals($expected, $actual, $message);
     }
@@ -2194,7 +2195,7 @@ abstract class Assert
     public static function assertXmlStringEqualsXmlString($expectedXml, $actualXml, string $message = ''): void
     {
         $expected = Xml::load($expectedXml);
-        $actual = Xml::load($actualXml);
+        $actual   = Xml::load($actualXml);
 
         static::assertEquals($expected, $actual, $message);
     }
@@ -2211,7 +2212,7 @@ abstract class Assert
     public static function assertXmlStringNotEqualsXmlString($expectedXml, $actualXml, string $message = ''): void
     {
         $expected = Xml::load($expectedXml);
-        $actual = Xml::load($actualXml);
+        $actual   = Xml::load($actualXml);
 
         static::assertNotEquals($expected, $actual, $message);
     }
@@ -2226,7 +2227,7 @@ abstract class Assert
     public static function assertEqualXMLStructure(DOMElement $expectedElement, DOMElement $actualElement, bool $checkAttributes = false, string $message = ''): void
     {
         $expectedElement = Xml::import($expectedElement);
-        $actualElement = Xml::import($actualElement);
+        $actualElement   = Xml::import($actualElement);
 
         static::assertSame(
             $expectedElement->tagName,
@@ -2405,7 +2406,7 @@ abstract class Assert
         static::assertFileExists($expectedFile, $message);
         static::assertFileExists($actualFile, $message);
 
-        $actualJson = \file_get_contents($actualFile);
+        $actualJson   = \file_get_contents($actualFile);
         $expectedJson = \file_get_contents($expectedFile);
 
         static::assertJson($expectedJson, $message);
@@ -2432,7 +2433,7 @@ abstract class Assert
         static::assertFileExists($expectedFile, $message);
         static::assertFileExists($actualFile, $message);
 
-        $actualJson = \file_get_contents($actualFile);
+        $actualJson   = \file_get_contents($actualFile);
         $expectedJson = \file_get_contents($expectedFile);
 
         static::assertJson($expectedJson, $message);
@@ -2716,7 +2717,7 @@ abstract class Assert
      */
     public static function readAttribute($classOrObject, string $attributeName)
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2762,7 +2763,7 @@ abstract class Assert
             throw InvalidArgumentHelper::factory(1, 'class name');
         }
 
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2802,7 +2803,7 @@ abstract class Assert
             throw InvalidArgumentHelper::factory(1, 'object');
         }
 
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2872,7 +2873,12 @@ abstract class Assert
         self::$count = 0;
     }
 
-    private static function isValidAttributeName(string $attributeName): bool
+    private static function isValidObjectAttributeName(string $attributeName): bool
+    {
+        return \preg_match('/[^\x00-\x1f\x7f-\x9f]+/', $attributeName);
+    }
+
+    private static function isValidClassAttributeName(string $attributeName): bool
     {
         return \preg_match('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $attributeName);
     }

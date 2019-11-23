@@ -23,7 +23,8 @@ class LoggingTranslatorTest extends TestCase
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $logger->expects($this->exactly(1))
             ->method('warning')
-            ->with('Translation not found.');
+            ->with('Translation not found.')
+        ;
 
         $translator = new Translator('ar');
         $loggableTranslator = new LoggingTranslator($translator, $logger);
@@ -38,14 +39,15 @@ class LoggingTranslatorTest extends TestCase
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $logger->expects($this->once())
             ->method('debug')
-            ->with('Translation use fallback catalogue.');
+            ->with('Translation use fallback catalogue.')
+        ;
 
         $translator = new Translator('ar');
-        $translator->setFallbackLocales(array('en'));
+        $translator->setFallbackLocales(['en']);
         $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array('some_message2' => 'one thing|%count% things'), 'en');
+        $translator->addResource('array', ['some_message2' => 'one thing|%count% things'], 'en');
         $loggableTranslator = new LoggingTranslator($translator, $logger);
-        $loggableTranslator->transChoice('some_message2', 10, array('%count%' => 10));
+        $loggableTranslator->transChoice('some_message2', 10, ['%count%' => 10]);
     }
 
     /**
@@ -56,10 +58,11 @@ class LoggingTranslatorTest extends TestCase
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $logger->expects($this->exactly(1))
             ->method('warning')
-            ->with('Translation not found.');
+            ->with('Translation not found.')
+        ;
 
         $translator = new Translator('ar');
         $loggableTranslator = new LoggingTranslator($translator, $logger);
-        $loggableTranslator->transChoice('some_message2', 10, array('%count%' => 10));
+        $loggableTranslator->transChoice('some_message2', 10, ['%count%' => 10]);
     }
 }

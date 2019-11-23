@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\SelfDescribing;
@@ -37,7 +36,7 @@ abstract class ConstraintTestCase extends TestCase
         $this->assertTrue($reflection->implementsInterface(SelfDescribing::class), \sprintf(
             'Failed to assert that "%s" implements "%s".',
             $className,
-            \Countable::class
+            SelfDescribing::class
         ));
     }
 

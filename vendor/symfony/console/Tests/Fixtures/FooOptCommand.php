@@ -15,8 +15,9 @@ class FooOptCommand extends Command
         $this
             ->setName('foo:bar')
             ->setDescription('The foo:bar command')
-            ->setAliases(array('afoobar'))
-            ->addOption('fooopt', 'fo', InputOption::VALUE_OPTIONAL, 'fooopt description');
+            ->setAliases(['afoobar'])
+            ->addOption('fooopt', 'fo', InputOption::VALUE_OPTIONAL, 'fooopt description')
+        ;
     }
 
     protected function interact(InputInterface $input, OutputInterface $output)

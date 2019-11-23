@@ -21,9 +21,9 @@ class DataTest extends TestCase
 {
     public function testBasicData()
     {
-        $values = array(1 => 123, 4.5, 'abc', null, false);
+        $values = [1 => 123, 4.5, 'abc', null, false];
         $data = $this->cloneVar($values);
-        $clonedValues = array();
+        $clonedValues = [];
 
         $this->assertInstanceOf(Data::class, $data);
         $this->assertCount(\count($values), $data);
@@ -37,7 +37,7 @@ class DataTest extends TestCase
             $this->assertSame($values[$k], $data->seek($k)->getValue());
             $this->assertSame($values[$k], $data->{$k});
             $this->assertSame($values[$k], $data[$k]);
-            $this->assertSame((string)$values[$k], (string)$data->seek($k));
+            $this->assertSame((string) $values[$k], (string) $data->seek($k));
 
             $clonedValues[$k] = $v->getValue();
         }
@@ -52,24 +52,24 @@ class DataTest extends TestCase
         $this->assertSame('Exception', $data->getType());
 
         $this->assertSame('foo', $data->message);
-        $this->assertSame('foo', $data->{Caster::PREFIX_PROTECTED . 'message'});
+        $this->assertSame('foo', $data->{Caster::PREFIX_PROTECTED.'message'});
 
         $this->assertSame('foo', $data['message']);
-        $this->assertSame('foo', $data[Caster::PREFIX_PROTECTED . 'message']);
+        $this->assertSame('foo', $data[Caster::PREFIX_PROTECTED.'message']);
 
-        $this->assertStringMatchesFormat('Exception (count=%d)', (string)$data);
+        $this->assertStringMatchesFormat('Exception (count=%d)', (string) $data);
     }
 
     public function testArray()
     {
-        $values = array(array(), array(123));
+        $values = [[], [123]];
         $data = $this->cloneVar($values);
 
         $this->assertSame($values, $data->getValue(true));
 
         $children = $data->getValue();
 
-        $this->assertInternalType('array', $children);
+        $this->assertIsArray($children);
 
         $this->assertInstanceOf(Data::class, $children[0]);
         $this->assertInstanceOf(Data::class, $children[1]);
@@ -83,27 +83,27 @@ class DataTest extends TestCase
 
     public function testStub()
     {
-        $data = $this->cloneVar(array(new ClassStub('stdClass')));
+        $data = $this->cloneVar([new ClassStub('stdClass')]);
         $data = $data[0];
 
         $this->assertSame('string', $data->getType());
         $this->assertSame('stdClass', $data->getValue());
-        $this->assertSame('stdClass', (string)$data);
+        $this->assertSame('stdClass', (string) $data);
     }
 
     public function testHardRefs()
     {
-        $values = array(array());
+        $values = [[]];
         $values[1] = &$values[0];
         $values[2][0] = &$values[2];
 
         $data = $this->cloneVar($values);
 
-        $this->assertSame(array(), $data[0]->getValue());
-        $this->assertSame(array(), $data[1]->getValue());
-        $this->assertEquals(array($data[2]->getValue()), $data[2]->getValue(true));
+        $this->assertSame([], $data[0]->getValue());
+        $this->assertSame([], $data[1]->getValue());
+        $this->assertEquals([$data[2]->getValue()], $data[2]->getValue(true));
 
-        $this->assertSame('array (count=3)', (string)$data);
+        $this->assertSame('array (count=3)', (string) $data);
     }
 
     private function cloneVar($value)

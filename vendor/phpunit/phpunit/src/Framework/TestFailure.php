@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Error\Error;
@@ -32,26 +31,6 @@ class TestFailure
      * @var string
      */
     private $testName;
-
-    /**
-     * Constructs a TestFailure with the given test and exception.
-     *
-     * @param Throwable $t
-     */
-    public function __construct(Test $failedTest, $t)
-    {
-        if ($failedTest instanceof SelfDescribing) {
-            $this->testName = $failedTest->toString();
-        } else {
-            $this->testName = \get_class($failedTest);
-        }
-
-        if (!$failedTest instanceof TestCase || !$failedTest->isInIsolation()) {
-            $this->failedTest = $failedTest;
-        }
-
-        $this->thrownException = $t;
-    }
 
     /**
      * Returns a description for an exception.
@@ -83,6 +62,26 @@ class TestFailure
         }
 
         return \get_class($e) . ': ' . $e->getMessage() . "\n";
+    }
+
+    /**
+     * Constructs a TestFailure with the given test and exception.
+     *
+     * @param Throwable $t
+     */
+    public function __construct(Test $failedTest, $t)
+    {
+        if ($failedTest instanceof SelfDescribing) {
+            $this->testName = $failedTest->toString();
+        } else {
+            $this->testName = \get_class($failedTest);
+        }
+
+        if (!$failedTest instanceof TestCase || !$failedTest->isInIsolation()) {
+            $this->failedTest = $failedTest;
+        }
+
+        $this->thrownException = $t;
     }
 
     /**

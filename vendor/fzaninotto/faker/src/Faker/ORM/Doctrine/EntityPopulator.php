@@ -42,19 +42,19 @@ class EntityPopulator
     }
 
     /**
-     * @return array
-     */
-    public function getColumnFormatters()
-    {
-        return $this->columnFormatters;
-    }
-
-    /**
      * @param $columnFormatters
      */
     public function setColumnFormatters($columnFormatters)
     {
         $this->columnFormatters = $columnFormatters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumnFormatters()
+    {
+        return $this->columnFormatters;
     }
 
     public function mergeColumnFormattersWith($columnFormatters)
@@ -63,19 +63,19 @@ class EntityPopulator
     }
 
     /**
-     * @return array
-     */
-    public function getModifiers()
-    {
-        return $this->modifiers;
-    }
-
-    /**
      * @param array $modifiers
      */
     public function setModifiers(array $modifiers)
     {
         $this->modifiers = $modifiers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModifiers()
+    {
+        return $this->modifiers;
     }
 
     /**
@@ -236,9 +236,9 @@ class EntityPopulator
         /* @var $repository \Doctrine\Common\Persistence\ObjectRepository */
         $repository = $manager->getRepository(get_class($obj));
         $result = $repository->createQueryBuilder('e')
-            ->select(sprintf('e.%s', $column))
-            ->getQuery()
-            ->execute();
+                ->select(sprintf('e.%s', $column))
+                ->getQuery()
+                ->execute();
         $ids = array_map('current', $result->toArray());
 
         $id = null;

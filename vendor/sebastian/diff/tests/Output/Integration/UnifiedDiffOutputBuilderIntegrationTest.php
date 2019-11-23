@@ -17,8 +17,8 @@ use Symfony\Component\Process\Process;
 /**
  * @covers SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\Differ
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Differ
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
  *
  * @requires OS Linux
  */
@@ -32,13 +32,18 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
 
     private $filePatch;
 
-    private static function setDiffFileHeader(string $diff, string $file): string
+    protected function setUp(): void
     {
-        $diffLines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
-        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
+        $this->dir       = \realpath(__DIR__ . '/../../fixtures/out/') . '/';
+        $this->fileFrom  = $this->dir . 'from.txt';
+        $this->filePatch = $this->dir . 'patch.txt';
 
-        return \implode('', $diffLines);
+        $this->cleanUpTempFiles();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanUpTempFiles();
     }
 
     /**
@@ -74,20 +79,6 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
             },
             ARRAY_FILTER_USE_KEY
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->dir = \realpath(__DIR__ . '/../../fixtures/out/') . '/';
-        $this->fileFrom = $this->dir . 'from.txt';
-        $this->filePatch = $this->dir . 'patch.txt';
-
-        $this->cleanUpTempFiles();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanUpTempFiles();
     }
 
     private function doIntegrationTestPatch(string $diff, string $from, string $to): void
@@ -159,5 +150,14 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
         @\unlink($this->fileFrom . '.orig');
         @\unlink($this->fileFrom);
         @\unlink($this->filePatch);
+    }
+
+    private static function setDiffFileHeader(string $diff, string $file): string
+    {
+        $diffLines    = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
+        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
+
+        return \implode('', $diffLines);
     }
 }

@@ -65,7 +65,7 @@ use PHPUnit\Framework\MockObject\Stub\ReturnValueMap as ReturnValueMapStub;
 /**
  * Asserts that an array has a specified key.
  *
- * @param int|string $key
+ * @param int|string        $key
  * @param array|ArrayAccess $array
  *
  * @throws ExpectationFailedException
@@ -84,6 +84,8 @@ function assertArrayHasKey($key, $array, string $message = ''): void
  *
  * @throws ExpectationFailedException
  * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+ *
+ * @deprecated https://github.com/sebastianbergmann/phpunit/issues/3494
  */
 function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
 {
@@ -93,7 +95,7 @@ function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false
 /**
  * Asserts that an array does not have a specified key.
  *
- * @param int|string $key
+ * @param int|string        $key
  * @param array|ArrayAccess $array
  *
  * @throws ExpectationFailedException
@@ -181,7 +183,7 @@ function assertContainsOnlyInstancesOf(string $className, iterable $haystack, st
  * or an attribute of an object contains only values of a given type.
  *
  * @param object|string $haystackClassOrObject
- * @param bool $isNativeType
+ * @param bool          $isNativeType
  *
  * @throws ExpectationFailedException
  * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -208,7 +210,7 @@ function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNative
  * type.
  *
  * @param object|string $haystackClassOrObject
- * @param bool $isNativeType
+ * @param bool          $isNativeType
  *
  * @throws ExpectationFailedException
  * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -300,9 +302,9 @@ function assertAttributeEquals($expected, string $actualAttributeName, $actualCl
  * Asserts that two variables are not equal.
  *
  * @param float $delta
- * @param int $maxDepth
- * @param bool $canonicalize
- * @param bool $ignoreCase
+ * @param int   $maxDepth
+ * @param bool  $canonicalize
+ * @param bool  $ignoreCase
  *
  * @throws ExpectationFailedException
  * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException

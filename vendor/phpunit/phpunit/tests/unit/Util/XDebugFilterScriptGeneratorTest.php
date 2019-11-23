@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\TestCase;
@@ -20,7 +19,7 @@ class XDebugFilterScriptGeneratorTest extends TestCase
     public function testReturnsExpectedScript(): void
     {
         $expectedDirectory = \sprintf('%s/', __DIR__);
-        $expected = <<<EOF
+        $expected          = <<<EOF
 <?php declare(strict_types=1);
 if (!\\function_exists('xdebug_set_filter')) {
     return;
@@ -47,22 +46,22 @@ EOF;
             'include' => [
                 'directory' => [
                     [
-                        'path' => __DIR__,
+                        'path'   => __DIR__,
                         'suffix' => '.php',
                         'prefix' => '',
                     ],
                     [
-                        'path' => \sprintf('%s/', __DIR__),
+                        'path'   => \sprintf('%s/', __DIR__),
                         'suffix' => '.php',
                         'prefix' => '',
                     ],
                     [
-                        'path' => \sprintf('%s/./%s', \dirname(__DIR__), \basename(__DIR__)),
+                        'path'   => \sprintf('%s/./%s', \dirname(__DIR__), \basename(__DIR__)),
                         'suffix' => '.php',
                         'prefix' => '',
                     ],
                     [
-                        'path' => $directoryPathThatDoesNotExist,
+                        'path'   => $directoryPathThatDoesNotExist,
                         'suffix' => '.php',
                         'prefix' => '',
                     ],
@@ -74,7 +73,7 @@ EOF;
             ],
             'exclude' => [
                 'directory' => [],
-                'file' => [],
+                'file'      => [],
             ],
         ];
 

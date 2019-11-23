@@ -26,23 +26,17 @@ use Symfony\Component\HttpKernel\KernelEvents;
  *
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @internal since Symfony 4.3
  */
 abstract class AbstractTestSessionListener implements EventSubscriberInterface
 {
     private $sessionId;
     private $sessionOptions;
 
-    public function __construct(array $sessionOptions = array())
+    public function __construct(array $sessionOptions = [])
     {
         $this->sessionOptions = $sessionOptions;
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::REQUEST => array('onKernelRequest', 192),
-            KernelEvents::RESPONSE => array('onKernelResponse', -128),
-        );
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -86,7 +80,7 @@ abstract class AbstractTestSessionListener implements EventSubscriberInterface
         }
 
         if ($session instanceof Session ? !$session->isEmpty() || (null !== $this->sessionId && $session->getId() !== $this->sessionId) : $wasStarted) {
-            $params = session_get_cookie_params() + array('samesite' => null);
+            $params = session_get_cookie_params() + ['samesite' => null];
             foreach ($this->sessionOptions as $k => $v) {
                 if (0 === strpos($k, 'cookie_')) {
                     $params[substr($k, 7)] = $v;
@@ -102,6 +96,14 @@ abstract class AbstractTestSessionListener implements EventSubscriberInterface
             $event->getResponse()->headers->setCookie(new Cookie($session->getName(), $session->getId(), 0 === $params['lifetime'] ? 0 : time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly'], false, $params['samesite'] ?: null));
             $this->sessionId = $session->getId();
         }
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::REQUEST => ['onKernelRequest', 192],
+            KernelEvents::RESPONSE => ['onKernelResponse', -128],
+        ];
     }
 
     /**

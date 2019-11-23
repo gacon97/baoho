@@ -4,9 +4,26 @@ namespace Faker\Provider;
 
 class DateTime extends Base
 {
-    protected static $century = array('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI');
+    protected static $century = array('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI');
 
     protected static $defaultTimezone = null;
+
+    /**
+     * @param \DateTime|string|float|int $max
+     * @return int|false
+     */
+    protected static function getMaxTimestamp($max = 'now')
+    {
+        if (is_numeric($max)) {
+            return (int) $max;
+        }
+
+        if ($max instanceof \DateTime) {
+            return $max->getTimestamp();
+        }
+
+        return strtotime(empty($max) ? 'now' : $max);
+    }
 
     /**
      * Get a timestamp between January 1, 1970 and now
@@ -51,7 +68,7 @@ class DateTime extends Base
      */
     public static function dateTimeAD($max = 'now', $timezone = null)
     {
-        $min = (PHP_INT_SIZE > 4 ? -62135597361 : -PHP_INT_MAX);
+        $min = (PHP_INT_SIZE>4 ? -62135597361 : -PHP_INT_MAX);
         return static::setTimezone(
             new \DateTime('@' . mt_rand($min, static::getMaxTimestamp($max))),
             $timezone
@@ -73,8 +90,8 @@ class DateTime extends Base
     /**
      * Get a date string between January 1, 1970 and now
      *
-     * @param string $format
-     * @param \DateTime|int|string $max maximum timestamp used as random end limit, default to "now"
+     * @param string               $format
+     * @param \DateTime|int|string $max    maximum timestamp used as random end limit, default to "now"
      * @return string
      * @example '2008-11-27'
      */
@@ -86,8 +103,8 @@ class DateTime extends Base
     /**
      * Get a time string (24h format by default)
      *
-     * @param string $format
-     * @param \DateTime|int|string $max maximum timestamp used as random end limit, default to "now"
+     * @param string               $format
+     * @param \DateTime|int|string $max    maximum timestamp used as random end limit, default to "now"
      * @return string
      * @example '15:02:34'
      */
@@ -101,7 +118,7 @@ class DateTime extends Base
      * Accepts date strings that can be recognized by strtotime().
      *
      * @param \DateTime|string $startDate Defaults to 30 years ago
-     * @param \DateTime|string $endDate Defaults to "now"
+     * @param \DateTime|string $endDate   Defaults to "now"
      * @param string|null $timezone time zone in which the date time should be set, default to DateTime::$defaultTimezone, if set, otherwise the result of `date_default_timezone_get`
      * @example DateTime('1999-02-02 11:42:52')
      * @return \DateTime
@@ -130,8 +147,8 @@ class DateTime extends Base
      * an interval
      * Accepts date string that can be recognized by strtotime().
      *
-     * @param string $date Defaults to 30 years ago
-     * @param string $interval Defaults to 5 days after
+     * @param \DateTime|string $date      Defaults to 30 years ago
+     * @param string $interval  Defaults to 5 days after
      * @param string|null $timezone time zone in which the date time should be set, default to DateTime::$defaultTimezone, if set, otherwise the result of `date_default_timezone_get`
      * @example dateTimeInInterval('1999-02-02 11:42:52', '+ 5 days')
      * @return \DateTime
@@ -141,12 +158,12 @@ class DateTime extends Base
     public static function dateTimeInInterval($date = '-30 years', $interval = '+5 days', $timezone = null)
     {
         $intervalObject = \DateInterval::createFromDateString($interval);
-        $datetime = $date instanceof \DateTime ? $date : new \DateTime($date);
-        $otherDatetime = clone $datetime;
+        $datetime       = $date instanceof \DateTime ? $date : new \DateTime($date);
+        $otherDatetime  = clone $datetime;
         $otherDatetime->add($intervalObject);
 
         $begin = $datetime > $otherDatetime ? $otherDatetime : $datetime;
-        $end = $datetime === $begin ? $otherDatetime : $datetime;
+        $end = $datetime===$begin ? $otherDatetime : $datetime;
 
         return static::dateTimeBetween(
             $begin,
@@ -278,13 +295,16 @@ class DateTime extends Base
     }
 
     /**
-     * Gets default time zone.
+     * Internal method to set the time zone on a DateTime.
      *
-     * @return string|null
+     * @param \DateTime $dt
+     * @param string|null $timezone
+     *
+     * @return \DateTime
      */
-    public static function getDefaultTimezone()
+    private static function setTimezone(\DateTime $dt, $timezone)
     {
-        return static::$defaultTimezone;
+        return $dt->setTimezone(new \DateTimeZone(static::resolveTimezone($timezone)));
     }
 
     /**
@@ -300,33 +320,13 @@ class DateTime extends Base
     }
 
     /**
-     * @param string|float|int $max
-     * @return int|false
-     */
-    protected static function getMaxTimestamp($max = 'now')
-    {
-        if (is_numeric($max)) {
-            return (int)$max;
-        }
-
-        if ($max instanceof \DateTime) {
-            return $max->getTimestamp();
-        }
-
-        return strtotime(empty($max) ? 'now' : $max);
-    }
-
-    /**
-     * Internal method to set the time zone on a DateTime.
+     * Gets default time zone.
      *
-     * @param \DateTime $dt
-     * @param string|null $timezone
-     *
-     * @return \DateTime
+     * @return string|null
      */
-    private static function setTimezone(\DateTime $dt, $timezone)
+    public static function getDefaultTimezone()
     {
-        return $dt->setTimezone(new \DateTimeZone(static::resolveTimezone($timezone)));
+        return static::$defaultTimezone;
     }
 
     /**

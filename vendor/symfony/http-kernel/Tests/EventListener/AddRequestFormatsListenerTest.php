@@ -13,6 +13,7 @@ namespace Symfony\Component\HttpKernel\Tests\EventListener;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\EventListener\AddRequestFormatsListener;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -28,6 +29,16 @@ class AddRequestFormatsListenerTest extends TestCase
      */
     private $listener;
 
+    protected function setUp(): void
+    {
+        $this->listener = new AddRequestFormatsListener(['csv' => ['text/csv', 'text/plain']]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->listener = null;
+    }
+
     public function testIsAnEventSubscriber()
     {
         $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventSubscriberInterface', $this->listener);
@@ -36,7 +47,7 @@ class AddRequestFormatsListenerTest extends TestCase
     public function testRegisteredEvent()
     {
         $this->assertEquals(
-            array(KernelEvents::REQUEST => array('onKernelRequest', 1)),
+            [KernelEvents::REQUEST => ['onKernelRequest', 100]],
             AddRequestFormatsListener::getSubscribedEvents()
         );
     }
@@ -44,23 +55,13 @@ class AddRequestFormatsListenerTest extends TestCase
     public function testSetAdditionalFormats()
     {
         $request = $this->getRequestMock();
-        $event = $this->getGetResponseEventMock($request);
+        $event = $this->getRequestEventMock($request);
 
         $request->expects($this->once())
             ->method('setFormat')
-            ->with('csv', array('text/csv', 'text/plain'));
+            ->with('csv', ['text/csv', 'text/plain']);
 
         $this->listener->onKernelRequest($event);
-    }
-
-    protected function setUp()
-    {
-        $this->listener = new AddRequestFormatsListener(array('csv' => array('text/csv', 'text/plain')));
-    }
-
-    protected function tearDown()
-    {
-        $this->listener = null;
     }
 
     protected function getRequestMock()
@@ -68,16 +69,16 @@ class AddRequestFormatsListenerTest extends TestCase
         return $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')->getMock();
     }
 
-    protected function getGetResponseEventMock(Request $request)
+    protected function getRequestEventMock(Request $request)
     {
         $event = $this
-            ->getMockBuilder('Symfony\Component\HttpKernel\Event\GetResponseEvent')
+            ->getMockBuilder(RequestEvent::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $event->expects($this->any())
             ->method('getRequest')
-            ->will($this->returnValue($request));
+            ->willReturn($request);
 
         return $event;
     }

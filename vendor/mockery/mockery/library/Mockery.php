@@ -27,6 +27,7 @@ use Mockery\Loader\EvalLoader;
 use Mockery\Loader\Loader;
 use Mockery\Matcher\MatcherAbstract;
 use Mockery\ClosureWrapper;
+use Mockery\Generator\MockNameBuilder;
 
 class Mockery
 {
@@ -68,7 +69,7 @@ class Mockery
      */
     public static function globalHelpers()
     {
-        require_once __DIR__ . '/helpers.php';
+        require_once __DIR__.'/helpers.php';
     }
 
     /**
@@ -108,9 +109,9 @@ class Mockery
     /**
      * Static shortcut to \Mockery\Container::mock().
      *
-     * @param array ...$args
+     * @param mixed ...$args
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public static function mock(...$args)
     {
@@ -121,9 +122,9 @@ class Mockery
      * Static and semantic shortcut for getting a mock from the container
      * and applying the spy's expected behavior into it.
      *
-     * @param array ...$args
+     * @param mixed ...$args
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public static function spy(...$args)
     {
@@ -137,9 +138,9 @@ class Mockery
     /**
      * Static and Semantic shortcut to \Mockery\Container::mock().
      *
-     * @param array ...$args
+     * @param mixed ...$args
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public static function instanceMock(...$args)
     {
@@ -149,9 +150,9 @@ class Mockery
     /**
      * Static shortcut to \Mockery\Container::mock(), first argument names the mock.
      *
-     * @param array ...$args
+     * @param mixed ...$args
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public static function namedMock(...$args)
     {
@@ -170,7 +171,7 @@ class Mockery
      *
      * @throws LogicException
      *
-     * @return \Mockery\MockInterface
+     * @return \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     public static function self()
     {
@@ -233,15 +234,13 @@ class Mockery
     }
 
     /**
-     * Set the container.
+     * Setter for the $_generator static propery.
      *
-     * @param \Mockery\Container $container
-     *
-     * @return \Mockery\Container
+     * @param \Mockery\Generator\Generator $generator
      */
-    public static function setContainer(Mockery\Container $container)
+    public static function setGenerator(Generator $generator)
     {
-        return self::$_container = $container;
+        self::$_generator = $generator;
     }
 
     /**
@@ -260,16 +259,6 @@ class Mockery
     }
 
     /**
-     * Setter for the $_generator static propery.
-     *
-     * @param \Mockery\Generator\Generator $generator
-     */
-    public static function setGenerator(Generator $generator)
-    {
-        self::$_generator = $generator;
-    }
-
-    /**
      * Creates and returns a default generator
      * used inside this class.
      *
@@ -278,6 +267,16 @@ class Mockery
     public static function getDefaultGenerator()
     {
         return new CachingGenerator(StringManipulationGenerator::withDefaultPasses());
+    }
+
+    /**
+     * Setter for the $_loader static property.
+     *
+     * @param Loader $loader
+     */
+    public static function setLoader(Loader $loader)
+    {
+        self::$_loader = $loader;
     }
 
     /**
@@ -296,16 +295,6 @@ class Mockery
     }
 
     /**
-     * Setter for the $_loader static property.
-     *
-     * @param Loader $loader
-     */
-    public static function setLoader(Loader $loader)
-    {
-        self::$_loader = $loader;
-    }
-
-    /**
      * Gets an EvalLoader to be used as default.
      *
      * @return EvalLoader
@@ -313,6 +302,18 @@ class Mockery
     public static function getDefaultLoader()
     {
         return new EvalLoader();
+    }
+
+    /**
+     * Set the container.
+     *
+     * @param \Mockery\Container $container
+     *
+     * @return \Mockery\Container
+     */
+    public static function setContainer(Mockery\Container $container)
+    {
+        return self::$_container = $container;
     }
 
     /**
@@ -541,6 +542,61 @@ class Mockery
     }
 
     /**
+     * Gets the string representation
+     * of any passed argument.
+     *
+     * @param mixed $argument
+     * @param int $depth
+     *
+     * @return mixed
+     */
+    private static function formatArgument($argument, $depth = 0)
+    {
+        if ($argument instanceof MatcherAbstract) {
+            return (string) $argument;
+        }
+
+        if (is_object($argument)) {
+            return 'object(' . get_class($argument) . ')';
+        }
+
+        if (is_int($argument) || is_float($argument)) {
+            return $argument;
+        }
+
+        if (is_array($argument)) {
+            if ($depth === 1) {
+                $argument = '[...]';
+            } else {
+                $sample = array();
+                foreach ($argument as $key => $value) {
+                    $key = is_int($key) ? $key : "'$key'";
+                    $value = self::formatArgument($value, $depth + 1);
+                    $sample[] = "$key => $value";
+                }
+
+                $argument = "[".implode(", ", $sample)."]";
+            }
+
+            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000).'...]' : $argument);
+        }
+
+        if (is_bool($argument)) {
+            return $argument ? 'true' : 'false';
+        }
+
+        if (is_resource($argument)) {
+            return 'resource(...)';
+        }
+
+        if (is_null($argument)) {
+            return 'NULL';
+        }
+
+        return "'".(string) $argument."'";
+    }
+
+    /**
      * Utility function to format objects to printable arrays.
      *
      * @param array $objects
@@ -574,175 +630,6 @@ class Mockery
         $formatting = false;
 
         return 'Objects: ( ' . var_export($parts, true) . ')';
-    }
-
-    /**
-     * Utility function to parse shouldReceive() arguments and generate
-     * expectations from such as needed.
-     *
-     * @param Mockery\MockInterface $mock
-     * @param array ...$args
-     * @param callable $add
-     * @return \Mockery\CompositeExpectation
-     */
-    public static function parseShouldReturnArgs(\Mockery\MockInterface $mock, $args, $add)
-    {
-        $composite = new \Mockery\CompositeExpectation();
-
-        foreach ($args as $arg) {
-            if (is_array($arg)) {
-                foreach ($arg as $k => $v) {
-                    $expectation = self::buildDemeterChain($mock, $k, $add)->andReturn($v);
-                    $composite->add($expectation);
-                }
-            } elseif (is_string($arg)) {
-                $expectation = self::buildDemeterChain($mock, $arg, $add);
-                $composite->add($expectation);
-            }
-        }
-
-        return $composite;
-    }
-
-    public static function declareClass($fqn)
-    {
-        return static::declareType($fqn, "class");
-    }
-
-    public static function declareInterface($fqn)
-    {
-        return static::declareType($fqn, "interface");
-    }
-
-    /**
-     * Register a file to be deleted on tearDown.
-     *
-     * @param string $fileName
-     */
-    public static function registerFileForCleanUp($fileName)
-    {
-        self::$_filesToCleanUp[] = $fileName;
-    }
-
-    /**
-     * Sets up expectations on the members of the CompositeExpectation and
-     * builds up any demeter chain that was passed to shouldReceive.
-     *
-     * @param \Mockery\MockInterface $mock
-     * @param string $arg
-     * @param callable $add
-     * @throws Mockery\Exception
-     * @return \Mockery\ExpectationInterface
-     */
-    protected static function buildDemeterChain(\Mockery\MockInterface $mock, $arg, $add)
-    {
-        /** @var Mockery\Container $container */
-        $container = $mock->mockery_getContainer();
-        $methodNames = explode('->', $arg);
-        reset($methodNames);
-
-        if (!\Mockery::getConfiguration()->mockingNonExistentMethodsAllowed()
-            && !$mock->mockery_isAnonymous()
-            && !in_array(current($methodNames), $mock->mockery_getMockableMethods())
-        ) {
-            throw new \Mockery\Exception(
-                'Mockery\'s configuration currently forbids mocking the method '
-                . current($methodNames) . ' as it does not exist on the class or object '
-                . 'being mocked'
-            );
-        }
-
-        /** @var ExpectationInterface|null $expectations */
-        $expectations = null;
-
-        /** @var Callable $nextExp */
-        $nextExp = function ($method) use ($add) {
-            return $add($method);
-        };
-
-        $parent = get_class($mock);
-
-        while (true) {
-            $method = array_shift($methodNames);
-            $expectations = $mock->mockery_getExpectationsFor($method);
-
-            if (is_null($expectations) || self::noMoreElementsInChain($methodNames)) {
-                $expectations = $nextExp($method);
-                if (self::noMoreElementsInChain($methodNames)) {
-                    break;
-                }
-
-                $mock = self::getNewDemeterMock($container, $parent, $method, $expectations);
-            } else {
-                $demeterMockKey = $container->getKeyOfDemeterMockFor($method, $parent);
-                if ($demeterMockKey) {
-                    $mock = self::getExistingDemeterMock($container, $demeterMockKey);
-                }
-            }
-
-            $parent .= '->' . $method;
-
-            $nextExp = function ($n) use ($mock) {
-                return $mock->shouldReceive($n);
-            };
-        }
-
-        return $expectations;
-    }
-
-    /**
-     * Gets the string representation
-     * of any passed argument.
-     *
-     * @param mixed $argument
-     * @param int $depth
-     *
-     * @return mixed
-     */
-    private static function formatArgument($argument, $depth = 0)
-    {
-        if ($argument instanceof MatcherAbstract) {
-            return (string)$argument;
-        }
-
-        if (is_object($argument)) {
-            return 'object(' . get_class($argument) . ')';
-        }
-
-        if (is_int($argument) || is_float($argument)) {
-            return $argument;
-        }
-
-        if (is_array($argument)) {
-            if ($depth === 1) {
-                $argument = '[...]';
-            } else {
-                $sample = array();
-                foreach ($argument as $key => $value) {
-                    $key = is_int($key) ? $key : "'$key'";
-                    $value = self::formatArgument($value, $depth + 1);
-                    $sample[] = "$key => $value";
-                }
-
-                $argument = "[" . implode(", ", $sample) . "]";
-            }
-
-            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000) . '...]' : $argument);
-        }
-
-        if (is_bool($argument)) {
-            return $argument ? 'true' : 'false';
-        }
-
-        if (is_resource($argument)) {
-            return 'resource(...)';
-        }
-
-        if (is_null($argument)) {
-            return 'NULL';
-        }
-
-        return "'" . (string)$argument . "'";
     }
 
     /**
@@ -842,6 +729,100 @@ class Mockery
     }
 
     /**
+     * Utility function to parse shouldReceive() arguments and generate
+     * expectations from such as needed.
+     *
+     * @param Mockery\LegacyMockInterface $mock
+     * @param array ...$args
+     * @param callable $add
+     * @return \Mockery\CompositeExpectation
+     */
+    public static function parseShouldReturnArgs(\Mockery\LegacyMockInterface $mock, $args, $add)
+    {
+        $composite = new \Mockery\CompositeExpectation();
+
+        foreach ($args as $arg) {
+            if (is_array($arg)) {
+                foreach ($arg as $k => $v) {
+                    $expectation = self::buildDemeterChain($mock, $k, $add)->andReturn($v);
+                    $composite->add($expectation);
+                }
+            } elseif (is_string($arg)) {
+                $expectation = self::buildDemeterChain($mock, $arg, $add);
+                $composite->add($expectation);
+            }
+        }
+
+        return $composite;
+    }
+
+    /**
+     * Sets up expectations on the members of the CompositeExpectation and
+     * builds up any demeter chain that was passed to shouldReceive.
+     *
+     * @param \Mockery\LegacyMockInterface $mock
+     * @param string $arg
+     * @param callable $add
+     * @throws Mockery\Exception
+     * @return \Mockery\ExpectationInterface
+     */
+    protected static function buildDemeterChain(\Mockery\LegacyMockInterface $mock, $arg, $add)
+    {
+        /** @var Mockery\Container $container */
+        $container = $mock->mockery_getContainer();
+        $methodNames = explode('->', $arg);
+        reset($methodNames);
+
+        if (!\Mockery::getConfiguration()->mockingNonExistentMethodsAllowed()
+            && !$mock->mockery_isAnonymous()
+            && !in_array(current($methodNames), $mock->mockery_getMockableMethods())
+        ) {
+            throw new \Mockery\Exception(
+                'Mockery\'s configuration currently forbids mocking the method '
+                . current($methodNames) . ' as it does not exist on the class or object '
+                . 'being mocked'
+            );
+        }
+
+        /** @var ExpectationInterface|null $expectations */
+        $expectations = null;
+
+        /** @var Callable $nextExp */
+        $nextExp = function ($method) use ($add) {
+            return $add($method);
+        };
+
+        $parent = get_class($mock);
+
+        while (true) {
+            $method = array_shift($methodNames);
+            $expectations = $mock->mockery_getExpectationsFor($method);
+
+            if (is_null($expectations) || self::noMoreElementsInChain($methodNames)) {
+                $expectations = $nextExp($method);
+                if (self::noMoreElementsInChain($methodNames)) {
+                    break;
+                }
+
+                $mock = self::getNewDemeterMock($container, $parent, $method, $expectations);
+            } else {
+                $demeterMockKey = $container->getKeyOfDemeterMockFor($method, $parent);
+                if ($demeterMockKey) {
+                    $mock = self::getExistingDemeterMock($container, $demeterMockKey);
+                }
+            }
+
+            $parent .= '->' . $method;
+
+            $nextExp = function ($n) use ($mock) {
+                return $mock->shouldReceive($n);
+            };
+        }
+
+        return $expectations;
+    }
+
+    /**
      * Gets a new demeter configured
      * mock from the container.
      *
@@ -857,8 +838,7 @@ class Mockery
         $parent,
         $method,
         Mockery\ExpectationInterface $exp
-    )
-    {
+    ) {
         $newMockName = 'demeter_' . md5($parent) . '_' . $method;
 
         if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
@@ -876,7 +856,10 @@ class Mockery
                 $parRefMethodRetType = $parRefMethod->getReturnType();
 
                 if ($parRefMethodRetType !== null) {
-                    $mock = self::namedMock($newMockName, (string)$parRefMethodRetType);
+                    $nameBuilder = new MockNameBuilder();
+                    $nameBuilder->addPart('\\' . $newMockName);
+                    $type = PHP_VERSION_ID >= 70100 ? $parRefMethodRetType->getName() : (string)$parRefMethodRetType;
+                    $mock = self::namedMock($nameBuilder->build(), $type);
                     $exp->andReturn($mock);
 
                     return $mock;
@@ -902,8 +885,7 @@ class Mockery
     private static function getExistingDemeterMock(
         Mockery\Container $container,
         $demeterMockKey
-    )
-    {
+    ) {
         $mocks = $container->getMocks();
         $mock = $mocks[$demeterMockKey];
 
@@ -923,6 +905,16 @@ class Mockery
         return empty($methodNames);
     }
 
+    public static function declareClass($fqn)
+    {
+        return static::declareType($fqn, "class");
+    }
+
+    public static function declareInterface($fqn)
+    {
+        return static::declareType($fqn, "interface");
+    }
+
     private static function declareType($fqn, $type)
     {
         $targetCode = "<?php ";
@@ -934,10 +926,10 @@ class Mockery
             $shortName = trim(array_pop($parts));
             $namespace = implode("\\", $parts);
 
-            $targetCode .= "namespace $namespace;\n";
+            $targetCode.= "namespace $namespace;\n";
         }
 
-        $targetCode .= "$type $shortName {} ";
+        $targetCode.= "$type $shortName {} ";
 
         /*
          * We could eval here, but it doesn't play well with the way
@@ -948,5 +940,15 @@ class Mockery
         file_put_contents($tmpfname, $targetCode);
         require $tmpfname;
         \Mockery::registerFileForCleanUp($tmpfname);
+    }
+
+    /**
+     * Register a file to be deleted on tearDown.
+     *
+     * @param string $fileName
+     */
+    public static function registerFileForCleanUp($fileName)
+    {
+        self::$_filesToCleanUp[] = $fileName;
     }
 }

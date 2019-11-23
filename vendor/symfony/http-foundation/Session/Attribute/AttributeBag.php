@@ -16,9 +16,10 @@ namespace Symfony\Component\HttpFoundation\Session\Attribute;
  */
 class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Countable
 {
-    protected $attributes = array();
     private $name = 'attributes';
     private $storageKey;
+
+    protected $attributes = [];
 
     /**
      * @param string $storageKey The key used to store attributes in the session
@@ -62,7 +63,7 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
      */
     public function has($name)
     {
-        return array_key_exists($name, $this->attributes);
+        return \array_key_exists($name, $this->attributes);
     }
 
     /**
@@ -70,7 +71,7 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
      */
     public function get($name, $default = null)
     {
-        return array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
+        return \array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
     }
 
     /**
@@ -94,7 +95,7 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
      */
     public function replace(array $attributes)
     {
-        $this->attributes = array();
+        $this->attributes = [];
         foreach ($attributes as $key => $value) {
             $this->set($key, $value);
         }
@@ -106,7 +107,7 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
     public function remove($name)
     {
         $retval = null;
-        if (array_key_exists($name, $this->attributes)) {
+        if (\array_key_exists($name, $this->attributes)) {
             $retval = $this->attributes[$name];
             unset($this->attributes[$name]);
         }
@@ -120,7 +121,7 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
     public function clear()
     {
         $return = $this->attributes;
-        $this->attributes = array();
+        $this->attributes = [];
 
         return $return;
     }

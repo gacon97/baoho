@@ -21,6 +21,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * SurrogateListener adds a Surrogate-Control HTTP header when the Response needs to be parsed for Surrogates.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.3
  */
 class SurrogateListener implements EventSubscriberInterface
 {
@@ -29,13 +31,6 @@ class SurrogateListener implements EventSubscriberInterface
     public function __construct(SurrogateInterface $surrogate = null)
     {
         $this->surrogate = $surrogate;
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::RESPONSE => 'onKernelResponse',
-        );
     }
 
     /**
@@ -61,5 +56,12 @@ class SurrogateListener implements EventSubscriberInterface
         }
 
         $surrogate->addSurrogateControl($event->getResponse());
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
     }
 }

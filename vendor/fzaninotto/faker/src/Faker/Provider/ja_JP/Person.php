@@ -9,7 +9,7 @@ class Person extends \Faker\Provider\Person
     );
 
     protected static $femaleNameFormats = array(
-        '{{lastName}} {{firstNameFemale}}',
+         '{{lastName}} {{firstNameFemale}}',
     );
 
     /**
@@ -82,30 +82,6 @@ class Person extends \Faker\Provider\Person
     );
 
     /**
-     * @example 'アキラ'
-     */
-    public static function firstKanaNameMale()
-    {
-        return static::randomElement(static::$firstKanaNameMale);
-    }
-
-    /**
-     * @example 'アケミ'
-     */
-    public static function firstKanaNameFemale()
-    {
-        return static::randomElement(static::$firstKanaNameFemale);
-    }
-
-    /**
-     * @example 'アオタ'
-     */
-    public static function lastKanaName()
-    {
-        return static::randomElement(static::$lastKanaName);
-    }
-
-    /**
      * @param string|null $gender 'male', 'female' or null for any
      * @return string
      * @example 'アオタ アキラ'
@@ -137,5 +113,29 @@ class Person extends \Faker\Provider\Person
         }
 
         return $this->generator->parse(static::randomElement(static::$firstKanaNameFormat));
+    }
+
+    /**
+     * @example 'アキラ'
+     */
+    public static function firstKanaNameMale()
+    {
+        return static::randomElement(static::$firstKanaNameMale);
+    }
+
+    /**
+     * @example 'アケミ'
+     */
+    public static function firstKanaNameFemale()
+    {
+        return static::randomElement(static::$firstKanaNameFemale);
+    }
+
+    /**
+     * @example 'アオタ'
+     */
+    public static function lastKanaName()
+    {
+        return static::randomElement(static::$lastKanaName);
     }
 }

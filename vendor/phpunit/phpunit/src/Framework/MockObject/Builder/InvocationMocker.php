@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\MockObject\Builder;
 
 use PHPUnit\Framework\Constraint\Constraint;
@@ -45,7 +44,7 @@ class InvocationMocker implements MethodNameMatch
     public function __construct(MatcherCollection $collection, Invocation $invocationMatcher, array $configurableMethods)
     {
         $this->collection = $collection;
-        $this->matcher = new Matcher($invocationMatcher);
+        $this->matcher    = new Matcher($invocationMatcher);
 
         $this->collection->addMatcher($this->matcher);
 
@@ -163,7 +162,7 @@ class InvocationMocker implements MethodNameMatch
     /**
      * @return InvocationMocker
      */
-    public function willThrowException(\Exception $exception)
+    public function willThrowException(\Throwable $exception)
     {
         $stub = new Stub\Exception($exception);
 

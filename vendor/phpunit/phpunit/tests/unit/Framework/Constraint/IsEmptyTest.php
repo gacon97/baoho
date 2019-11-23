@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -64,5 +63,15 @@ EOF
         }
 
         $this->fail();
+    }
+
+    /**
+     * @ticket https://github.com/sebastianbergmann/phpunit/issues/3743
+     */
+    public function test_EmptyIterator_is_handled_correctly(): void
+    {
+        $constraint = new IsEmpty;
+
+        $this->assertTrue($constraint->evaluate(new \EmptyIterator, '', true));
     }
 }

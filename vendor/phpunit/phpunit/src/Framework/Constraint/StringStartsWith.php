@@ -7,8 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
+
+use PHPUnit\Util\InvalidArgumentHelper;
 
 /**
  * Constraint that asserts that the string it is evaluated for begins with a
@@ -24,6 +25,10 @@ class StringStartsWith extends Constraint
     public function __construct(string $prefix)
     {
         parent::__construct();
+
+        if (\strlen($prefix) === 0) {
+            throw InvalidArgumentHelper::factory(1, 'non-empty string');
+        }
 
         $this->prefix = $prefix;
     }

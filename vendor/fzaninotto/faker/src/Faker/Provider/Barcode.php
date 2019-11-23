@@ -8,6 +8,13 @@ namespace Faker\Provider;
  */
 class Barcode extends Base
 {
+    private function ean($length = 13)
+    {
+        $code = static::numerify(str_repeat('#', $length - 1));
+
+        return $code . static::eanChecksum($code);
+    }
+
     /**
      * Utility function for computing EAN checksums
      *
@@ -29,7 +36,7 @@ class Barcode extends Base
      * ISBN-10 check digit
      * @link http://en.wikipedia.org/wiki/International_Standard_Book_Number#ISBN-10_check_digits
      *
-     * @param  string $input ISBN without check-digit
+     * @param  string           $input ISBN without check-digit
      * @throws \LengthException When wrong input length passed
      *
      * @return integer Check digit
@@ -54,7 +61,7 @@ class Barcode extends Base
         $result = (11 - array_sum($digits) % 11) % 11;
 
         // 10 is replaced by X
-        return ($result < 10) ? $result : 'X';
+        return ($result < 10)?$result:'X';
     }
 
     /**
@@ -101,13 +108,6 @@ class Barcode extends Base
     public function isbn13()
     {
         $code = '97' . static::numberBetween(8, 9) . static::numerify(str_repeat('#', 9));
-
-        return $code . static::eanChecksum($code);
-    }
-
-    private function ean($length = 13)
-    {
-        $code = static::numerify(str_repeat('#', $length - 1));
 
         return $code . static::eanChecksum($code);
     }

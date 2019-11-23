@@ -25,6 +25,16 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class MockClassWithFinalWakeupTest extends MockeryTestCase
 {
+    protected function mockeryTestSetUp()
+    {
+        $this->container = new \Mockery\Container;
+    }
+
+    protected function mockeryTestTearDown()
+    {
+        $this->container->mockery_close();
+    }
+
     /**
      * @test
      *
@@ -50,16 +60,6 @@ class MockClassWithFinalWakeupTest extends MockeryTestCase
 
         // Make sure __wakeup is overridden and doesn't return anything.
         $this->assertNull($mock->__wakeup());
-    }
-
-    protected function setUp()
-    {
-        $this->container = new \Mockery\Container;
-    }
-
-    protected function tearDown()
-    {
-        $this->container->mockery_close();
     }
 }
 

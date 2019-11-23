@@ -19,8 +19,8 @@ use Symfony\Component\Process\Process;
 /**
  * @covers SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\Differ
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Differ
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
  *
  * @requires OS Linux
  */
@@ -36,13 +36,23 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
 
     private $filePatch;
 
-    private static function setDiffFileHeader(string $diff, string $file): string
+    protected function setUp(): void
     {
-        $diffLines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
-        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
+        $this->dir       = \realpath(__DIR__ . '/../../fixtures/out') . '/';
+        $this->fileFrom  = $this->dir . 'from.txt';
+        $this->fileTo    = $this->dir . 'to.txt';
+        $this->filePatch = $this->dir . 'diff.patch';
 
-        return \implode('', $diffLines);
+        if (!\is_dir($this->dir)) {
+            throw new \RuntimeException('Integration test working directory not found.');
+        }
+
+        $this->cleanUpTempFiles();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanUpTempFiles();
     }
 
     /**
@@ -61,7 +71,7 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
     public function testIntegrationUsingPHPFileInVendorGitApply(string $fileFrom, string $fileTo): void
     {
         $from = FileUtils::getFileContent($fileFrom);
-        $to = FileUtils::getFileContent($fileTo);
+        $to   = FileUtils::getFileContent($fileTo);
 
         $diff = (new Differ(new StrictUnifiedDiffOutputBuilder(['fromFile' => 'Original', 'toFile' => 'New'])))->diff($from, $to);
 
@@ -91,7 +101,7 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
     public function testIntegrationUsingPHPFileInVendorPatch(string $fileFrom, string $fileTo): void
     {
         $from = FileUtils::getFileContent($fileFrom);
-        $to = FileUtils::getFileContent($fileTo);
+        $to   = FileUtils::getFileContent($fileTo);
 
         $diff = (new Differ(new StrictUnifiedDiffOutputBuilder(['fromFile' => 'Original', 'toFile' => 'New'])))->diff($from, $to);
 
@@ -150,8 +160,8 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
 
     public function provideFilePairs(): array
     {
-        $cases = [];
-        $fromFile = __FILE__;
+        $cases     = [];
+        $fromFile  = __FILE__;
         $vendorDir = \realpath(__DIR__ . '/../../../vendor');
 
         $fileIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($vendorDir, \RecursiveDirectoryIterator::SKIP_DOTS));
@@ -162,9 +172,9 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
                 continue;
             }
 
-            $toFile = $file->getPathname();
+            $toFile                                                                                         = $file->getPathname();
             $cases[\sprintf("Diff file:\n\"%s\"\nvs.\n\"%s\"\n", \realpath($fromFile), \realpath($toFile))] = [$fromFile, $toFile];
-            $fromFile = $toFile;
+            $fromFile                                                                                       = $toFile;
         }
 
         return $cases;
@@ -193,36 +203,17 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
 
         $output = $p->getOutput();
 
-        $diffLines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $diffLines    = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $this->fileFrom, $diffLines[0], 1);
         $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $this->fileFrom, $diffLines[1], 1);
-        $diff = \implode('', $diffLines);
+        $diff         = \implode('', $diffLines);
 
-        $outputLines = \preg_split('/(.*\R)/', $output, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $outputLines    = \preg_split('/(.*\R)/', $output, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $outputLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $this->fileFrom, $outputLines[0], 1);
         $outputLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $this->fileFrom, $outputLines[1], 1);
-        $output = \implode('', $outputLines);
+        $output         = \implode('', $outputLines);
 
         $this->assertSame($diff, $output);
-    }
-
-    protected function setUp(): void
-    {
-        $this->dir = \realpath(__DIR__ . '/../../fixtures/out') . '/';
-        $this->fileFrom = $this->dir . 'from.txt';
-        $this->fileTo = $this->dir . 'to.txt';
-        $this->filePatch = $this->dir . 'diff.patch';
-
-        if (!\is_dir($this->dir)) {
-            throw new \RuntimeException('Integration test working directory not found.');
-        }
-
-        $this->cleanUpTempFiles();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanUpTempFiles();
     }
 
     private function doIntegrationTestGitApply(string $diff, string $from, string $to): void
@@ -295,5 +286,14 @@ final class StrictUnifiedDiffOutputBuilderIntegrationTest extends TestCase
         @\unlink($this->fileFrom);
         @\unlink($this->fileTo);
         @\unlink($this->filePatch);
+    }
+
+    private static function setDiffFileHeader(string $diff, string $file): string
+    {
+        $diffLines    = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
+        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
+
+        return \implode('', $diffLines);
     }
 }

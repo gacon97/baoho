@@ -34,7 +34,7 @@ trait AddTrait
      */
     final public function add(string $name, $path): RouteConfigurator
     {
-        $paths = array();
+        $paths = [];
         $parentConfigurator = $this instanceof CollectionConfigurator ? $this : ($this instanceof RouteConfigurator ? $this->parentConfigurator : null);
 
         if (\is_array($path)) {
@@ -48,15 +48,15 @@ trait AddTrait
                         throw new \LogicException(sprintf('Route "%s" with locale "%s" is missing a corresponding prefix in its parent collection.', $name, $locale));
                     }
 
-                    $paths[$locale] = $this->prefixes[$locale] . $localePath;
+                    $paths[$locale] = $this->prefixes[$locale].$localePath;
                 }
             }
         } elseif (null !== $this->prefixes) {
             foreach ($this->prefixes as $locale => $prefix) {
-                $paths[$locale] = $prefix . $path;
+                $paths[$locale] = $prefix.$path;
             }
         } else {
-            $this->collection->add($this->name . $name, $route = $this->createRoute($path));
+            $this->collection->add($this->name.$name, $route = $this->createRoute($path));
 
             return new RouteConfigurator($this->collection, $route, $this->name, $parentConfigurator, $this->prefixes);
         }
@@ -64,10 +64,10 @@ trait AddTrait
         $routes = new RouteCollection();
 
         foreach ($paths as $locale => $path) {
-            $routes->add($name . '.' . $locale, $route = $this->createRoute($path));
-            $this->collection->add($this->name . $name . '.' . $locale, $route);
+            $routes->add($name.'.'.$locale, $route = $this->createRoute($path));
+            $this->collection->add($this->name.$name.'.'.$locale, $route);
             $route->setDefault('_locale', $locale);
-            $route->setDefault('_canonical_route', $this->name . $name);
+            $route->setDefault('_canonical_route', $this->name.$name);
         }
 
         return new RouteConfigurator($this->collection, $routes, $this->name, $parentConfigurator, $this->prefixes);

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 class TestSuiteTest extends TestCase
@@ -16,6 +15,16 @@ class TestSuiteTest extends TestCase
      * @var TestResult
      */
     private $result;
+
+    protected function setUp(): void
+    {
+        $this->result = new TestResult;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->result = null;
+    }
 
     /**
      * @testdox TestSuite can be created with name of existing non-TestCase class
@@ -154,9 +163,9 @@ class TestSuiteTest extends TestCase
 
         $suite->run($this->result);
 
-        $skipped = $this->result->skipped();
+        $skipped           = $this->result->skipped();
         $lastSkippedResult = \array_pop($skipped);
-        $message = $lastSkippedResult->thrownException()->getMessage();
+        $message           = $lastSkippedResult->thrownException()->getMessage();
 
         $this->assertContains('Test for DataProviderDependencyTest::testDependency skipped by data provider', $message);
     }
@@ -197,10 +206,6 @@ class TestSuiteTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    /**
-     * @expectedException PHPUnit\Framework\Exception
-     * @expectedExceptionMessage No valid test provided.
-     */
     public function testCreateTestForConstructorlessTestClass(): void
     {
         $reflection = $this->getMockBuilder(\ReflectionClass::class)
@@ -216,16 +221,30 @@ class TestSuiteTest extends TestCase
         $reflection->expects($this->once())
             ->method('getName')
             ->willReturn(__CLASS__);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('No valid test provided.');
+
         TestSuite::createTest($reflection, 'TestForConstructorlessTestClass');
     }
 
-    protected function setUp(): void
+    /**
+     * @testdox Handles exceptions in tearDownAfterClass()
+     */
+    public function testTearDownAfterClassInTestSuite(): void
     {
-        $this->result = new TestResult;
-    }
+        $suite = new TestSuite(\ExceptionInTearDownAfterClassTest::class);
+        $suite->run($this->result);
 
-    protected function tearDown(): void
-    {
-        $this->result = null;
+        $this->assertSame(3, $this->result->count());
+        $this->assertCount(1, $this->result->failures());
+
+        $failure = $this->result->failures()[0];
+
+        $this->assertSame(
+            'Exception in ExceptionInTearDownAfterClassTest::tearDownAfterClass' . \PHP_EOL .
+            'throw Exception in tearDownAfterClass()',
+            $failure->thrownException()->getMessage()
+        );
     }
 }

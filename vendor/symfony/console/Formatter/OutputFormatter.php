@@ -22,30 +22,8 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 class OutputFormatter implements WrappableOutputFormatterInterface
 {
     private $decorated;
-    private $styles = array();
+    private $styles = [];
     private $styleStack;
-
-    /**
-     * Initializes console output formatter.
-     *
-     * @param bool $decorated Whether this formatter should actually decorate strings
-     * @param OutputFormatterStyleInterface[] $styles Array of "name => FormatterStyle" instances
-     */
-    public function __construct(bool $decorated = false, array $styles = array())
-    {
-        $this->decorated = $decorated;
-
-        $this->setStyle('error', new OutputFormatterStyle('white', 'red'));
-        $this->setStyle('info', new OutputFormatterStyle('green'));
-        $this->setStyle('comment', new OutputFormatterStyle('yellow'));
-        $this->setStyle('question', new OutputFormatterStyle('black', 'cyan'));
-
-        foreach ($styles as $name => $style) {
-            $this->setStyle($name, $style);
-        }
-
-        $this->styleStack = new OutputFormatterStyleStack();
-    }
 
     /**
      * Escapes "<" special char in given text.
@@ -83,11 +61,33 @@ class OutputFormatter implements WrappableOutputFormatterInterface
     }
 
     /**
+     * Initializes console output formatter.
+     *
+     * @param bool                            $decorated Whether this formatter should actually decorate strings
+     * @param OutputFormatterStyleInterface[] $styles    Array of "name => FormatterStyle" instances
+     */
+    public function __construct(bool $decorated = false, array $styles = [])
+    {
+        $this->decorated = $decorated;
+
+        $this->setStyle('error', new OutputFormatterStyle('white', 'red'));
+        $this->setStyle('info', new OutputFormatterStyle('green'));
+        $this->setStyle('comment', new OutputFormatterStyle('yellow'));
+        $this->setStyle('question', new OutputFormatterStyle('black', 'cyan'));
+
+        foreach ($styles as $name => $style) {
+            $this->setStyle($name, $style);
+        }
+
+        $this->styleStack = new OutputFormatterStyleStack();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setDecorated($decorated)
     {
-        $this->decorated = (bool)$decorated;
+        $this->decorated = (bool) $decorated;
     }
 
     /**
@@ -131,7 +131,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
      */
     public function format($message)
     {
-        return $this->formatAndWrap((string)$message, 0);
+        return $this->formatAndWrap((string) $message, 0);
     }
 
     /**
@@ -141,7 +141,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
     {
         $offset = 0;
         $output = '';
-        $tagRegex = '[a-z][a-z0-9,_=;-]*+';
+        $tagRegex = '[a-z][^<>]*+';
         $currentLineLength = 0;
         preg_match_all("#<(($tagRegex) | /($tagRegex)?)>#ix", $message, $matches, PREG_OFFSET_CAPTURE);
         foreach ($matches[0] as $i => $match) {
@@ -178,7 +178,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
         $output .= $this->applyCurrentStyle(substr($message, $offset), $output, $width, $currentLineLength);
 
         if (false !== strpos($output, "\0")) {
-            return strtr($output, array("\0" => '\\', '\\<' => '<'));
+            return strtr($output, ["\0" => '\\', '\\<' => '<']);
         }
 
         return str_replace('\\<', '<', $output);
@@ -216,6 +216,8 @@ class OutputFormatter implements WrappableOutputFormatterInterface
                 $style->setForeground(strtolower($match[1]));
             } elseif ('bg' == $match[0]) {
                 $style->setBackground(strtolower($match[1]));
+            } elseif ('href' === $match[0]) {
+                $style->setHref($match[1]);
             } elseif ('options' === $match[0]) {
                 preg_match_all('([^,;]+)', strtolower($match[1]), $options);
                 $options = array_shift($options);
@@ -248,23 +250,27 @@ class OutputFormatter implements WrappableOutputFormatterInterface
         }
 
         if ($currentLineLength) {
-            $prefix = substr($text, 0, $i = $width - $currentLineLength) . "\n";
+            $prefix = substr($text, 0, $i = $width - $currentLineLength)."\n";
             $text = substr($text, $i);
         } else {
             $prefix = '';
         }
 
         preg_match('~(\\n)$~', $text, $matches);
-        $text = $prefix . preg_replace('~([^\\n]{' . $width . '})\\ *~', "\$1\n", $text);
-        $text = rtrim($text, "\n") . ($matches[1] ?? '');
+        $text = $prefix.preg_replace('~([^\\n]{'.$width.'})\\ *~', "\$1\n", $text);
+        $text = rtrim($text, "\n").($matches[1] ?? '');
 
         if (!$currentLineLength && '' !== $current && "\n" !== substr($current, -1)) {
-            $text = "\n" . $text;
+            $text = "\n".$text;
         }
 
         $lines = explode("\n", $text);
-        if ($width === $currentLineLength = \strlen(end($lines))) {
-            $currentLineLength = 0;
+
+        foreach ($lines as $line) {
+            $currentLineLength += \strlen($line);
+            if ($width <= $currentLineLength) {
+                $currentLineLength = 0;
+            }
         }
 
         if ($this->isDecorated()) {

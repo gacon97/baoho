@@ -25,18 +25,18 @@ class RouteCollectionBuilder
     /**
      * @var Route[]|RouteCollectionBuilder[]
      */
-    private $routes = array();
+    private $routes = [];
 
     private $loader;
-    private $defaults = array();
+    private $defaults = [];
     private $prefix;
     private $host;
     private $condition;
-    private $requirements = array();
-    private $options = array();
+    private $requirements = [];
+    private $options = [];
     private $schemes;
     private $methods;
-    private $resources = array();
+    private $resources = [];
 
     public function __construct(LoaderInterface $loader = null)
     {
@@ -48,9 +48,9 @@ class RouteCollectionBuilder
      *
      *     $routes->import('blog.yml', '/blog');
      *
-     * @param mixed $resource
+     * @param mixed       $resource
      * @param string|null $prefix
-     * @param string $type
+     * @param string      $type
      *
      * @return self
      *
@@ -87,9 +87,9 @@ class RouteCollectionBuilder
     /**
      * Adds a route and returns it for future modification.
      *
-     * @param string $path The route path
-     * @param string $controller The route's controller
-     * @param string|null $name The name to give this route
+     * @param string      $path       The route path
+     * @param string      $controller The route's controller
+     * @param string|null $name       The name to give this route
      *
      * @return Route
      */
@@ -115,7 +115,7 @@ class RouteCollectionBuilder
     /**
      * Add a RouteCollectionBuilder.
      *
-     * @param string $prefix
+     * @param string                 $prefix
      * @param RouteCollectionBuilder $builder
      */
     public function mount($prefix, self $builder)
@@ -127,7 +127,6 @@ class RouteCollectionBuilder
     /**
      * Adds a Route object to the builder.
      *
-     * @param Route $route
      * @param string|null $name
      *
      * @return $this
@@ -136,7 +135,7 @@ class RouteCollectionBuilder
     {
         if (null === $name) {
             // used as a flag to know which routes will need a name later
-            $name = '_unnamed_route_' . spl_object_hash($route);
+            $name = '_unnamed_route_'.spl_object_hash($route);
         }
 
         $this->routes[$name] = $route;
@@ -177,7 +176,7 @@ class RouteCollectionBuilder
      * default value is already set).
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -193,7 +192,7 @@ class RouteCollectionBuilder
      * requirement is already set).
      *
      * @param string $key
-     * @param mixed $regex
+     * @param mixed  $regex
      *
      * @return $this
      */
@@ -209,7 +208,7 @@ class RouteCollectionBuilder
      * option is already set).
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -249,6 +248,18 @@ class RouteCollectionBuilder
     }
 
     /**
+     * Adds a resource for this collection.
+     *
+     * @return $this
+     */
+    private function addResource(ResourceInterface $resource): self
+    {
+        $this->resources[] = $resource;
+
+        return $this;
+    }
+
+    /**
      * Creates the final RouteCollection and returns it.
      *
      * @return RouteCollection
@@ -269,7 +280,7 @@ class RouteCollectionBuilder
                 }
 
                 if (null !== $this->prefix) {
-                    $route->setPath('/' . $this->prefix . $route->getPath());
+                    $route->setPath('/'.$this->prefix.$route->getPath());
                 }
 
                 if (!$route->getHost()) {
@@ -311,26 +322,14 @@ class RouteCollectionBuilder
     }
 
     /**
-     * Adds a resource for this collection.
-     *
-     * @return $this
-     */
-    private function addResource(ResourceInterface $resource): self
-    {
-        $this->resources[] = $resource;
-
-        return $this;
-    }
-
-    /**
      * Generates a route name based on details of this route.
      */
     private function generateRouteName(Route $route): string
     {
-        $methods = implode('_', $route->getMethods()) . '_';
+        $methods = implode('_', $route->getMethods()).'_';
 
-        $routeName = $methods . $route->getPath();
-        $routeName = str_replace(array('/', ':', '|', '-'), '_', $routeName);
+        $routeName = $methods.$route->getPath();
+        $routeName = str_replace(['/', ':', '|', '-'], '_', $routeName);
         $routeName = preg_replace('/[^a-z0-9A-Z_.]+/', '', $routeName);
 
         // Collapse consecutive underscores down into a single underscore.
@@ -342,8 +341,8 @@ class RouteCollectionBuilder
     /**
      * Finds a loader able to load an imported resource and loads it.
      *
-     * @param mixed $resource A resource
-     * @param string|null $type The resource type or null if unknown
+     * @param mixed       $resource A resource
+     * @param string|null $type     The resource type or null if unknown
      *
      * @return RouteCollection[]
      *
@@ -358,7 +357,7 @@ class RouteCollectionBuilder
         if ($this->loader->supports($resource, $type)) {
             $collections = $this->loader->load($resource, $type);
 
-            return \is_array($collections) ? $collections : array($collections);
+            return \is_array($collections) ? $collections : [$collections];
         }
 
         if (null === $resolver = $this->loader->getResolver()) {
@@ -371,6 +370,6 @@ class RouteCollectionBuilder
 
         $collections = $loader->load($resource, $type);
 
-        return \is_array($collections) ? $collections : array($collections);
+        return \is_array($collections) ? $collections : [$collections];
     }
 }

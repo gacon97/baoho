@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\TestCase;
@@ -21,7 +20,7 @@ class TestSuiteSorterTest extends TestCase
     /**
      * Constants to improve clarity of @dataprovider
      */
-    private const IGNORE_DEPENDENCIES = false;
+    private const IGNORE_DEPENDENCIES  = false;
 
     private const RESOLVE_DEPENDENCIES = true;
 
@@ -61,7 +60,7 @@ class TestSuiteSorterTest extends TestCase
     public function testShouldNotAffectEmptyTestSuite(int $order, bool $resolveDependencies, int $orderDefects): void
     {
         $sorter = new TestSuiteSorter;
-        $suite = new TestSuite;
+        $suite  = new TestSuite;
 
         $sorter->reorderTestsInSuite($suite, $order, $resolveDependencies, $orderDefects);
 
@@ -205,11 +204,11 @@ class TestSuiteSorterTest extends TestCase
             'duration-same-dependency-ignore' => [
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => 1,
-                    'testTwo' => 1,
+                    'testOne'   => 1,
+                    'testTwo'   => 1,
                     'testThree' => 1,
-                    'testFour' => 1,
-                    'testFive' => 1,
+                    'testFour'  => 1,
+                    'testFive'  => 1,
                 ],
                 [
                     \MultiDependencyTest::class . '::testOne',
@@ -222,11 +221,11 @@ class TestSuiteSorterTest extends TestCase
             'duration-same-dependency-resolve' => [
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => 1,
-                    'testTwo' => 1,
+                    'testOne'   => 1,
+                    'testTwo'   => 1,
                     'testThree' => 1,
-                    'testFour' => 1,
-                    'testFive' => 1,
+                    'testFour'  => 1,
+                    'testFive'  => 1,
                 ],
                 [
                     \MultiDependencyTest::class . '::testOne',
@@ -239,11 +238,11 @@ class TestSuiteSorterTest extends TestCase
             'duration-different-dependency-ignore' => [
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => 5,
-                    'testTwo' => 3,
+                    'testOne'   => 5,
+                    'testTwo'   => 3,
                     'testThree' => 4,
-                    'testFour' => 1,
-                    'testFive' => 2,
+                    'testFour'  => 1,
+                    'testFive'  => 2,
                 ],
                 [
                     \MultiDependencyTest::class . '::testFour',
@@ -256,11 +255,11 @@ class TestSuiteSorterTest extends TestCase
             'duration-different-dependency-resolve' => [
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => 5,
-                    'testTwo' => 3,
+                    'testOne'   => 5,
+                    'testTwo'   => 3,
                     'testThree' => 4,
-                    'testFour' => 1,
-                    'testFive' => 2,
+                    'testFour'  => 1,
+                    'testFive'  => 2,
                 ],
                 [
                     \MultiDependencyTest::class . '::testFive',
@@ -288,7 +287,7 @@ class TestSuiteSorterTest extends TestCase
             $cache->setTime(\MultiDependencyTest::class . '::' . $testName, $data['time']);
         }
 
-        $sorter = new TestSuiteSorter($cache);
+        $sorter  = new TestSuiteSorter($cache);
         $sorter->reorderTestsInSuite($suite, $order, $resolveDependencies, TestSuiteSorter::ORDER_DEFECTS_FIRST);
 
         $this->assertSame($expected, $sorter->getExecutionOrder());
@@ -374,11 +373,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testOne',
@@ -410,11 +409,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testFive',
@@ -430,11 +429,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 0],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 0],
                 ],
                 [
                     \MultiDependencyTest::class . '::testFive',
@@ -450,11 +449,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testThree',
@@ -470,11 +469,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testOne',
@@ -490,11 +489,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_REVERSED,
                 self::IGNORE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testThree',
@@ -511,11 +510,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 0],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testFive',
@@ -535,8 +534,8 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_REVERSED,
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_SKIPPED, 'time' => 1],
                 ],
                 [
@@ -555,11 +554,11 @@ class TestSuiteSorterTest extends TestCase
                 TestSuiteSorter::ORDER_DEFAULT,
                 self::RESOLVE_DEPENDENCIES,
                 [
-                    'testOne' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testTwo' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testOne'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
+                    'testTwo'   => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
                     'testThree' => ['state' => BaseTestRunner::STATUS_PASSED, 'time' => 1],
-                    'testFour' => ['state' => BaseTestRunner::STATUS_FAILURE, 'time' => 1],
-                    'testFive' => ['state' => BaseTestRunner::STATUS_FAILURE, 'time' => 1],
+                    'testFour'  => ['state' => BaseTestRunner::STATUS_FAILURE, 'time' => 1],
+                    'testFive'  => ['state' => BaseTestRunner::STATUS_FAILURE, 'time' => 1],
                 ],
                 [
                     \MultiDependencyTest::class . '::testFive',
@@ -590,8 +589,8 @@ class TestSuiteSorterTest extends TestCase
 
     public function suiteSorterOptionPermutationsProvider(): array
     {
-        $orderValues = [TestSuiteSorter::ORDER_DEFAULT, TestSuiteSorter::ORDER_REVERSED, TestSuiteSorter::ORDER_RANDOMIZED];
-        $resolveValues = [false, true];
+        $orderValues        = [TestSuiteSorter::ORDER_DEFAULT, TestSuiteSorter::ORDER_REVERSED, TestSuiteSorter::ORDER_RANDOMIZED];
+        $resolveValues      = [false, true];
         $orderDefectsValues = [TestSuiteSorter::ORDER_DEFAULT, TestSuiteSorter::ORDER_DEFECTS_FIRST];
 
         $data = [];

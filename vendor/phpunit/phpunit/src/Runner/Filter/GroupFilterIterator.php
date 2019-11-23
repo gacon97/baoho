@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner\Filter;
 
 use PHPUnit\Framework\TestSuite;
@@ -26,7 +25,7 @@ abstract class GroupFilterIterator extends RecursiveFilterIterator
         parent::__construct($iterator);
 
         foreach ($suite->getGroupDetails() as $group => $tests) {
-            if (\in_array($group, $groups, true)) {
+            if (\in_array((string) $group, $groups, true)) {
                 $testHashes = \array_map(
                     'spl_object_hash',
                     $tests

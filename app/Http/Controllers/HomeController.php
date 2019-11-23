@@ -52,7 +52,7 @@ class HomeController extends Controller
 
         $mainProducts = Product::where('show', 'sản phẩm bán chạy')->get();
 
-        return view('web.temp.layout', compact('categories', 'subCategories', 'products', 'banners', 'featuresItems', 'safeDevices', 'clothes', 'fireProtectionEquipments', 'metallicEquipments', 'shoeProtections', 'sessionSet', 'mainProducts'));
+        return view('web.temp.layout', compact('categories', 'subCategories', 'products', 'banners', 'safeDevices', 'clothes', 'fireProtectionEquipments', 'metallicEquipments', 'shoeProtections', 'sessionSet', 'mainProducts'));
     }
 
     public function show($slug)

@@ -94,6 +94,29 @@ class Inspector
         return $this->extractDocrefUrl($this->exception->getMessage())['url'];
     }
 
+    private function extractDocrefUrl($message)
+    {
+        $docref = [
+            'message' => $message,
+            'url' => null,
+        ];
+
+        // php embbeds urls to the manual into the Exception message with the following ini-settings defined
+        // http://php.net/manual/en/errorfunc.configuration.php#ini.docref-root
+        if (!ini_get('html_errors') || !ini_get('docref_root')) {
+            return $docref;
+        }
+
+        $pattern = "/\[<a href='([^']+)'>(?:[^<]+)<\/a>\]/";
+        if (preg_match($pattern, $message, $matches)) {
+            // -> strip those automatically generated links from the exception message
+            $docref['message'] = preg_replace($pattern, '', $message, 1);
+            $docref['url'] = $matches[1];
+        }
+
+        return $docref;
+    }
+
     /**
      * Does the wrapped Exception has a previous Exception?
      * @return bool
@@ -120,6 +143,7 @@ class Inspector
 
         return $this->previousExceptionInspector;
     }
+
 
     /**
      * Returns an array of all previous exceptions for this inspector's exception
@@ -228,7 +252,7 @@ class Inspector
         }
 
         if (!extension_loaded('xdebug') || !xdebug_is_enabled()) {
-            return [];
+            return $traces;
         }
 
         // Use xdebug to get the full stack trace and remove the shutdown handler stack trace
@@ -248,10 +272,10 @@ class Inspector
     protected function getFrameFromException($exception)
     {
         return [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
+            'file'  => $exception->getFile(),
+            'line'  => $exception->getLine(),
             'class' => get_class($exception),
-            'args' => [
+            'args'  => [
                 $exception->getMessage(),
             ],
         ];
@@ -266,10 +290,10 @@ class Inspector
     protected function getFrameFromError(ErrorException $exception)
     {
         return [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
+            'file'  => $exception->getFile(),
+            'line'  => $exception->getLine(),
             'class' => null,
-            'args' => [],
+            'args'  => [],
         ];
     }
 
@@ -295,28 +319,5 @@ class Inspector
         }
 
         return true;
-    }
-
-    private function extractDocrefUrl($message)
-    {
-        $docref = [
-            'message' => $message,
-            'url' => null,
-        ];
-
-        // php embbeds urls to the manual into the Exception message with the following ini-settings defined
-        // http://php.net/manual/en/errorfunc.configuration.php#ini.docref-root
-        if (!ini_get('html_errors') || !ini_get('docref_root')) {
-            return $docref;
-        }
-
-        $pattern = "/\[<a href='([^']+)'>(?:[^<]+)<\/a>\]/";
-        if (preg_match($pattern, $message, $matches)) {
-            // -> strip those automatically generated links from the exception message
-            $docref['message'] = preg_replace($pattern, '', $message, 1);
-            $docref['url'] = $matches[1];
-        }
-
-        return $docref;
     }
 }

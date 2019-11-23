@@ -43,9 +43,9 @@ class MessageSelector
      * The two methods can also be mixed:
      *     {0} There are no apples|one: There is one apple|more: There are %count% apples
      *
-     * @param string $message The message being translated
-     * @param int|float $number The number of items represented for the message
-     * @param string $locale The locale to use for choosing
+     * @param string    $message The message being translated
+     * @param int|float $number  The number of items represented for the message
+     * @param string    $locale  The locale to use for choosing
      *
      * @return string
      *
@@ -53,19 +53,19 @@ class MessageSelector
      */
     public function choose($message, $number, $locale)
     {
-        $parts = array();
+        $parts = [];
         if (preg_match('/^\|++$/', $message)) {
             $parts = explode('|', $message);
         } elseif (preg_match_all('/(?:\|\||[^\|])++/', $message, $matches)) {
             $parts = $matches[0];
         }
 
-        $explicitRules = array();
-        $standardRules = array();
+        $explicitRules = [];
+        $standardRules = [];
         foreach ($parts as $part) {
             $part = trim(str_replace('||', '|', $part));
 
-            if (preg_match('/^(?P<interval>' . Interval::getIntervalRegexp() . ')\s*(?P<message>.*?)$/xs', $part, $matches)) {
+            if (preg_match('/^(?P<interval>'.Interval::getIntervalRegexp().')\s*(?P<message>.*?)$/xs', $part, $matches)) {
                 $explicitRules[$matches['interval']] = $matches['message'];
             } elseif (preg_match('/^\w+\:\s*(.*?)$/', $part, $matches)) {
                 $standardRules[] = $matches[1];

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Util\Filter;
@@ -38,7 +37,7 @@ class ExceptionWrapper extends Exception
     {
         // PDOException::getCode() is a string.
         // @see https://php.net/manual/en/class.pdoexception.php#95812
-        parent::__construct($t->getMessage(), (int)$t->getCode());
+        parent::__construct($t->getMessage(), (int) $t->getCode());
         $this->setOriginalException($t);
     }
 
@@ -65,14 +64,14 @@ class ExceptionWrapper extends Exception
         return $this->className;
     }
 
-    public function setClassName(string $className): void
-    {
-        $this->className = $className;
-    }
-
     public function getPreviousWrapped(): ?self
     {
         return $this->previous;
+    }
+
+    public function setClassName(string $className): void
+    {
+        $this->className = $className;
     }
 
     public function setOriginalException(\Throwable $t): void
@@ -80,8 +79,8 @@ class ExceptionWrapper extends Exception
         $this->originalException($t);
 
         $this->className = \get_class($t);
-        $this->file = $t->getFile();
-        $this->line = $t->getLine();
+        $this->file      = $t->getFile();
+        $this->line      = $t->getLine();
 
         $this->serializableTrace = $t->getTrace();
 

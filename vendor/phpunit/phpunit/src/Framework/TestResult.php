@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use AssertionError;
@@ -39,37 +38,37 @@ class TestResult implements Countable
     protected $passed = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $errors = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $failures = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $warnings = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $notImplemented = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $risky = [];
 
     /**
-     * @var array
+     * @var TestFailure[]
      */
     protected $skipped = [];
 
     /**
-     * @var array
+     * @var TestListener[]
      */
     protected $listeners = [];
 
@@ -199,6 +198,12 @@ class TestResult implements Countable
     {
         $annotations = $test->getAnnotations();
 
+        // If there is a @coversNothing annotation on the test method then code
+        // coverage data does not need to be collected
+        if (isset($annotations['method']['coversNothing'])) {
+            return false;
+        }
+
         // If any methods have covers, coverage must me generated
         if (isset($annotations['method']['covers'])) {
             return true;
@@ -253,7 +258,7 @@ class TestResult implements Countable
     {
         if ($t instanceof RiskyTest) {
             $this->risky[] = new TestFailure($test, $t);
-            $notifyMethod = 'addRiskyTest';
+            $notifyMethod  = 'addRiskyTest';
 
             if ($test instanceof TestCase) {
                 $test->markAsRisky();
@@ -264,21 +269,21 @@ class TestResult implements Countable
             }
         } elseif ($t instanceof IncompleteTest) {
             $this->notImplemented[] = new TestFailure($test, $t);
-            $notifyMethod = 'addIncompleteTest';
+            $notifyMethod           = 'addIncompleteTest';
 
             if ($this->stopOnIncomplete) {
                 $this->stop();
             }
         } elseif ($t instanceof SkippedTest) {
             $this->skipped[] = new TestFailure($test, $t);
-            $notifyMethod = 'addSkippedTest';
+            $notifyMethod    = 'addSkippedTest';
 
             if ($this->stopOnSkipped) {
                 $this->stop();
             }
         } else {
             $this->errors[] = new TestFailure($test, $t);
-            $notifyMethod = 'addError';
+            $notifyMethod   = 'addError';
 
             if ($this->stopOnError || $this->stopOnFailure) {
                 $this->stop();
@@ -325,7 +330,7 @@ class TestResult implements Countable
     {
         if ($e instanceof RiskyTest || $e instanceof OutputError) {
             $this->risky[] = new TestFailure($test, $e);
-            $notifyMethod = 'addRiskyTest';
+            $notifyMethod  = 'addRiskyTest';
 
             if ($test instanceof TestCase) {
                 $test->markAsRisky();
@@ -336,21 +341,21 @@ class TestResult implements Countable
             }
         } elseif ($e instanceof IncompleteTest) {
             $this->notImplemented[] = new TestFailure($test, $e);
-            $notifyMethod = 'addIncompleteTest';
+            $notifyMethod           = 'addIncompleteTest';
 
             if ($this->stopOnIncomplete) {
                 $this->stop();
             }
         } elseif ($e instanceof SkippedTest) {
             $this->skipped[] = new TestFailure($test, $e);
-            $notifyMethod = 'addSkippedTest';
+            $notifyMethod    = 'addSkippedTest';
 
             if ($this->stopOnSkipped) {
                 $this->stop();
             }
         } else {
             $this->failures[] = new TestFailure($test, $e);
-            $notifyMethod = 'addFailure';
+            $notifyMethod     = 'addFailure';
 
             if ($this->stopOnFailure || $this->stopOnDefect) {
                 $this->stop();
@@ -415,11 +420,11 @@ class TestResult implements Countable
 
         if (!$this->lastTestFailed && $test instanceof TestCase) {
             $class = \get_class($test);
-            $key = $class . '::' . $test->getName();
+            $key   = $class . '::' . $test->getName();
 
             $this->passed[$key] = [
                 'result' => $test->getResult(),
-                'size' => \PHPUnit\Util\Test::getSize(
+                'size'   => \PHPUnit\Util\Test::getSize(
                     $class,
                     $test->getName(false)
                 ),
@@ -462,7 +467,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the risky tests.
+     * Returns an array of TestFailure objects for the risky tests
+     *
+     * @return TestFailure[]
      */
     public function risky(): array
     {
@@ -470,7 +477,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the incomplete tests.
+     * Returns an array of TestFailure objects for the incomplete tests
+     *
+     * @return TestFailure[]
      */
     public function notImplemented(): array
     {
@@ -494,7 +503,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the skipped tests.
+     * Returns an array of TestFailure objects for the skipped tests
+     *
+     * @return TestFailure[]
      */
     public function skipped(): array
     {
@@ -510,7 +521,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the errors.
+     * Returns an array of TestFailure objects for the errors
+     *
+     * @return TestFailure[]
      */
     public function errors(): array
     {
@@ -526,7 +539,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the failures.
+     * Returns an array of TestFailure objects for the failures
+     *
+     * @return TestFailure[]
      */
     public function failures(): array
     {
@@ -542,7 +557,9 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns an Enumeration for the warnings.
+     * Returns an array of TestFailure objects for the warnings
+     *
+     * @return TestFailure[]
      */
     public function warnings(): array
     {
@@ -599,12 +616,12 @@ class TestResult implements Countable
             $isAnyCoverageRequired = self::isAnyCoverageRequired($test);
         }
 
-        $error = false;
-        $failure = false;
-        $warning = false;
+        $error      = false;
+        $failure    = false;
+        $warning    = false;
         $incomplete = false;
-        $risky = false;
-        $skipped = false;
+        $risky      = false;
+        $skipped    = false;
 
         $this->startTest($test);
 
@@ -624,8 +641,8 @@ class TestResult implements Countable
         }
 
         $collectCodeCoverage = $this->codeCoverage !== null &&
-            !$test instanceof WarningTestCase &&
-            $isAnyCoverageRequired;
+                               !$test instanceof WarningTestCase &&
+                               $isAnyCoverageRequired;
 
         if ($collectCodeCoverage) {
             $this->codeCoverage->start($test);
@@ -705,7 +722,7 @@ class TestResult implements Countable
             $test->addToAssertionCount(1);
 
             $failure = true;
-            $frame = $e->getTrace()[0];
+            $frame   = $e->getTrace()[0];
 
             $e = new AssertionFailedError(
                 \sprintf(
@@ -720,7 +737,7 @@ class TestResult implements Countable
         } catch (Exception $e) {
             $error = true;
         } catch (Throwable $e) {
-            $e = new ExceptionWrapper($e);
+            $e     = new ExceptionWrapper($e);
             $error = true;
         }
 
@@ -760,9 +777,9 @@ class TestResult implements Countable
         }
 
         if ($collectCodeCoverage) {
-            $append = !$risky && !$incomplete && !$skipped;
+            $append           = !$risky && !$incomplete && !$skipped;
             $linesToBeCovered = [];
-            $linesToBeUsed = [];
+            $linesToBeUsed    = [];
 
             if ($append && $test instanceof TestCase) {
                 try {
@@ -841,18 +858,21 @@ class TestResult implements Countable
             !$test->doesNotPerformAssertions() &&
             $test->getNumAssertions() == 0) {
             $reflected = new \ReflectionClass($test);
-            $name = $test->getName(false);
+            $name      = $test->getName(false);
 
             if ($name && $reflected->hasMethod($name)) {
                 $reflected = $reflected->getMethod($name);
             }
+
             $this->addFailure(
                 $test,
-                new RiskyTestError(\sprintf(
-                    "This test did not perform any assertions\n\n%s:%d",
-                    $reflected->getFileName(),
-                    $reflected->getStartLine()
-                )),
+                new RiskyTestError(
+                    \sprintf(
+                        "This test did not perform any assertions\n\n%s:%d",
+                        $reflected->getFileName(),
+                        $reflected->getStartLine()
+                    )
+                ),
                 $time
             );
         } elseif ($this->beStrictAboutTestsThatDoNotTestAnything &&
@@ -860,10 +880,12 @@ class TestResult implements Countable
             $test->getNumAssertions() > 0) {
             $this->addFailure(
                 $test,
-                new RiskyTestError(\sprintf(
-                    'This test is annotated with "@doesNotPerformAssertions" but performed %d assertions',
-                    $test->getNumAssertions()
-                )),
+                new RiskyTestError(
+                    \sprintf(
+                        'This test is annotated with "@doesNotPerformAssertions" but performed %d assertions',
+                        $test->getNumAssertions()
+                    )
+                ),
                 $time
             );
         } elseif ($this->beStrictAboutOutputDuringTests && $test->hasOutput()) {
@@ -1069,7 +1091,12 @@ class TestResult implements Countable
      */
     public function wasSuccessful(): bool
     {
-        return empty($this->errors) && empty($this->failures) && empty($this->warnings);
+        return $this->wasSuccessfulIgnoringWarnings() && empty($this->warnings);
+    }
+
+    public function wasSuccessfulIgnoringWarnings(): bool
+    {
+        return empty($this->errors) && empty($this->failures);
     }
 
     /**
@@ -1097,19 +1124,19 @@ class TestResult implements Countable
     }
 
     /**
-     * Returns the set timeout for large tests.
-     */
-    public function getTimeoutForLargeTests(): int
-    {
-        return $this->timeoutForLargeTests;
-    }
-
-    /**
      * Sets the timeout for large tests.
      */
     public function setTimeoutForLargeTests(int $timeout): void
     {
         $this->timeoutForLargeTests = $timeout;
+    }
+
+    /**
+     * Returns the set timeout for large tests.
+     */
+    public function getTimeoutForLargeTests(): int
+    {
+        return $this->timeoutForLargeTests;
     }
 
     public function setRegisterMockObjectsFromTestArgumentsRecursively(bool $flag): void

@@ -29,17 +29,17 @@ class ClassParserTest extends TestCase
 
         /** @var SelectorNode $selector */
         $selector = $selectors[0];
-        $this->assertEquals($representation, (string)$selector->getTree());
+        $this->assertEquals($representation, (string) $selector->getTree());
     }
 
     public function getParseTestData()
     {
-        return array(
-            array('.testclass', 'Class[Element[*].testclass]'),
-            array('testel.testclass', 'Class[Element[testel].testclass]'),
-            array('testns|.testclass', 'Class[Element[testns|*].testclass]'),
-            array('testns|*.testclass', 'Class[Element[testns|*].testclass]'),
-            array('testns|testel.testclass', 'Class[Element[testns|testel].testclass]'),
-        );
+        return [
+            ['.testclass', 'Class[Element[*].testclass]'],
+            ['testel.testclass', 'Class[Element[testel].testclass]'],
+            ['testns|.testclass', 'Class[Element[testns|*].testclass]'],
+            ['testns|*.testclass', 'Class[Element[testns|*].testclass]'],
+            ['testns|testel.testclass', 'Class[Element[testns|testel].testclass]'],
+        ];
     }
 }

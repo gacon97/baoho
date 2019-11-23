@@ -13,6 +13,9 @@ namespace Symfony\Component\HttpFoundation\File\MimeType;
 
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\Mime\MimeTypes;
+
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.3, use "%s" instead.', MimeTypeGuesser::class, MimeTypes::class), E_USER_DEPRECATED);
 
 /**
  * A singleton mime type guesser.
@@ -51,16 +54,7 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
      *
      * @var array
      */
-    protected $guessers = array();
-
-    /**
-     * Registers all natively provided mime type guessers.
-     */
-    private function __construct()
-    {
-        $this->register(new FileBinaryMimeTypeGuesser());
-        $this->register(new FileinfoMimeTypeGuesser());
-    }
+    protected $guessers = [];
 
     /**
      * Returns the singleton instance.
@@ -82,6 +76,15 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
     public static function reset()
     {
         self::$instance = null;
+    }
+
+    /**
+     * Registers all natively provided mime type guessers.
+     */
+    private function __construct()
+    {
+        $this->register(new FileBinaryMimeTypeGuesser());
+        $this->register(new FileinfoMimeTypeGuesser());
     }
 
     /**
@@ -129,5 +132,7 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
         if (2 === \count($this->guessers) && !FileBinaryMimeTypeGuesser::isSupported() && !FileinfoMimeTypeGuesser::isSupported()) {
             throw new \LogicException('Unable to guess the mime type as no guessers are available (Did you enable the php_fileinfo extension?)');
         }
+
+        return null;
     }
 }

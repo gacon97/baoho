@@ -16,9 +16,9 @@ use SebastianBergmann\Diff\Utils\FileUtils;
 /**
  * @covers SebastianBergmann\Diff\Parser
  *
- * @uses   SebastianBergmann\Diff\Chunk
- * @uses   SebastianBergmann\Diff\Diff
- * @uses   SebastianBergmann\Diff\Line
+ * @uses SebastianBergmann\Diff\Chunk
+ * @uses SebastianBergmann\Diff\Diff
+ * @uses SebastianBergmann\Diff\Line
  */
 final class ParserTest extends TestCase
 {
@@ -27,18 +27,21 @@ final class ParserTest extends TestCase
      */
     private $parser;
 
+    protected function setUp(): void
+    {
+        $this->parser = new Parser;
+    }
+
     public function testParse(): void
     {
         $content = FileUtils::getFileContent(__DIR__ . '/fixtures/patch.txt');
 
         $diffs = $this->parser->parse($content);
 
-        $this->assertInternalType('array', $diffs);
         $this->assertContainsOnlyInstancesOf(Diff::class, $diffs);
         $this->assertCount(1, $diffs);
 
         $chunks = $diffs[0]->getChunks();
-        $this->assertInternalType('array', $chunks);
         $this->assertContainsOnlyInstancesOf(Chunk::class, $chunks);
 
         $this->assertCount(1, $chunks);
@@ -80,13 +83,11 @@ index abcdefg..abcdefh 100644
 -B
 END;
         $diffs = $this->parser->parse($content);
-        $this->assertInternalType('array', $diffs);
         $this->assertContainsOnlyInstancesOf(Diff::class, $diffs);
         $this->assertCount(1, $diffs);
 
         $chunks = $diffs[0]->getChunks();
 
-        $this->assertInternalType('array', $chunks);
         $this->assertContainsOnlyInstancesOf(Chunk::class, $chunks);
         $this->assertCount(1, $chunks);
 
@@ -97,7 +98,6 @@ END;
         $this->assertSame(8, $chunk->getEndRange());
 
         $lines = $chunk->getLines();
-        $this->assertInternalType('array', $lines);
         $this->assertContainsOnlyInstancesOf(Line::class, $lines);
         $this->assertCount(2, $lines);
 
@@ -166,10 +166,5 @@ END;
                 \unserialize(FileUtils::getFileContent(__DIR__ . '/fixtures/serialized_diff.bin')),
             ],
         ];
-    }
-
-    protected function setUp(): void
-    {
-        $this->parser = new Parser;
     }
 }

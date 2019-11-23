@@ -20,37 +20,43 @@ class AnnotationFileLoaderTest extends AbstractAnnotationLoaderTest
     protected $loader;
     protected $reader;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->reader = $this->getReader();
+        $this->loader = new AnnotationFileLoader(new FileLocator(), $this->getClassLoader($this->reader));
+    }
+
     public function testLoad()
     {
         $this->reader->expects($this->once())->method('getClassAnnotation');
 
-        $this->loader->load(__DIR__ . '/../Fixtures/AnnotatedClasses/FooClass.php');
+        $this->loader->load(__DIR__.'/../Fixtures/AnnotatedClasses/FooClass.php');
     }
 
     public function testLoadTraitWithClassConstant()
     {
         $this->reader->expects($this->never())->method('getClassAnnotation');
 
-        $this->loader->load(__DIR__ . '/../Fixtures/AnnotatedClasses/FooTrait.php');
+        $this->loader->load(__DIR__.'/../Fixtures/AnnotatedClasses/FooTrait.php');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Did you forgot to add the "<?php" start tag at the beginning of the file?
-     */
     public function testLoadFileWithoutStartTag()
     {
-        $this->loader->load(__DIR__ . '/../Fixtures/OtherAnnotatedClasses/NoStartTagClass.php');
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Did you forgot to add the "<?php" start tag at the beginning of the file?');
+        $this->loader->load(__DIR__.'/../Fixtures/OtherAnnotatedClasses/NoStartTagClass.php');
     }
 
     public function testLoadVariadic()
     {
-        $route = new Route(array('path' => '/path/to/{id}'));
+        $route = new Route(['path' => '/path/to/{id}']);
         $this->reader->expects($this->once())->method('getClassAnnotation');
         $this->reader->expects($this->once())->method('getMethodAnnotations')
-            ->will($this->returnValue(array($route)));
+            ->willReturn([$route]);
 
-        $this->loader->load(__DIR__ . '/../Fixtures/OtherAnnotatedClasses/VariadicClass.php');
+        $this->loader->load(__DIR__.'/../Fixtures/OtherAnnotatedClasses/VariadicClass.php');
     }
 
     /**
@@ -61,25 +67,25 @@ class AnnotationFileLoaderTest extends AbstractAnnotationLoaderTest
         $this->reader->expects($this->never())->method('getClassAnnotation');
         $this->reader->expects($this->never())->method('getMethodAnnotations');
 
-        $this->loader->load(__DIR__ . '/../Fixtures/OtherAnnotatedClasses/AnonymousClassInTrait.php');
+        $this->loader->load(__DIR__.'/../Fixtures/OtherAnnotatedClasses/AnonymousClassInTrait.php');
+    }
+
+    public function testLoadAbstractClass()
+    {
+        $this->reader->expects($this->never())->method('getClassAnnotation');
+        $this->reader->expects($this->never())->method('getMethodAnnotations');
+
+        $this->loader->load(__DIR__.'/../Fixtures/AnnotatedClasses/AbstractClass.php');
     }
 
     public function testSupports()
     {
-        $fixture = __DIR__ . '/../Fixtures/annotated.php';
+        $fixture = __DIR__.'/../Fixtures/annotated.php';
 
         $this->assertTrue($this->loader->supports($fixture), '->supports() returns true if the resource is loadable');
         $this->assertFalse($this->loader->supports('foo.foo'), '->supports() returns true if the resource is loadable');
 
         $this->assertTrue($this->loader->supports($fixture, 'annotation'), '->supports() checks the resource type if specified');
         $this->assertFalse($this->loader->supports($fixture, 'foo'), '->supports() checks the resource type if specified');
-    }
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->reader = $this->getReader();
-        $this->loader = new AnnotationFileLoader(new FileLocator(), $this->getClassLoader($this->reader));
     }
 }

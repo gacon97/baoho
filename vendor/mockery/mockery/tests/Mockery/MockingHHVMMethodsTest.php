@@ -32,6 +32,17 @@ class MockingHHVMMethodsTest extends MockeryTestCase
      */
     private $container;
 
+    protected function mockeryTestSetUp()
+    {
+        if (!$this->isHHVM()) {
+            $this->markTestSkipped('For HHVM test only');
+        }
+
+        parent::mockeryTestSetUp();
+
+        require_once __DIR__."/Fixtures/MethodWithHHVMReturnType.php";
+    }
+
     /** @test */
     public function it_strip_hhvm_array_return_types()
     {
@@ -84,17 +95,6 @@ class MockingHHVMMethodsTest extends MockeryTestCase
 
         $mock->shouldReceive('HHVMImmVector')->andReturn(new \HH\ImmVector([1, 2, 3]));
         $mock->HHVMImmVector();
-    }
-
-    protected function setUp()
-    {
-        if (!$this->isHHVM()) {
-            $this->markTestSkipped('For HHVM test only');
-        }
-
-        parent::setUp();
-
-        require_once __DIR__ . "/Fixtures/MethodWithHHVMReturnType.php";
     }
 
     /**

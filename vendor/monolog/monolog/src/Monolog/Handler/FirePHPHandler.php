@@ -54,33 +54,9 @@ class FirePHPHandler extends AbstractProcessingHandler
     protected static $sendHeaders = true;
 
     /**
-     * BC getter for the sendHeaders property that has been made static
-     */
-    public function __get($property)
-    {
-        if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property ' . $property);
-        }
-
-        return static::$sendHeaders;
-    }
-
-    /**
-     * BC setter for the sendHeaders property that has been made static
-     */
-    public function __set($property, $value)
-    {
-        if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property ' . $property);
-        }
-
-        static::$sendHeaders = $value;
-    }
-
-    /**
      * Base header creation function used by init headers & record headers
      *
-     * @param  array $meta Wildfire Plugin, Protocol & Structure Indexes
+     * @param  array  $meta    Wildfire Plugin, Protocol & Structure Indexes
      * @param  string $message Log message
      * @return array  Complete header string ready for the client as key and message as value
      */
@@ -95,7 +71,7 @@ class FirePHPHandler extends AbstractProcessingHandler
      * Creates message header from record
      *
      * @see createHeader()
-     * @param  array $record
+     * @param  array  $record
      * @return string
      */
     protected function createRecordHeader(array $record)
@@ -191,5 +167,29 @@ class FirePHPHandler extends AbstractProcessingHandler
         }
 
         return isset($_SERVER['HTTP_X_FIREPHP_VERSION']);
+    }
+
+    /**
+     * BC getter for the sendHeaders property that has been made static
+     */
+    public function __get($property)
+    {
+        if ('sendHeaders' !== $property) {
+            throw new \InvalidArgumentException('Undefined property '.$property);
+        }
+
+        return static::$sendHeaders;
+    }
+
+    /**
+     * BC setter for the sendHeaders property that has been made static
+     */
+    public function __set($property, $value)
+    {
+        if ('sendHeaders' !== $property) {
+            throw new \InvalidArgumentException('Undefined property '.$property);
+        }
+
+        static::$sendHeaders = $value;
     }
 }

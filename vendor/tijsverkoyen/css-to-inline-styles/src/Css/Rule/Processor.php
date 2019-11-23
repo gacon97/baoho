@@ -8,45 +8,45 @@ use \TijsVerkoyen\CssToInlineStyles\Css\Property\Processor as PropertyProcessor;
 class Processor
 {
     /**
-     * Sort an array on the specificity element in an ascending way
-     * Lower specificity will be sorted to the beginning of the array
-     *
-     * @return int
-     * @param  Rule $e1 The first element.
-     * @param  Rule $e2 The second element.
-     */
-    public static function sortOnSpecificity(Rule $e1, Rule $e2)
-    {
-        $e1Specificity = $e1->getSpecificity();
-        $value = $e1Specificity->compareTo($e2->getSpecificity());
-
-        // if the specificity is the same, use the order in which the element appeared
-        if ($value === 0) {
-            $value = $e1->getOrder() - $e2->getOrder();
-        }
-
-        return $value;
-    }
-
-    /**
-     * Split a string into seperate rules
+     * Splits a string into separate rules
      *
      * @param string $rulesString
-     * @return array
+     *
+     * @return string[]
      */
     public function splitIntoSeparateRules($rulesString)
     {
         $rulesString = $this->cleanup($rulesString);
 
-        return (array)explode('}', $rulesString);
+        return (array) explode('}', $rulesString);
     }
 
     /**
-     * Convert a rule-string into an object
+     * @param string $string
+     *
+     * @return string
+     */
+    private function cleanup($string)
+    {
+        $string = str_replace(array("\r", "\n"), '', $string);
+        $string = str_replace(array("\t"), ' ', $string);
+        $string = str_replace('"', '\'', $string);
+        $string = preg_replace('|/\*.*?\*/|', '', $string);
+        $string = preg_replace('/\s\s+/', ' ', $string);
+
+        $string = trim($string);
+        $string = rtrim($string, '}');
+
+        return $string;
+    }
+
+    /**
+     * Converts a rule-string into an object
      *
      * @param string $rule
-     * @param int $originalOrder
-     * @return array
+     * @param int    $originalOrder
+     *
+     * @return Rule[]
      */
     public function convertToObjects($rule, $originalOrder)
     {
@@ -58,7 +58,7 @@ class Processor
         }
         $propertiesProcessor = new PropertyProcessor();
         $rules = array();
-        $selectors = (array)explode(',', trim($chunks[0]));
+        $selectors = (array) explode(',', trim($chunks[0]));
         $properties = $propertiesProcessor->splitIntoSeparateProperties($chunks[1]);
 
         foreach ($selectors as $selector) {
@@ -77,11 +77,13 @@ class Processor
     }
 
     /**
-     * Calculate the specificity based on a CSS Selector string,
+     * Calculates the specificity based on a CSS Selector string,
      * Based on the patterns from premailer/css_parser by Alex Dunae
      *
      * @see https://github.com/premailer/css_parser/blob/master/lib/css_parser/regexps.rb
+     *
      * @param string $selector
+     *
      * @return Specificity
      */
     public function calculateSpecificityBasedOnASelector($selector)
@@ -121,7 +123,9 @@ class Processor
     }
 
     /**
-     * @param array $rules
+     * @param string[] $rules
+     * @param Rule[]   $objects
+     *
      * @return Rule[]
      */
     public function convertArrayToObjects(array $rules, array $objects = array())
@@ -136,20 +140,24 @@ class Processor
     }
 
     /**
-     * @param string $string
-     * @return string
+     * Sorts an array on the specificity element in an ascending way
+     * Lower specificity will be sorted to the beginning of the array
+     *
+     * @param Rule $e1 The first element.
+     * @param Rule $e2 The second element.
+     *
+     * @return int
      */
-    private function cleanup($string)
+    public static function sortOnSpecificity(Rule $e1, Rule $e2)
     {
-        $string = str_replace(array("\r", "\n"), '', $string);
-        $string = str_replace(array("\t"), ' ', $string);
-        $string = str_replace('"', '\'', $string);
-        $string = preg_replace('|/\*.*?\*/|', '', $string);
-        $string = preg_replace('/\s\s+/', ' ', $string);
+        $e1Specificity = $e1->getSpecificity();
+        $value = $e1Specificity->compareTo($e2->getSpecificity());
 
-        $string = trim($string);
-        $string = rtrim($string, '}');
+        // if the specificity is the same, use the order in which the element appeared
+        if ($value === 0) {
+            $value = $e1->getOrder() - $e2->getOrder();
+        }
 
-        return $string;
+        return $value;
     }
 }

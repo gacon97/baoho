@@ -19,6 +19,16 @@ class StreamOutputTest extends TestCase
 {
     protected $stream;
 
+    protected function setUp(): void
+    {
+        $this->stream = fopen('php://memory', 'a', false);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->stream = null;
+    }
+
     public function testConstructor()
     {
         $output = new StreamOutput($this->stream, Output::VERBOSITY_QUIET, true);
@@ -26,12 +36,10 @@ class StreamOutputTest extends TestCase
         $this->assertTrue($output->isDecorated(), '__construct() takes the decorated flag as its second argument');
     }
 
-    /**
-     * @expectedException        \InvalidArgumentException
-     * @expectedExceptionMessage The StreamOutput class needs a stream as its first argument.
-     */
     public function testStreamIsRequired()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('The StreamOutput class needs a stream as its first argument.');
         new StreamOutput('foo');
     }
 
@@ -46,16 +54,6 @@ class StreamOutputTest extends TestCase
         $output = new StreamOutput($this->stream);
         $output->writeln('foo');
         rewind($output->getStream());
-        $this->assertEquals('foo' . PHP_EOL, stream_get_contents($output->getStream()), '->doWrite() writes to the stream');
-    }
-
-    protected function setUp()
-    {
-        $this->stream = fopen('php://memory', 'a', false);
-    }
-
-    protected function tearDown()
-    {
-        $this->stream = null;
+        $this->assertEquals('foo'.PHP_EOL, stream_get_contents($output->getStream()), '->doWrite() writes to the stream');
     }
 }

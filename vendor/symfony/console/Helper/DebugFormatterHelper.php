@@ -20,22 +20,22 @@ namespace Symfony\Component\Console\Helper;
  */
 class DebugFormatterHelper extends Helper
 {
-    private $colors = array('black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default');
-    private $started = array();
+    private $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
+    private $started = [];
     private $count = -1;
 
     /**
      * Starts a debug formatting session.
      *
-     * @param string $id The id of the formatting session
+     * @param string $id      The id of the formatting session
      * @param string $message The message to display
-     * @param string $prefix The prefix to use
+     * @param string $prefix  The prefix to use
      *
      * @return string
      */
     public function start($id, $message, $prefix = 'RUN')
     {
-        $this->started[$id] = array('border' => ++$this->count % \count($this->colors));
+        $this->started[$id] = ['border' => ++$this->count % \count($this->colors)];
 
         return sprintf("%s<bg=blue;fg=white> %s </> <fg=blue>%s</>\n", $this->getBorder($id), $prefix, $message);
     }
@@ -43,10 +43,10 @@ class DebugFormatterHelper extends Helper
     /**
      * Adds progress to a formatting session.
      *
-     * @param string $id The id of the formatting session
-     * @param string $buffer The message to display
-     * @param bool $error Whether to consider the buffer as error
-     * @param string $prefix The prefix for output
+     * @param string $id          The id of the formatting session
+     * @param string $buffer      The message to display
+     * @param bool   $error       Whether to consider the buffer as error
+     * @param string $prefix      The prefix for output
      * @param string $errorPrefix The prefix for error output
      *
      * @return string
@@ -85,10 +85,10 @@ class DebugFormatterHelper extends Helper
     /**
      * Stops a formatting session.
      *
-     * @param string $id The id of the formatting session
-     * @param string $message The message to display
-     * @param bool $successful Whether to consider the result as success
-     * @param string $prefix The prefix for the end output
+     * @param string $id         The id of the formatting session
+     * @param string $message    The message to display
+     * @param bool   $successful Whether to consider the result as success
+     * @param string $prefix     The prefix for the end output
      *
      * @return string
      */
@@ -108,14 +108,6 @@ class DebugFormatterHelper extends Helper
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'debug_formatter';
-    }
-
-    /**
      * @param string $id The id of the formatting session
      *
      * @return string
@@ -123,5 +115,13 @@ class DebugFormatterHelper extends Helper
     private function getBorder($id)
     {
         return sprintf('<bg=%s> </>', $this->colors[$this->started[$id]['border']]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'debug_formatter';
     }
 }

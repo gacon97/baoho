@@ -7,16 +7,17 @@ use Symfony\Component\CssSelector\Node\Specificity;
 class Processor
 {
     /**
-     * Split a string into seperate properties
+     * Split a string into separate properties
      *
      * @param string $propertiesString
-     * @return array
+     *
+     * @return string[]
      */
     public function splitIntoSeparateProperties($propertiesString)
     {
         $propertiesString = $this->cleanup($propertiesString);
 
-        $properties = (array)explode(';', $propertiesString);
+        $properties = (array) explode(';', $propertiesString);
         $keysToRemove = array();
         $numberOfProperties = count($properties);
 
@@ -40,9 +41,29 @@ class Processor
     }
 
     /**
-     * Convert a property-string into an object
+     * @param string $string
+     *
+     * @return string
+     */
+    private function cleanup($string)
+    {
+        $string = str_replace(array("\r", "\n"), '', $string);
+        $string = str_replace(array("\t"), ' ', $string);
+        $string = str_replace('"', '\'', $string);
+        $string = preg_replace('|/\*.*?\*/|', '', $string);
+        $string = preg_replace('/\s\s+/', ' ', $string);
+
+        $string = trim($string);
+        $string = rtrim($string, ';');
+
+        return $string;
+    }
+
+    /**
+     * Converts a property-string into an object
      *
      * @param string $property
+     *
      * @return Property|null
      */
     public function convertToObject($property, Specificity $specificity = null)
@@ -64,9 +85,10 @@ class Processor
     }
 
     /**
-     * Convert an array of property-strings into objects
+     * Converts an array of property-strings into objects
      *
-     * @param array $properties
+     * @param string[] $properties
+     *
      * @return Property[]
      */
     public function convertArrayToObjects(array $properties, Specificity $specificity = null)
@@ -88,7 +110,8 @@ class Processor
     /**
      * Build the property-string for multiple properties
      *
-     * @param array $properties
+     * @param Property[] $properties
+     *
      * @return string
      */
     public function buildPropertiesString(array $properties)
@@ -100,23 +123,5 @@ class Processor
         }
 
         return implode(' ', $chunks);
-    }
-
-    /**
-     * @param $string
-     * @return mixed|string
-     */
-    private function cleanup($string)
-    {
-        $string = str_replace(array("\r", "\n"), '', $string);
-        $string = str_replace(array("\t"), ' ', $string);
-        $string = str_replace('"', '\'', $string);
-        $string = preg_replace('|/\*.*?\*/|', '', $string);
-        $string = preg_replace('/\s\s+/', ' ', $string);
-
-        $string = trim($string);
-        $string = rtrim($string, ';');
-
-        return $string;
     }
 }

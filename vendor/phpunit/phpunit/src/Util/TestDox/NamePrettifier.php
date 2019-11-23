@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\TestDox;
 
 use PHPUnit\Framework\TestCase;
@@ -61,7 +60,7 @@ final class NamePrettifier
      */
     public function prettifyTestCase(TestCase $test): string
     {
-        $annotations = $test->getAnnotations();
+        $annotations                = $test->getAnnotations();
         $annotationWithPlaceholders = false;
 
         $callback = static function (string $variable): string {
@@ -72,9 +71,9 @@ final class NamePrettifier
             $result = $annotations['method']['testdox'][0];
 
             if (\strpos($result, '$') !== false) {
-                $annotation = $annotations['method']['testdox'][0];
+                $annotation   = $annotations['method']['testdox'][0];
                 $providedData = $this->mapTestMethodParameterNamesToProvidedDataValues($test);
-                $variables = \array_map($callback, \array_keys($providedData));
+                $variables    = \array_map($callback, \array_keys($providedData));
 
                 $result = \trim(\preg_replace($variables, $providedData, $annotation));
 
@@ -126,7 +125,7 @@ final class NamePrettifier
             return \trim(\str_replace('_', ' ', $name));
         }
 
-        $max = \strlen($name);
+        $max        = \strlen($name);
         $wasNumeric = false;
 
         for ($i = 0; $i < $max; $i++) {
@@ -156,10 +155,10 @@ final class NamePrettifier
      */
     private function mapTestMethodParameterNamesToProvidedDataValues(TestCase $test): array
     {
-        $reflector = new \ReflectionMethod(\get_class($test), $test->getName(false));
-        $providedData = [];
+        $reflector          = new \ReflectionMethod(\get_class($test), $test->getName(false));
+        $providedData       = [];
         $providedDataValues = \array_values($test->getProvidedData());
-        $i = 0;
+        $i                  = 0;
 
         foreach ($reflector->getParameters() as $parameter) {
             if (!\array_key_exists($i, $providedDataValues) && $parameter->isDefaultValueAvailable()) {
@@ -172,7 +171,7 @@ final class NamePrettifier
                 $reflector = new \ReflectionObject($value);
 
                 if ($reflector->hasMethod('__toString')) {
-                    $value = (string)$value;
+                    $value = (string) $value;
                 }
             }
 

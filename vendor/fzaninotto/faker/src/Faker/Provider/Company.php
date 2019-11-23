@@ -15,15 +15,9 @@ class Company extends Base
     );
 
     /**
-     * @example 'Ltd'
-     */
-    public static function companySuffix()
-    {
-        return static::randomElement(static::$companySuffix);
-    }
-
-    /**
      * @example 'Acme Ltd'
+     *
+     * @return string
      */
     public function company()
     {
@@ -33,7 +27,19 @@ class Company extends Base
     }
 
     /**
+     * @example 'Ltd'
+     *
+     * @return string
+     */
+    public static function companySuffix()
+    {
+        return static::randomElement(static::$companySuffix);
+    }
+
+    /**
      * @example 'Job'
+     *
+     * @return string
      */
     public function jobTitle()
     {

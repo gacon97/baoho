@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\TestDox;
 
 use PHPUnit\Framework\TestCase;
@@ -18,6 +17,16 @@ class NamePrettifierTest extends TestCase
      * @var NamePrettifier
      */
     private $namePrettifier;
+
+    protected function setUp(): void
+    {
+        $this->namePrettifier = new NamePrettifier;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->namePrettifier = null;
+    }
 
     public function testTitleHasSensibleDefaults(): void
     {
@@ -51,8 +60,7 @@ class NamePrettifierTest extends TestCase
 
     public function testPhpDoxIgnoreDataKeys(): void
     {
-        $test = new class extends TestCase
-        {
+        $test = new class extends TestCase {
             public function __construct()
             {
                 parent::__construct('testAddition', [
@@ -81,8 +89,7 @@ class NamePrettifierTest extends TestCase
 
     public function testPhpDoxUsesDefaultValue(): void
     {
-        $test = new class extends TestCase
-        {
+        $test = new class extends TestCase {
             public function __construct()
             {
                 parent::__construct('testAddition', []);
@@ -107,18 +114,17 @@ class NamePrettifierTest extends TestCase
 
     public function testPhpDoxArgumentExporting(): void
     {
-        $test = new class extends TestCase
-        {
+        $test = new class extends TestCase {
             public function __construct()
             {
                 parent::__construct('testExport', [
-                    'int' => 1234,
-                    'strInt' => '1234',
-                    'float' => 2.123,
+                    'int'      => 1234,
+                    'strInt'   => '1234',
+                    'float'    => 2.123,
                     'strFloat' => '2.123',
-                    'string' => 'foo',
-                    'bool' => true,
-                    'null' => null,
+                    'string'   => 'foo',
+                    'bool'     => true,
+                    'null'     => null,
                 ]);
             }
 
@@ -141,8 +147,7 @@ class NamePrettifierTest extends TestCase
 
     public function testPhpDoxReplacesLongerVariablesFirst(): void
     {
-        $test = new class extends TestCase
-        {
+        $test = new class extends TestCase {
             public function __construct()
             {
                 parent::__construct('testFoo', []);
@@ -163,15 +168,5 @@ class NamePrettifierTest extends TestCase
         };
 
         $this->assertEquals('1, "1", 12, 3, $abcd, 2', $this->namePrettifier->prettifyTestCase($test));
-    }
-
-    protected function setUp(): void
-    {
-        $this->namePrettifier = new NamePrettifier;
-    }
-
-    protected function tearDown(): void
-    {
-        $this->namePrettifier = null;
     }
 }

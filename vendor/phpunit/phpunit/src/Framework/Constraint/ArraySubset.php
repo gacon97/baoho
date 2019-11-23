@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -18,6 +17,8 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  *
  * Uses array_replace_recursive() to check if a key value subset is part of the
  * subject array.
+ *
+ * @deprecated https://github.com/sebastianbergmann/phpunit/issues/3494
  */
 class ArraySubset extends Constraint
 {
@@ -49,9 +50,9 @@ class ArraySubset extends Constraint
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed $other value or object to evaluate
-     * @param string $description Additional information about the test
-     * @param bool $returnResult Whether to return a result or throw an exception
+     * @param mixed  $other        value or object to evaluate
+     * @param string $description  Additional information about the test
+     * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -60,7 +61,7 @@ class ArraySubset extends Constraint
     {
         //type cast $other & $this->subset as an array to allow
         //support in standard array functions.
-        $other = $this->toArray($other);
+        $other        = $this->toArray($other);
         $this->subset = $this->toArray($this->subset);
 
         $patched = \array_replace_recursive($other, $this->subset);
@@ -127,6 +128,6 @@ class ArraySubset extends Constraint
         }
 
         // Keep BC even if we know that array would not be the expected one
-        return (array)$other;
+        return (array) $other;
     }
 }

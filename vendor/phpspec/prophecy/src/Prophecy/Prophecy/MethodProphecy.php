@@ -38,8 +38,8 @@ class MethodProphecy
     /**
      * Initializes method prophecy.
      *
-     * @param ObjectProphecy $objectProphecy
-     * @param string $methodName
+     * @param ObjectProphecy                        $objectProphecy
+     * @param string                                $methodName
      * @param null|Argument\ArgumentsWildcard|array $arguments
      *
      * @throws \Prophecy\Exception\Doubler\MethodNotFoundException If method not found
@@ -54,12 +54,12 @@ class MethodProphecy
         }
 
         $this->objectProphecy = $objectProphecy;
-        $this->methodName = $methodName;
+        $this->methodName     = $methodName;
 
         $reflectedMethod = new \ReflectionMethod($double, $methodName);
         if ($reflectedMethod->isFinal()) {
             throw new MethodProphecyException(sprintf(
-                "Can not add prophecy for a method `%s::%s()`\n" .
+                "Can not add prophecy for a method `%s::%s()`\n".
                 "as it is a final method.",
                 get_class($double),
                 $methodName
@@ -71,7 +71,7 @@ class MethodProphecy
         }
 
         if (version_compare(PHP_VERSION, '7.0', '>=') && true === $reflectedMethod->hasReturnType()) {
-            $type = (string)$reflectedMethod->getReturnType();
+            $type = PHP_VERSION_ID >= 70100 ? $reflectedMethod->getReturnType()->getName() : (string) $reflectedMethod->getReturnType();
 
             if ('void' === $type) {
                 $this->voidReturnType = true;
@@ -79,23 +79,16 @@ class MethodProphecy
 
             $this->will(function () use ($type) {
                 switch ($type) {
-                    case 'void':
-                        return;
-                    case 'string':
-                        return '';
-                    case 'float':
-                        return 0.0;
-                    case 'int':
-                        return 0;
-                    case 'bool':
-                        return false;
-                    case 'array':
-                        return array();
+                    case 'void': return;
+                    case 'string': return '';
+                    case 'float':  return 0.0;
+                    case 'int':    return 0;
+                    case 'bool':   return false;
+                    case 'array':  return array();
 
                     case 'callable':
                     case 'Closure':
-                        return function () {
-                        };
+                        return function () {};
 
                     case 'Traversable':
                     case 'Generator':
@@ -129,7 +122,7 @@ class MethodProphecy
 
         if (!$arguments instanceof Argument\ArgumentsWildcard) {
             throw new InvalidArgumentException(sprintf(
-                "Either an array or an instance of ArgumentsWildcard expected as\n" .
+                "Either an array or an instance of ArgumentsWildcard expected as\n".
                 'a `MethodProphecy::withArguments()` argument, but got %s.',
                 gettype($arguments)
             ));
@@ -185,6 +178,40 @@ class MethodProphecy
         }
 
         return $this->will(new Promise\ReturnPromise(func_get_args()));
+    }
+
+    /**
+     * @param array $items
+     *
+     * @return $this
+     *
+     * @throws \Prophecy\Exception\InvalidArgumentException
+     */
+    public function willYield($items)
+    {
+        if ($this->voidReturnType) {
+            throw new MethodProphecyException(
+                "The method \"$this->methodName\" has a void return type, and so cannot yield anything",
+                $this
+            );
+        }
+
+        if (!is_array($items)) {
+            throw new InvalidArgumentException(sprintf(
+                'Expected array, but got %s.',
+                gettype($items)
+            ));
+        }
+
+        // Remove eval() when minimum version >=5.5
+        /** @var callable $generator */
+        $generator = eval('return function() use ($items) {
+            foreach ($items as $key => $value) {
+                yield $key => $value;
+            }
+        };');
+
+        return $this->will($generator);
     }
 
     /**

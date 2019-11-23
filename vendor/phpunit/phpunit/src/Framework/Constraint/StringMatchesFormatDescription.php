@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use SebastianBergmann\Diff\Differ;
@@ -54,7 +53,7 @@ class StringMatchesFormatDescription extends RegularExpression
     protected function additionalFailureDescription($other): string
     {
         $from = \explode("\n", $this->string);
-        $to = \explode("\n", $this->convertNewlines($other));
+        $to   = \explode("\n", $this->convertNewlines($other));
 
         foreach ($from as $index => $line) {
             if (isset($to[$index]) && $line !== $to[$index]) {
@@ -67,7 +66,7 @@ class StringMatchesFormatDescription extends RegularExpression
         }
 
         $this->string = \implode("\n", $from);
-        $other = \implode("\n", $to);
+        $other        = \implode("\n", $to);
 
         $differ = new Differ("--- Expected\n+++ Actual\n");
 

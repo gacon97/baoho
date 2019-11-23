@@ -30,6 +30,28 @@ class MemcachedSessionHandlerTest extends TestCase
 
     protected $memcached;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (version_compare(phpversion('memcached'), '2.2.0', '>=') && version_compare(phpversion('memcached'), '3.0.0b1', '<')) {
+            $this->markTestSkipped('Tests can only be run with memcached extension 2.1.0 or lower, or 3.0.0b1 or higher');
+        }
+
+        $this->memcached = $this->getMockBuilder('Memcached')->getMock();
+        $this->storage = new MemcachedSessionHandler(
+            $this->memcached,
+            ['prefix' => self::PREFIX, 'expiretime' => self::TTL]
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->memcached = null;
+        $this->storage = null;
+        parent::tearDown();
+    }
+
     public function testOpenSession()
     {
         $this->assertTrue($this->storage->open('', ''));
@@ -37,6 +59,12 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function testCloseSession()
     {
+        $this->memcached
+            ->expects($this->once())
+            ->method('quit')
+            ->willReturn(true)
+        ;
+
         $this->assertTrue($this->storage->close());
     }
 
@@ -45,7 +73,8 @@ class MemcachedSessionHandlerTest extends TestCase
         $this->memcached
             ->expects($this->once())
             ->method('get')
-            ->with(self::PREFIX . 'id');
+            ->with(self::PREFIX.'id')
+        ;
 
         $this->assertEquals('', $this->storage->read('id'));
     }
@@ -55,8 +84,9 @@ class MemcachedSessionHandlerTest extends TestCase
         $this->memcached
             ->expects($this->once())
             ->method('set')
-            ->with(self::PREFIX . 'id', 'data', $this->equalTo(time() + self::TTL, 2))
-            ->will($this->returnValue(true));
+            ->with(self::PREFIX.'id', 'data', $this->equalTo(time() + self::TTL, 2))
+            ->willReturn(true)
+        ;
 
         $this->assertTrue($this->storage->write('id', 'data'));
     }
@@ -66,8 +96,9 @@ class MemcachedSessionHandlerTest extends TestCase
         $this->memcached
             ->expects($this->once())
             ->method('delete')
-            ->with(self::PREFIX . 'id')
-            ->will($this->returnValue(true));
+            ->with(self::PREFIX.'id')
+            ->willReturn(true)
+        ;
 
         $this->assertTrue($this->storage->destroy('id'));
     }
@@ -92,12 +123,12 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function getOptionFixtures()
     {
-        return array(
-            array(array('prefix' => 'session'), true),
-            array(array('expiretime' => 100), true),
-            array(array('prefix' => 'session', 'expiretime' => 200), true),
-            array(array('expiretime' => 100, 'foo' => 'bar'), false),
-        );
+        return [
+            [['prefix' => 'session'], true],
+            [['expiretime' => 100], true],
+            [['prefix' => 'session', 'expiretime' => 200], true],
+            [['expiretime' => 100, 'foo' => 'bar'], false],
+        ];
     }
 
     public function testGetConnection()
@@ -106,27 +137,5 @@ class MemcachedSessionHandlerTest extends TestCase
         $method->setAccessible(true);
 
         $this->assertInstanceOf('\Memcached', $method->invoke($this->storage));
-    }
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        if (version_compare(phpversion('memcached'), '2.2.0', '>=') && version_compare(phpversion('memcached'), '3.0.0b1', '<')) {
-            $this->markTestSkipped('Tests can only be run with memcached extension 2.1.0 or lower, or 3.0.0b1 or higher');
-        }
-
-        $this->memcached = $this->getMockBuilder('Memcached')->getMock();
-        $this->storage = new MemcachedSessionHandler(
-            $this->memcached,
-            array('prefix' => self::PREFIX, 'expiretime' => self::TTL)
-        );
-    }
-
-    protected function tearDown()
-    {
-        $this->memcached = null;
-        $this->storage = null;
-        parent::tearDown();
     }
 }

@@ -28,14 +28,14 @@ class MockSplFileInfo extends \SplFileInfo
         if (\is_string($param)) {
             parent::__construct($param);
         } elseif (\is_array($param)) {
-            $defaults = array(
+            $defaults = [
                 'name' => 'file.txt',
                 'contents' => null,
                 'mode' => null,
                 'type' => null,
                 'relativePath' => null,
                 'relativePathname' => null,
-            );
+            ];
             $defaults = array_merge($defaults, $param);
             parent::__construct($defaults['name']);
             $this->setContents($defaults['contents']);
@@ -110,23 +110,23 @@ class MockSplFileInfo extends \SplFileInfo
         }
     }
 
-    public function getRelativePath()
-    {
-        return $this->relativePath;
-    }
-
     public function setRelativePath($relativePath)
     {
         $this->relativePath = $relativePath;
     }
 
-    public function getRelativePathname()
-    {
-        return $this->relativePathname;
-    }
-
     public function setRelativePathname($relativePathname)
     {
         $this->relativePathname = $relativePathname;
+    }
+
+    public function getRelativePath()
+    {
+        return $this->relativePath;
+    }
+
+    public function getRelativePathname()
+    {
+        return $this->relativePathname;
     }
 }

@@ -32,7 +32,7 @@ class ExpectationDirector
     /**
      * Mock object the director is attached to
      *
-     * @var \Mockery\MockInterface
+     * @var \Mockery\MockInterface|\Mockery\LegacyMockInterface
      */
     protected $_mock = null;
 
@@ -61,9 +61,9 @@ class ExpectationDirector
      * Constructor
      *
      * @param string $name
-     * @param \Mockery\MockInterface $mock
+     * @param \Mockery\LegacyMockInterface $mock
      */
-    public function __construct($name, \Mockery\MockInterface $mock)
+    public function __construct($name, \Mockery\LegacyMockInterface $mock)
     {
         $this->_name = $name;
         $this->_mock = $mock;
@@ -166,6 +166,27 @@ class ExpectationDirector
     }
 
     /**
+     * Search current array of expectations for a match
+     *
+     * @param array $expectations
+     * @param array $args
+     * @return mixed
+     */
+    protected function _findExpectationIn(array $expectations, array $args)
+    {
+        foreach ($expectations as $exp) {
+            if ($exp->isEligible() && $exp->matchArgs($args)) {
+                return $exp;
+            }
+        }
+        foreach ($expectations as $exp) {
+            if ($exp->matchArgs($args)) {
+                return $exp;
+            }
+        }
+    }
+
+    /**
      * Return all expectations assigned to this director
      *
      * @return array
@@ -193,26 +214,5 @@ class ExpectationDirector
     public function getExpectationCount()
     {
         return count($this->getExpectations()) ?: count($this->getDefaultExpectations());
-    }
-
-    /**
-     * Search current array of expectations for a match
-     *
-     * @param array $expectations
-     * @param array $args
-     * @return mixed
-     */
-    protected function _findExpectationIn(array $expectations, array $args)
-    {
-        foreach ($expectations as $exp) {
-            if ($exp->isEligible() && $exp->matchArgs($args)) {
-                return $exp;
-            }
-        }
-        foreach ($expectations as $exp) {
-            if ($exp->matchArgs($args)) {
-                return $exp;
-            }
-        }
     }
 }

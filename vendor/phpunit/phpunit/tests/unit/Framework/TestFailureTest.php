@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Error\Error;
@@ -17,36 +16,36 @@ class TestFailureTest extends TestCase
 {
     public function testToString(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals(__METHOD__ . ': message', $failure->toString());
     }
 
     public function testToStringForError(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new \Error('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals(__METHOD__ . ': message', $failure->toString());
     }
 
     public function testToStringForNonSelfDescribing(): void
     {
-        $test = new \NotSelfDescribingTest();
+        $test      = new \NotSelfDescribingTest();
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals('NotSelfDescribingTest: message', $failure->toString());
     }
 
     public function testgetExceptionAsString(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new \Error('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals("Error: message\n", $failure->getExceptionAsString());
     }
@@ -88,54 +87,54 @@ class TestFailureTest extends TestCase
 
     public function testGetTestName(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals($this->toString(), $failure->getTestName());
     }
 
     public function testFailedTest(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals($test, $failure->failedTest());
     }
 
     public function testThrownException(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals($exception, $failure->thrownException());
     }
 
     public function testExceptionMessage(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Exception('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertEquals('message', $failure->exceptionMessage());
     }
 
     public function testIsFailure(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new ExpectationFailedException('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertTrue($failure->isFailure());
     }
 
     public function testIsFailureFalse(): void
     {
-        $test = new self(__FUNCTION__);
+        $test      = new self(__FUNCTION__);
         $exception = new Warning('message');
-        $failure = new TestFailure($test, $exception);
+        $failure   = new TestFailure($test, $exception);
 
         $this->assertFalse($failure->isFailure());
     }

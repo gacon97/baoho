@@ -33,15 +33,11 @@ use Mockery\Generator\StringManipulation\Pass\RemoveBuiltinMethodsThatAreFinalPa
 use Mockery\Generator\StringManipulation\Pass\RemoveDestructorPass;
 use Mockery\Generator\StringManipulation\Pass\RemoveUnserializeForInternalSerializableClassesPass;
 use Mockery\Generator\StringManipulation\Pass\TraitPass;
+use Mockery\Generator\StringManipulation\Pass\AvoidMethodClashPass;
 
 class StringManipulationGenerator implements Generator
 {
     protected $passes = array();
-
-    public function __construct(array $passes)
-    {
-        $this->passes = $passes;
-    }
 
     /**
      * Creates a new StringManipulationGenerator with the default passes
@@ -58,12 +54,18 @@ class StringManipulationGenerator implements Generator
             new ClassNamePass(),
             new InstanceMockPass(),
             new InterfacePass(),
+            new AvoidMethodClashPass(),
             new MethodDefinitionPass(),
             new RemoveUnserializeForInternalSerializableClassesPass(),
             new RemoveBuiltinMethodsThatAreFinalPass(),
             new RemoveDestructorPass(),
             new ConstantsPass(),
         ]);
+    }
+
+    public function __construct(array $passes)
+    {
+        $this->passes = $passes;
     }
 
     public function generate(MockConfiguration $config)

@@ -28,7 +28,7 @@ class PhpFileLoader extends FileLoader
     /**
      * Loads a PHP file.
      *
-     * @param string $file A PHP file path
+     * @param string      $file A PHP file path
      * @param string|null $type The resource type
      *
      * @return RouteCollection A RouteCollection instance
@@ -40,7 +40,7 @@ class PhpFileLoader extends FileLoader
 
         // the closure forbids access to the private scope in the included file
         $loader = $this;
-        $load = \Closure::bind(function ($file) use ($loader) {
+        $load = \Closure::bind(static function ($file) use ($loader) {
             return include $file;
         }, null, ProtectedPhpFileLoader::class);
 
@@ -48,7 +48,7 @@ class PhpFileLoader extends FileLoader
 
         if (\is_object($result) && \is_callable($result)) {
             $collection = new RouteCollection();
-            $result(new RoutingConfigurator($collection, $this, $path, $file), $this);
+            $result(new RoutingConfigurator($collection, $this, $path, $file));
         } else {
             $collection = $result;
         }

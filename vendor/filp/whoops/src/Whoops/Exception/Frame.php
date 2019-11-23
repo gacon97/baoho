@@ -40,7 +40,7 @@ class Frame implements Serializable
     }
 
     /**
-     * @param  bool $shortened
+     * @param  bool        $shortened
      * @return string|null
      */
     public function getFile($shortened = false)
@@ -57,7 +57,7 @@ class Frame implements Serializable
         // trace collector(s).
         if (preg_match('/^(.*)\((\d+)\) : (?:eval\(\)\'d|assert) code$/', $file, $matches)) {
             $file = $this->frame['file'] = $matches[1];
-            $this->frame['line'] = (int)$matches[2];
+            $this->frame['line'] = (int) $matches[2];
         }
 
         if ($shortened && is_string($file)) {
@@ -101,7 +101,7 @@ class Frame implements Serializable
      */
     public function getArgs()
     {
-        return isset($this->frame['args']) ? (array)$this->frame['args'] : [];
+        return isset($this->frame['args']) ? (array) $this->frame['args'] : [];
     }
 
     /**
@@ -119,7 +119,11 @@ class Frame implements Serializable
                 return null;
             }
 
-            $this->fileContentsCache = file_get_contents($filePath);
+            try {
+                $this->fileContentsCache = file_get_contents($filePath);
+            } catch (ErrorException $exception) {
+                // Internal file paths of PHP extensions cannot be opened
+            }
         }
 
         return $this->fileContentsCache;
@@ -149,7 +153,7 @@ class Frame implements Serializable
      * a filter to only retrieve comments from a specific
      * context.
      *
-     * @param  string $filter
+     * @param  string  $filter
      * @return array[]
      */
     public function getComments($filter = null)
@@ -190,8 +194,8 @@ class Frame implements Serializable
      *     $frame->getFileLines(9, 1); // array( 10 => '...', 11 => '...')
      *
      * @throws InvalidArgumentException if $length is less than or equal to 0
-     * @param  int $start
-     * @param  int $length
+     * @param  int                      $start
+     * @param  int                      $length
      * @return string[]|null
      */
     public function getFileLines($start = 0, $length = null)
@@ -201,8 +205,8 @@ class Frame implements Serializable
 
             // Get a subset of lines from $start to $end
             if ($length !== null) {
-                $start = (int)$start;
-                $length = (int)$length;
+                $start  = (int) $start;
+                $length = (int) $length;
                 if ($start < 0) {
                     $start = 0;
                 }

@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\HttpKernel\EventListener;
 
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.3 and will be removed in 5.0, use LocaleAwareListener instead.', TranslatorListener::class), E_USER_DEPRECATED);
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -24,6 +26,8 @@ use Symfony\Contracts\Translation\LocaleAwareInterface;
  * Synchronizes the locale between the request and the translator.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since Symfony 4.3, use LocaleAwareListener instead
  */
 class TranslatorListener implements EventSubscriberInterface
 {
@@ -42,15 +46,6 @@ class TranslatorListener implements EventSubscriberInterface
         $this->requestStack = $requestStack;
     }
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            // must be registered after the Locale listener
-            KernelEvents::REQUEST => array(array('onKernelRequest', 10)),
-            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
-        );
-    }
-
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->setLocale($event->getRequest());
@@ -63,6 +58,15 @@ class TranslatorListener implements EventSubscriberInterface
         }
 
         $this->setLocale($parentRequest);
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            // must be registered after the Locale listener
+            KernelEvents::REQUEST => [['onKernelRequest', 10]],
+            KernelEvents::FINISH_REQUEST => [['onKernelFinishRequest', 0]],
+        ];
     }
 
     private function setLocale(Request $request)

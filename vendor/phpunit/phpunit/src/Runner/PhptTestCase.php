@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\Assert;
@@ -25,7 +24,7 @@ use Throwable;
 /**
  * Runner for PHPT test cases.
  */
-class PhptTestCase implements Test, SelfDescribing
+class PhptTestCase implements SelfDescribing, Test
 {
     /**
      * @var string[]
@@ -36,17 +35,17 @@ class PhptTestCase implements Test, SelfDescribing
         'auto_prepend_file=',
         'disable_functions=',
         'display_errors=1',
-        'docref_root=',
         'docref_ext=.html',
+        'docref_root=',
         'error_append_string=',
         'error_prepend_string=',
         'error_reporting=-1',
         'html_errors=0',
         'log_errors=0',
         'magic_quotes_runtime=0',
-        'output_handler=',
         'open_basedir=',
         'output_buffering=Off',
+        'output_handler=',
         'report_memleaks=0',
         'report_zend_debug=0',
         'safe_mode=0',
@@ -85,7 +84,7 @@ class PhptTestCase implements Test, SelfDescribing
         }
 
         $this->filename = $filename;
-        $this->phpUtil = $phpUtil ?: AbstractPhpProcess::factory();
+        $this->phpUtil  = $phpUtil ?: AbstractPhpProcess::factory();
     }
 
     /**
@@ -110,14 +109,22 @@ class PhptTestCase implements Test, SelfDescribing
      */
     public function run(TestResult $result = null): TestResult
     {
-        $sections = $this->parse();
-        $code = $this->render($sections['FILE']);
-
         if ($result === null) {
             $result = new TestResult;
         }
 
-        $xfail = false;
+        try {
+            $sections = $this->parse();
+        } catch (Exception $e) {
+            $result->startTest($this);
+            $result->addFailure($this, new SkippedTestError($e->getMessage()), 0);
+            $result->endTest($this, 0);
+
+            return $result;
+        }
+
+        $code     = $this->render($sections['FILE']);
+        $xfail    = false;
         $settings = $this->parseIniSection(self::SETTINGS);
 
         $result->startTest($this);
@@ -161,8 +168,8 @@ class PhptTestCase implements Test, SelfDescribing
 
         Timer::start();
 
-        $jobResult = $this->phpUtil->runJob($code, $this->stringifyIni($settings));
-        $time = Timer::stop();
+        $jobResult    = $this->phpUtil->runJob($code, $this->stringifyIni($settings));
+        $time         = Timer::stop();
         $this->output = $jobResult['stdout'] ?? '';
 
         if ($result->getCollectCodeCoverageInformation() && ($coverage = $this->cleanupForCoverage())) {
@@ -170,7 +177,7 @@ class PhptTestCase implements Test, SelfDescribing
         }
 
         try {
-            $this->assertPhptExpectation($sections, $jobResult['stdout']);
+            $this->assertPhptExpectation($sections, $this->output);
         } catch (AssertionFailedError $e) {
             $failure = $e;
 
@@ -246,8 +253,8 @@ class PhptTestCase implements Test, SelfDescribing
             }
 
             $setting = \explode('=', $setting, 2);
-            $name = \trim($setting[0]);
-            $value = \trim($setting[1]);
+            $name    = \trim($setting[0]);
+            $value   = \trim($setting[1]);
 
             if ($name === 'extension' || $name === 'zend_extension') {
                 if (!isset($ini[$name])) {
@@ -286,8 +293,8 @@ class PhptTestCase implements Test, SelfDescribing
     private function assertPhptExpectation(array $sections, string $output): void
     {
         $assertions = [
-            'EXPECT' => 'assertEquals',
-            'EXPECTF' => 'assertStringMatchesFormat',
+            'EXPECT'      => 'assertEquals',
+            'EXPECTF'     => 'assertStringMatchesFormat',
             'EXPECTREGEX' => 'assertRegExp',
         ];
 
@@ -296,7 +303,7 @@ class PhptTestCase implements Test, SelfDescribing
         foreach ($assertions as $sectionName => $sectionAssertion) {
             if (isset($sections[$sectionName])) {
                 $sectionContent = \preg_replace('/\r\n/', "\n", \trim($sections[$sectionName]));
-                $expected = $sectionName === 'EXPECTREGEX' ? "/{$sectionContent}/" : $sectionContent;
+                $expected       = $sectionName === 'EXPECTREGEX' ? "/{$sectionContent}/" : $sectionContent;
 
                 if ($expected === null) {
                     throw new Exception('No PHPT expectation found');
@@ -319,7 +326,7 @@ class PhptTestCase implements Test, SelfDescribing
             return false;
         }
 
-        $skipif = $this->render($sections['SKIPIF']);
+        $skipif    = $this->render($sections['SKIPIF']);
         $jobResult = $this->phpUtil->runJob($skipif, $this->stringifyIni($settings));
 
         if (!\strncasecmp('skip', \ltrim($jobResult['stdout']), 4)) {
@@ -356,35 +363,35 @@ class PhptTestCase implements Test, SelfDescribing
     private function parse(): array
     {
         $sections = [];
-        $section = '';
+        $section  = '';
 
         $unsupportedSections = [
-            'REDIRECTTEST',
-            'REQUEST',
-            'POST',
-            'PUT',
-            'POST_RAW',
-            'GZIP_POST',
-            'DEFLATE_POST',
-            'GET',
-            'COOKIE',
-            'HEADERS',
             'CGI',
+            'COOKIE',
+            'DEFLATE_POST',
             'EXPECTHEADERS',
             'EXTENSIONS',
+            'GET',
+            'GZIP_POST',
+            'HEADERS',
             'PHPDBG',
+            'POST',
+            'POST_RAW',
+            'PUT',
+            'REDIRECTTEST',
+            'REQUEST',
         ];
 
         foreach (\file($this->filename) as $line) {
             if (\preg_match('/^--([_A-Z]+)--/', $line, $result)) {
-                $section = $result[1];
+                $section            = $result[1];
                 $sections[$section] = '';
 
                 continue;
             }
 
             if (empty($section)) {
-                throw new Exception('Invalid PHPT file');
+                throw new Exception('Invalid PHPT file: empty section header');
             }
 
             $sections[$section] .= $line;
@@ -404,7 +411,7 @@ class PhptTestCase implements Test, SelfDescribing
         foreach ($unsupportedSections as $section) {
             if (isset($sections[$section])) {
                 throw new Exception(
-                    'PHPUnit does not support this PHPT file'
+                    "PHPUnit does not support PHPT $section sections"
                 );
             }
         }
@@ -502,12 +509,12 @@ class PhptTestCase implements Test, SelfDescribing
 
     private function getCoverageFiles(): array
     {
-        $baseDir = \dirname(\realpath($this->filename)) . \DIRECTORY_SEPARATOR;
+        $baseDir  = \dirname(\realpath($this->filename)) . \DIRECTORY_SEPARATOR;
         $basename = \basename($this->filename, 'phpt');
 
         return [
             'coverage' => $baseDir . $basename . 'coverage',
-            'job' => $baseDir . $basename . 'php',
+            'job'      => $baseDir . $basename . 'php',
         ];
     }
 
@@ -535,18 +542,18 @@ class PhptTestCase implements Test, SelfDescribing
 
         if (!empty($GLOBALS['__PHPUNIT_BOOTSTRAP'])) {
             $globals = '$GLOBALS[\'__PHPUNIT_BOOTSTRAP\'] = ' . \var_export(
-                    $GLOBALS['__PHPUNIT_BOOTSTRAP'],
-                    true
-                ) . ";\n";
+                $GLOBALS['__PHPUNIT_BOOTSTRAP'],
+                true
+            ) . ";\n";
         }
 
         $template->setVar(
             [
                 'composerAutoload' => $composerAutoload,
-                'phar' => $phar,
-                'globals' => $globals,
-                'job' => $files['job'],
-                'coverageFile' => $files['coverage'],
+                'phar'             => $phar,
+                'globals'          => $globals,
+                'job'              => $files['job'],
+                'coverageFile'     => $files['coverage'],
             ]
         );
 
@@ -556,7 +563,7 @@ class PhptTestCase implements Test, SelfDescribing
 
     private function cleanupForCoverage(): array
     {
-        $files = $this->getCoverageFiles();
+        $files    = $this->getCoverageFiles();
         $coverage = @\unserialize(\file_get_contents($files['coverage']));
 
         if ($coverage === false) {

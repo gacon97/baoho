@@ -23,9 +23,20 @@ class ExceptionCasterTest extends TestCase
 {
     use VarDumperTestTrait;
 
+    private function getTestException($msg, &$ref = null)
+    {
+        return new \Exception(''.$msg);
+    }
+
+    protected function tearDown(): void
+    {
+        ExceptionCaster::$srcContext = 1;
+        ExceptionCaster::$traceArgs = true;
+    }
+
     public function testDefaultSettings()
     {
-        $ref = array('foo');
+        $ref = ['foo'];
         $e = $this->getTestException('foo', $ref);
 
         $expectedDump = <<<'EODUMP'
@@ -41,12 +52,11 @@ Exception {
       › }
     }
     %s%eTests%eCaster%eExceptionCasterTest.php:40 { …}
-    Symfony\Component\VarDumper\Tests\Caster\ExceptionCasterTest->testDefaultSettings() {}
 %A
 EODUMP;
 
         $this->assertDumpMatchesFormat($expectedDump, $e);
-        $this->assertSame(array('foo'), $ref);
+        $this->assertSame(['foo'], $ref);
     }
 
     public function testSeek()
@@ -60,8 +70,7 @@ EODUMP;
     ›     return new \Exception(''.$msg);
     › }
   }
-  %s%eTests%eCaster%eExceptionCasterTest.php:65 { …}
-  Symfony\Component\VarDumper\Tests\Caster\ExceptionCasterTest->testSeek() {}
+  %s%eTests%eCaster%eExceptionCasterTest.php:64 { …}
 %A
 EODUMP;
 
@@ -85,8 +94,7 @@ Exception {
       ›     return new \Exception(''.$msg);
       › }
     }
-    %s%eTests%eCaster%eExceptionCasterTest.php:84 { …}
-    Symfony\Component\VarDumper\Tests\Caster\ExceptionCasterTest->testNoArgs() {}
+    %s%eTests%eCaster%eExceptionCasterTest.php:82 { …}
 %A
 EODUMP;
 
@@ -153,21 +161,21 @@ EODUMP;
      */
     public function testFrameWithTwig()
     {
-        require_once \dirname(__DIR__) . '/Fixtures/Twig.php';
+        require_once \dirname(__DIR__).'/Fixtures/Twig.php';
 
-        $f = array(
-            new FrameStub(array(
-                'file' => \dirname(__DIR__) . '/Fixtures/Twig.php',
+        $f = [
+            new FrameStub([
+                'file' => \dirname(__DIR__).'/Fixtures/Twig.php',
                 'line' => 20,
                 'class' => '__TwigTemplate_VarDumperFixture_u75a09',
-            )),
-            new FrameStub(array(
-                'file' => \dirname(__DIR__) . '/Fixtures/Twig.php',
+            ]),
+            new FrameStub([
+                'file' => \dirname(__DIR__).'/Fixtures/Twig.php',
                 'line' => 21,
                 'class' => '__TwigTemplate_VarDumperFixture_u75a09',
                 'object' => new \__TwigTemplate_VarDumperFixture_u75a09(null, __FILE__),
-            )),
-        );
+            ]),
+        ];
 
         $expectedDump = <<<'EODUMP'
 array:2 [
@@ -219,8 +227,7 @@ EODUMP;
 
     public function testAnonymous()
     {
-        $e = new \Exception(sprintf('Boo "%s" ba.', \get_class(new class('Foo') extends \Exception
-        {
+        $e = new \Exception(sprintf('Boo "%s" ba.', \get_class(new class('Foo') extends \Exception {
         })));
 
         $expectedDump = <<<'EODUMP'
@@ -233,16 +240,5 @@ Exception {
 EODUMP;
 
         $this->assertDumpMatchesFormat($expectedDump, $e, Caster::EXCLUDE_VERBOSE);
-    }
-
-    protected function tearDown()
-    {
-        ExceptionCaster::$srcContext = 1;
-        ExceptionCaster::$traceArgs = true;
-    }
-
-    private function getTestException($msg, &$ref = null)
-    {
-        return new \Exception('' . $msg);
     }
 }

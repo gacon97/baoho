@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\Assert;
@@ -84,8 +83,8 @@ EOF
         \fclose($fh);
 
         return [
-            'open resource' => [\fopen(__FILE__, 'r')],
-            'closed resource' => [$fh],
+            'open resource'     => [\fopen(__FILE__, 'r')],
+            'closed resource'   => [$fh],
         ];
     }
 

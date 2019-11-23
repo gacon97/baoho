@@ -13,7 +13,18 @@ class Address extends \Faker\Provider\Address
         'gasse', 'platz', 'ring', 'straße', 'weg',
     );
 
-    protected static $postcode = array('####');
+    // As per https://en.wikipedia.org/wiki/List_of_postal_codes_in_Austria (@todo implement more strict postal code values according to wikipedia)
+    protected static $postcode = array(
+        '1###',
+        '2###',
+        '3###',
+        '4###',
+        '5###',
+        '6###',
+        '7###',
+        '8###',
+        '9###',
+    );
 
     protected static $cityNames = array(
         'Allentsteig', 'Altheim', 'Althofen', 'Amstetten', 'Ansfelden', 'Attnang-Puchheim',
@@ -86,19 +97,6 @@ class Address extends \Faker\Provider\Address
         "{{streetAddress}}\n{{postcode}} {{city}}",
     );
 
-    /**
-     * @example 'Wien'
-     */
-    public static function state()
-    {
-        return static::randomElement(static::$state);
-    }
-
-    public static function buildingNumber()
-    {
-        return static::regexify(self::numerify(static::randomElement(static::$buildingNumber)));
-    }
-
     public function cityName()
     {
         return static::randomElement(static::$cityNames);
@@ -112,5 +110,18 @@ class Address extends \Faker\Provider\Address
     public function streetSuffixLong()
     {
         return static::randomElement(static::$streetSuffixLong);
+    }
+
+    /**
+     * @example 'Wien'
+     */
+    public static function state()
+    {
+        return static::randomElement(static::$state);
+    }
+
+    public static function buildingNumber()
+    {
+        return static::regexify(self::numerify(static::randomElement(static::$buildingNumber)));
     }
 }

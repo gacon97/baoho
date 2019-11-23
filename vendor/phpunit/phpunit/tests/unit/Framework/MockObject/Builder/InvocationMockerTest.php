@@ -16,12 +16,12 @@ class InvocationMockerTest extends TestCase
     public function testWillReturnWithOneValue(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['foo'])
-            ->getMock();
+                     ->setMethods(['foo'])
+                     ->getMock();
 
         $mock->expects($this->any())
-            ->method('foo')
-            ->willReturn(1);
+             ->method('foo')
+             ->willReturn(1);
 
         $this->assertEquals(1, $mock->foo());
     }
@@ -29,12 +29,12 @@ class InvocationMockerTest extends TestCase
     public function testWillReturnWithMultipleValues(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['foo'])
-            ->getMock();
+                     ->setMethods(['foo'])
+                     ->getMock();
 
         $mock->expects($this->any())
-            ->method('foo')
-            ->willReturn(1, 2, 3);
+             ->method('foo')
+             ->willReturn(1, 2, 3);
 
         $this->assertEquals(1, $mock->foo());
         $this->assertEquals(2, $mock->foo());
@@ -44,12 +44,12 @@ class InvocationMockerTest extends TestCase
     public function testWillReturnOnConsecutiveCalls(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['foo'])
-            ->getMock();
+                     ->setMethods(['foo'])
+                     ->getMock();
 
         $mock->expects($this->any())
-            ->method('foo')
-            ->willReturnOnConsecutiveCalls(1, 2, 3);
+             ->method('foo')
+             ->willReturnOnConsecutiveCalls(1, 2, 3);
 
         $this->assertEquals(1, $mock->foo());
         $this->assertEquals(2, $mock->foo());
@@ -59,12 +59,12 @@ class InvocationMockerTest extends TestCase
     public function testWillReturnByReference(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['foo'])
-            ->getMock();
+                     ->setMethods(['foo'])
+                     ->getMock();
 
         $mock->expects($this->any())
-            ->method('foo')
-            ->willReturnReference($value);
+             ->method('foo')
+             ->willReturnReference($value);
 
         $this->assertNull($mock->foo());
         $value = 'foo';
@@ -77,7 +77,7 @@ class InvocationMockerTest extends TestCase
     {
         /** @var MatcherCollection|\PHPUnit\Framework\MockObject\MockObject $matcherCollection */
         $matcherCollection = $this->createMock(MatcherCollection::class);
-        $invocationMocker = new \PHPUnit\Framework\MockObject\Builder\InvocationMocker(
+        $invocationMocker  = new \PHPUnit\Framework\MockObject\Builder\InvocationMocker(
             $matcherCollection,
             $this->any(),
             []

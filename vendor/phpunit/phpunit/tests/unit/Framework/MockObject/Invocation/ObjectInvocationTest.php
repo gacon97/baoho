@@ -87,7 +87,7 @@ class ObjectInvocationTest extends TestCase
 
     public function testConstructorAllowToSetFlagCloneObjectsInParameters(): void
     {
-        $parameters = [new stdClass];
+        $parameters   = [new stdClass];
         $cloneObjects = true;
 
         $invocation = new ObjectInvocation(

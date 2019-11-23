@@ -26,8 +26,6 @@ namespace Mockery\Generator;
  */
 class MockConfiguration
 {
-    protected static $mockCounter = 0;
-
     /**
      * A class that we'd like to mock
      */
@@ -103,8 +101,7 @@ class MockConfiguration
         array $parameterOverrides = array(),
         $mockOriginalDestructor = false,
         array $constantsMap = array()
-    )
-    {
+    ) {
         $this->addTargets($targets);
         $this->blackListedMethods = $blackListedMethods;
         $this->whiteListedMethods = $whiteListedMethods;
@@ -125,14 +122,14 @@ class MockConfiguration
     public function getHash()
     {
         $vars = array(
-            'targetClassName' => $this->targetClassName,
-            'targetInterfaceNames' => $this->targetInterfaceNames,
-            'targetTraitNames' => $this->targetTraitNames,
-            'name' => $this->name,
-            'blackListedMethods' => $this->blackListedMethods,
-            'whiteListedMethod' => $this->whiteListedMethods,
-            'instanceMock' => $this->instanceMock,
-            'parameterOverrides' => $this->parameterOverrides,
+            'targetClassName'        => $this->targetClassName,
+            'targetInterfaceNames'   => $this->targetInterfaceNames,
+            'targetTraitNames'       => $this->targetTraitNames,
+            'name'                   => $this->name,
+            'blackListedMethods'     => $this->blackListedMethods,
+            'whiteListedMethod'      => $this->whiteListedMethods,
+            'instanceMock'           => $this->instanceMock,
+            'parameterOverrides'     => $this->parameterOverrides,
             'mockOriginalDestructor' => $this->mockOriginalDestructor
         );
 
@@ -257,14 +254,57 @@ class MockConfiguration
         );
     }
 
+    protected function addTarget($target)
+    {
+        if (is_object($target)) {
+            $this->setTargetObject($target);
+            $this->setTargetClassName(get_class($target));
+            return $this;
+        }
+
+        if ($target[0] !== "\\") {
+            $target = "\\" . $target;
+        }
+
+        if (class_exists($target)) {
+            $this->setTargetClassName($target);
+            return $this;
+        }
+
+        if (interface_exists($target)) {
+            $this->addTargetInterfaceName($target);
+            return $this;
+        }
+
+        if (trait_exists($target)) {
+            $this->addTargetTraitName($target);
+            return $this;
+        }
+
+        /**
+         * Default is to set as class, or interface if class already set
+         *
+         * Don't like this condition, can't remember what the default
+         * targetClass is for
+         */
+        if ($this->getTargetClassName()) {
+            $this->addTargetInterfaceName($target);
+            return $this;
+        }
+
+        $this->setTargetClassName($target);
+    }
+
+    protected function addTargets($interfaces)
+    {
+        foreach ($interfaces as $interface) {
+            $this->addTarget($interface);
+        }
+    }
+
     public function getTargetClassName()
     {
         return $this->targetClassName;
-    }
-
-    protected function setTargetClassName($targetClassName)
-    {
-        $this->targetClassName = $targetClassName;
     }
 
     public function getTargetClass()
@@ -321,7 +361,7 @@ class MockConfiguration
         foreach ($this->targetInterfaceNames as $targetInterface) {
             if (!interface_exists($targetInterface)) {
                 $this->targetInterfaces[] = UndefinedTargetClass::factory($targetInterface);
-                return;
+                continue;
             }
 
             $dtc = DefinedTargetClass::factory($targetInterface);
@@ -366,11 +406,6 @@ class MockConfiguration
         return $this->targetObject;
     }
 
-    protected function setTargetObject($object)
-    {
-        $this->targetObject = $object;
-    }
-
     public function getName()
     {
         return $this->name;
@@ -381,24 +416,21 @@ class MockConfiguration
      */
     public function generateName()
     {
-        $name = 'Mockery_' . static::$mockCounter++;
+        $nameBuilder = new MockNameBuilder();
 
         if ($this->getTargetObject()) {
-            $name .= "_" . str_replace("\\", "_", get_class($this->getTargetObject()));
+            $nameBuilder->addPart(get_class($this->getTargetObject()));
         }
 
         if ($this->getTargetClass()) {
-            $name .= "_" . str_replace("\\", "_", $this->getTargetClass()->getName());
+            $nameBuilder->addPart($this->getTargetClass()->getName());
         }
 
-        if ($this->getTargetInterfaces()) {
-            $name .= array_reduce($this->getTargetInterfaces(), function ($tmpname, $i) {
-                $tmpname .= '_' . str_replace("\\", "_", $i->getName());
-                return $tmpname;
-            }, '');
+        foreach ($this->getTargetInterfaces() as $targetInterface) {
+            $nameBuilder->addPart($targetInterface->getName());
         }
 
-        return $name;
+        return $nameBuilder->build();
     }
 
     public function getShortName()
@@ -444,57 +476,9 @@ class MockConfiguration
         return $this->mockOriginalDestructor;
     }
 
-    public function getConstantsMap()
+    protected function setTargetClassName($targetClassName)
     {
-        return $this->constantsMap;
-    }
-
-    protected function addTarget($target)
-    {
-        if (is_object($target)) {
-            $this->setTargetObject($target);
-            $this->setTargetClassName(get_class($target));
-            return $this;
-        }
-
-        if ($target[0] !== "\\") {
-            $target = "\\" . $target;
-        }
-
-        if (class_exists($target)) {
-            $this->setTargetClassName($target);
-            return $this;
-        }
-
-        if (interface_exists($target)) {
-            $this->addTargetInterfaceName($target);
-            return $this;
-        }
-
-        if (trait_exists($target)) {
-            $this->addTargetTraitName($target);
-            return $this;
-        }
-
-        /**
-         * Default is to set as class, or interface if class already set
-         *
-         * Don't like this condition, can't remember what the default
-         * targetClass is for
-         */
-        if ($this->getTargetClassName()) {
-            $this->addTargetInterfaceName($target);
-            return $this;
-        }
-
-        $this->setTargetClassName($target);
-    }
-
-    protected function addTargets($interfaces)
-    {
-        foreach ($interfaces as $interface) {
-            $this->addTarget($interface);
-        }
+        $this->targetClassName = $targetClassName;
     }
 
     protected function getAllMethods()
@@ -576,5 +560,15 @@ class MockConfiguration
     protected function addTargetTraitName($targetTraitName)
     {
         $this->targetTraitNames[] = $targetTraitName;
+    }
+
+    protected function setTargetObject($object)
+    {
+        $this->targetObject = $object;
+    }
+
+    public function getConstantsMap()
+    {
+        return $this->constantsMap;
     }
 }

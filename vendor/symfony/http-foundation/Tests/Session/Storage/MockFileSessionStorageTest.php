@@ -24,13 +24,30 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
 class MockFileSessionStorageTest extends TestCase
 {
     /**
-     * @var MockFileSessionStorage
-     */
-    protected $storage;
-    /**
      * @var string
      */
     private $sessionDir;
+
+    /**
+     * @var MockFileSessionStorage
+     */
+    protected $storage;
+
+    protected function setUp(): void
+    {
+        $this->sessionDir = sys_get_temp_dir().'/sftest';
+        $this->storage = $this->getStorage();
+    }
+
+    protected function tearDown(): void
+    {
+        array_map('unlink', glob($this->sessionDir.'/*'));
+        if (is_dir($this->sessionDir)) {
+            rmdir($this->sessionDir);
+        }
+        $this->sessionDir = null;
+        $this->storage = null;
+    }
 
     public function testStart()
     {
@@ -74,7 +91,7 @@ class MockFileSessionStorageTest extends TestCase
         $storage->start();
         $this->assertEquals('108', $storage->getBag('attributes')->get('new'));
         $this->assertTrue($storage->getBag('flashes')->has('newkey'));
-        $this->assertEquals(array('test'), $storage->getBag('flashes')->peek('newkey'));
+        $this->assertEquals(['test'], $storage->getBag('flashes')->peek('newkey'));
     }
 
     public function testMultipleInstances()
@@ -90,29 +107,11 @@ class MockFileSessionStorageTest extends TestCase
         $this->assertEquals('bar', $storage2->getBag('attributes')->get('foo'), 'values persist between instances');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testSaveWithoutStart()
     {
+        $this->expectException('RuntimeException');
         $storage1 = $this->getStorage();
         $storage1->save();
-    }
-
-    protected function setUp()
-    {
-        $this->sessionDir = sys_get_temp_dir() . '/sftest';
-        $this->storage = $this->getStorage();
-    }
-
-    protected function tearDown()
-    {
-        $this->sessionDir = null;
-        $this->storage = null;
-        array_map('unlink', glob($this->sessionDir . '/*.session'));
-        if (is_dir($this->sessionDir)) {
-            rmdir($this->sessionDir);
-        }
     }
 
     private function getStorage()

@@ -32,17 +32,17 @@ class EntityPopulator
         return $this->class;
     }
 
+    public function setColumnFormatters($columnFormatters)
+    {
+        $this->columnFormatters = $columnFormatters;
+    }
+
     /**
      * @return array
      */
     public function getColumnFormatters()
     {
         return $this->columnFormatters;
-    }
-
-    public function setColumnFormatters($columnFormatters)
-    {
-        $this->columnFormatters = $columnFormatters;
     }
 
     public function mergeColumnFormattersWith($columnFormatters)
@@ -92,16 +92,43 @@ class EntityPopulator
     }
 
     /**
-     * @return array
+     * @param ColumnMap $columnMap
+     * @return bool
      */
-    public function getModifiers()
+    protected function isColumnBehavior(ColumnMap $columnMap)
     {
-        return $this->modifiers;
+        foreach ($columnMap->getTable()->getBehaviors() as $name => $params) {
+            $columnName = Base::toLower($columnMap->getName());
+            switch ($name) {
+                case 'nested_set':
+                    $columnNames = array($params['left_column'], $params['right_column'], $params['level_column']);
+                    if (in_array($columnName, $columnNames)) {
+                        return true;
+                    }
+                    break;
+                case 'timestampable':
+                    $columnNames = array($params['create_column'], $params['update_column']);
+                    if (in_array($columnName, $columnNames)) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        return false;
     }
 
     public function setModifiers($modifiers)
     {
         $this->modifiers = $modifiers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModifiers()
+    {
+        return $this->modifiers;
     }
 
     public function mergeModifiersWith($modifiers)
@@ -161,32 +188,5 @@ class EntityPopulator
         $obj->save($con);
 
         return $obj->getPrimaryKey();
-    }
-
-    /**
-     * @param ColumnMap $columnMap
-     * @return bool
-     */
-    protected function isColumnBehavior(ColumnMap $columnMap)
-    {
-        foreach ($columnMap->getTable()->getBehaviors() as $name => $params) {
-            $columnName = Base::toLower($columnMap->getName());
-            switch ($name) {
-                case 'nested_set':
-                    $columnNames = array($params['left_column'], $params['right_column'], $params['level_column']);
-                    if (in_array($columnName, $columnNames)) {
-                        return true;
-                    }
-                    break;
-                case 'timestampable':
-                    $columnNames = array($params['create_column'], $params['update_column']);
-                    if (in_array($columnName, $columnNames)) {
-                        return true;
-                    }
-                    break;
-            }
-        }
-
-        return false;
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use DOMCharacterData;
@@ -65,11 +64,11 @@ final class Xml
             @\chdir(\dirname($filename));
         }
 
-        $document = new DOMDocument;
+        $document                     = new DOMDocument;
         $document->preserveWhiteSpace = false;
 
-        $internal = \libxml_use_internal_errors(true);
-        $message = '';
+        $internal  = \libxml_use_internal_errors(true);
+        $message   = '';
         $reporting = \error_reporting(0);
 
         if ($filename !== '') {
@@ -127,7 +126,7 @@ final class Xml
     public static function loadFile(string $filename, bool $isHtml = false, bool $xinclude = false, bool $strict = false): DOMDocument
     {
         $reporting = \error_reporting(0);
-        $contents = \file_get_contents($filename);
+        $contents  = \file_get_contents($filename);
 
         \error_reporting($reporting);
 
@@ -198,7 +197,7 @@ final class Xml
                     $value = self::xmlToVariable($item);
 
                     if ($entry->hasAttribute('key')) {
-                        $variable[(string)$entry->getAttribute('key')] = $value;
+                        $variable[(string) $entry->getAttribute('key')] = $value;
                     } else {
                         $variable[] = $value;
                     }
@@ -210,7 +209,7 @@ final class Xml
                 $className = $element->getAttribute('class');
 
                 if ($element->hasChildNodes()) {
-                    $arguments = $element->childNodes->item(0)->childNodes;
+                    $arguments       = $element->childNodes->item(0)->childNodes;
                     $constructorArgs = [];
 
                     foreach ($arguments as $argument) {
@@ -219,7 +218,7 @@ final class Xml
                         }
                     }
 
-                    $class = new ReflectionClass($className);
+                    $class    = new ReflectionClass($className);
                     $variable = $class->newInstanceArgs($constructorArgs);
                 } else {
                     $variable = new $className;

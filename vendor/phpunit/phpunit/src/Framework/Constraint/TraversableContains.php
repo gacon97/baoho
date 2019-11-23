@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use SplObjectStorage;
@@ -40,9 +39,9 @@ class TraversableContains extends Constraint
     {
         parent::__construct();
 
-        $this->checkForObjectIdentity = $checkForObjectIdentity;
+        $this->checkForObjectIdentity    = $checkForObjectIdentity;
         $this->checkForNonObjectIdentity = $checkForNonObjectIdentity;
-        $this->value = $value;
+        $this->value                     = $value;
     }
 
     /**

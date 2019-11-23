@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\Exception;
@@ -22,6 +21,13 @@ class ConfigurationTest extends TestCase
      */
     protected $configuration;
 
+    protected function setUp(): void
+    {
+        $this->configuration = Configuration::getInstance(
+            TEST_FILES_PATH . 'configuration.xml'
+        );
+    }
+
     public function testExceptionIsThrownForNotExistingConfigurationFile(): void
     {
         $this->expectException(Exception::class);
@@ -33,7 +39,7 @@ class ConfigurationTest extends TestCase
     {
         $configurationFilename = TEST_FILES_PATH . 'configuration.colors.true.xml';
         $configurationInstance = Configuration::getInstance($configurationFilename);
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
 
         $this->assertEquals(ResultPrinter::COLOR_AUTO, $configurationValues['colors']);
     }
@@ -42,7 +48,7 @@ class ConfigurationTest extends TestCase
     {
         $configurationFilename = TEST_FILES_PATH . 'configuration.colors.false.xml';
         $configurationInstance = Configuration::getInstance($configurationFilename);
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
 
         $this->assertEquals(ResultPrinter::COLOR_NEVER, $configurationValues['colors']);
     }
@@ -51,7 +57,7 @@ class ConfigurationTest extends TestCase
     {
         $configurationFilename = TEST_FILES_PATH . 'configuration.colors.empty.xml';
         $configurationInstance = Configuration::getInstance($configurationFilename);
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
 
         $this->assertEquals(ResultPrinter::COLOR_NEVER, $configurationValues['colors']);
     }
@@ -60,7 +66,7 @@ class ConfigurationTest extends TestCase
     {
         $configurationFilename = TEST_FILES_PATH . 'configuration.colors.invalid.xml';
         $configurationInstance = Configuration::getInstance($configurationFilename);
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
 
         $this->assertEquals(ResultPrinter::COLOR_NEVER, $configurationValues['colors']);
     }
@@ -81,7 +87,7 @@ class ConfigurationTest extends TestCase
     {
         $configurationFilename = TEST_FILES_PATH . 'configuration.columns.default.xml';
         $configurationInstance = Configuration::getInstance($configurationFilename);
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
 
         $this->assertEquals(80, $configurationValues['columns']);
     }
@@ -96,13 +102,13 @@ class ConfigurationTest extends TestCase
     public function testShouldParseXmlConfigurationRootAttributes(string $optionName, string $optionValue, $expected): void
     {
         $tmpFilename = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'phpunit.' . $optionName . \uniqid() . '.xml';
-        $xml = "<phpunit $optionName='$optionValue'></phpunit>" . \PHP_EOL;
+        $xml         = "<phpunit $optionName='$optionValue'></phpunit>" . \PHP_EOL;
         \file_put_contents($tmpFilename, $xml);
 
         $configurationInstance = Configuration::getInstance($tmpFilename);
         $this->assertFalse($configurationInstance->hasValidationErrors(), 'option causes validation error');
 
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
         $this->assertEquals($expected, $configurationValues[$optionName]);
 
         @\unlink($tmpFilename);
@@ -111,38 +117,38 @@ class ConfigurationTest extends TestCase
     public function configurationRootOptionsProvider(): array
     {
         return [
-            'executionOrder default' => ['executionOrder', 'default', TestSuiteSorter::ORDER_DEFAULT],
-            'executionOrder random' => ['executionOrder', 'random', TestSuiteSorter::ORDER_RANDOMIZED],
-            'executionOrder reverse' => ['executionOrder', 'reverse', TestSuiteSorter::ORDER_REVERSED],
-            'cacheResult false' => ['cacheResult', 'false', false],
-            'cacheResult true' => ['cacheResult', 'true', true],
-            'cacheResultFile absolute path' => ['cacheResultFile', '/path/to/result/cache', '/path/to/result/cache'],
-            'columns' => ['columns', 'max', 'max'],
-            'stopOnFailure' => ['stopOnFailure', 'true', true],
-            'stopOnWarning' => ['stopOnWarning', 'true', true],
-            'stopOnIncomplete' => ['stopOnIncomplete', 'true', true],
-            'stopOnRisky' => ['stopOnRisky', 'true', true],
-            'stopOnSkipped' => ['stopOnSkipped', 'true', true],
-            'failOnWarning' => ['failOnWarning', 'true', true],
-            'failOnRisky' => ['failOnRisky', 'true', true],
-            'disableCodeCoverageIgnore' => ['disableCodeCoverageIgnore', 'true', true],
-            'processIsolation' => ['processIsolation', 'true', true],
-            'testSuiteLoaderFile absolute path' => ['testSuiteLoaderFile', '/path/to/file', '/path/to/file'],
-            'reverseDefectList' => ['reverseDefectList', 'true', true],
-            'registerMockObjectsFromTestArgumentsRecursively' => ['registerMockObjectsFromTestArgumentsRecursively', 'true', true],
+            'executionOrder default'                                        => ['executionOrder', 'default', TestSuiteSorter::ORDER_DEFAULT],
+            'executionOrder random'                                         => ['executionOrder', 'random', TestSuiteSorter::ORDER_RANDOMIZED],
+            'executionOrder reverse'                                        => ['executionOrder', 'reverse', TestSuiteSorter::ORDER_REVERSED],
+            'cacheResult false'                                             => ['cacheResult', 'false', false],
+            'cacheResult true'                                              => ['cacheResult', 'true', true],
+            'cacheResultFile absolute path'                                 => ['cacheResultFile', '/path/to/result/cache', '/path/to/result/cache'],
+            'columns'                                                       => ['columns', 'max', 'max'],
+            'stopOnFailure'                                                 => ['stopOnFailure', 'true', true],
+            'stopOnWarning'                                                 => ['stopOnWarning', 'true', true],
+            'stopOnIncomplete'                                              => ['stopOnIncomplete', 'true', true],
+            'stopOnRisky'                                                   => ['stopOnRisky', 'true', true],
+            'stopOnSkipped'                                                 => ['stopOnSkipped', 'true', true],
+            'failOnWarning'                                                 => ['failOnWarning', 'true', true],
+            'failOnRisky'                                                   => ['failOnRisky', 'true', true],
+            'disableCodeCoverageIgnore'                                     => ['disableCodeCoverageIgnore', 'true', true],
+            'processIsolation'                                              => ['processIsolation', 'true', true],
+            'testSuiteLoaderFile absolute path'                             => ['testSuiteLoaderFile', '/path/to/file', '/path/to/file'],
+            'reverseDefectList'                                             => ['reverseDefectList', 'true', true],
+            'registerMockObjectsFromTestArgumentsRecursively'               => ['registerMockObjectsFromTestArgumentsRecursively', 'true', true],
         ];
     }
 
     public function testShouldParseXmlConfigurationExecutionOrderCombined(): void
     {
         $tmpFilename = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'phpunit.' . \uniqid() . '.xml';
-        $xml = "<phpunit executionOrder='depends,defects'></phpunit>" . \PHP_EOL;
+        $xml         = "<phpunit executionOrder='depends,defects'></phpunit>" . \PHP_EOL;
         \file_put_contents($tmpFilename, $xml);
 
         $configurationInstance = Configuration::getInstance($tmpFilename);
         $this->assertFalse($configurationInstance->hasValidationErrors(), 'option causes validation error');
 
-        $configurationValues = $configurationInstance->getPHPUnitConfiguration();
+        $configurationValues   = $configurationInstance->getPHPUnitConfiguration();
         $this->assertSame(TestSuiteSorter::ORDER_DEFECTS_FIRST, $configurationValues['executionOrderDefects']);
         $this->assertSame(true, $configurationValues['resolveDependencies']);
 
@@ -154,15 +160,15 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(
             [
                 'whitelist' => [
-                    'addUncoveredFilesFromWhitelist' => true,
+                    'addUncoveredFilesFromWhitelist'     => true,
                     'processUncoveredFilesFromWhitelist' => false,
-                    'include' => [
+                    'include'                            => [
                         'directory' => [
                             0 => [
-                                'path' => '/path/to/files',
+                                'path'   => '/path/to/files',
                                 'prefix' => '',
                                 'suffix' => '.php',
-                                'group' => 'DEFAULT',
+                                'group'  => 'DEFAULT',
                             ],
                         ],
                         'file' => [
@@ -173,10 +179,10 @@ class ConfigurationTest extends TestCase
                     'exclude' => [
                         'directory' => [
                             0 => [
-                                'path' => '/path/to/files',
+                                'path'   => '/path/to/files',
                                 'prefix' => '',
                                 'suffix' => '.php',
-                                'group' => 'DEFAULT',
+                                'group'  => 'DEFAULT',
                             ],
                         ],
                         'file' => [
@@ -221,7 +227,7 @@ class ConfigurationTest extends TestCase
 
     public function testListenerConfigurationIsReadCorrectly(): void
     {
-        $dir = __DIR__;
+        $dir         = __DIR__;
         $includePath = \ini_get('include_path');
 
         \ini_set('include_path', $dir . \PATH_SEPARATOR . $includePath);
@@ -229,8 +235,8 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(
             [
                 0 => [
-                    'class' => 'MyListener',
-                    'file' => '/optional/path/to/MyListener.php',
+                    'class'     => 'MyListener',
+                    'file'      => '/optional/path/to/MyListener.php',
                     'arguments' => [
                         0 => [
                             0 => 'Sebastian',
@@ -246,13 +252,13 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
                 [
-                    'class' => 'IncludePathListener',
-                    'file' => __FILE__,
+                    'class'     => 'IncludePathListener',
+                    'file'      => __FILE__,
                     'arguments' => [],
                 ],
                 [
-                    'class' => 'CompactArgumentsListener',
-                    'file' => '/CompactArgumentsListener.php',
+                    'class'     => 'CompactArgumentsListener',
+                    'file'      => '/CompactArgumentsListener.php',
                     'arguments' => [
                         0 => 42,
                         1 => false,
@@ -267,7 +273,7 @@ class ConfigurationTest extends TestCase
 
     public function testExtensionConfigurationIsReadCorrectly(): void
     {
-        $dir = __DIR__;
+        $dir         = __DIR__;
         $includePath = \ini_get('include_path');
 
         \ini_set('include_path', $dir . \PATH_SEPARATOR . $includePath);
@@ -275,8 +281,8 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(
             [
                 0 => [
-                    'class' => 'MyExtension',
-                    'file' => '/optional/path/to/MyExtension.php',
+                    'class'     => 'MyExtension',
+                    'file'      => '/optional/path/to/MyExtension.php',
                     'arguments' => [
                         0 => [
                             0 => 'Sebastian',
@@ -291,13 +297,13 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
                 [
-                    'class' => 'IncludePathExtension',
-                    'file' => __FILE__,
+                    'class'     => 'IncludePathExtension',
+                    'file'      => __FILE__,
                     'arguments' => [],
                 ],
                 [
-                    'class' => 'CompactArgumentsExtension',
-                    'file' => '/CompactArgumentsExtension.php',
+                    'class'     => 'CompactArgumentsExtension',
+                    'file'      => '/CompactArgumentsExtension.php',
                     'arguments' => [
                         0 => 42,
                     ],
@@ -313,22 +319,22 @@ class ConfigurationTest extends TestCase
     {
         $this->assertEquals(
             [
-                'lowUpperBound' => '50',
-                'highLowerBound' => '90',
-                'coverage-html' => '/tmp/report',
-                'coverage-clover' => '/tmp/clover.xml',
-                'coverage-crap4j' => '/tmp/crap4j.xml',
-                'crap4jThreshold' => 50,
-                'coverage-text' => '/tmp/coverage.txt',
+                'lowUpperBound'                  => '50',
+                'highLowerBound'                 => '90',
+                'coverage-html'                  => '/tmp/report',
+                'coverage-clover'                => '/tmp/clover.xml',
+                'coverage-crap4j'                => '/tmp/crap4j.xml',
+                'crap4jThreshold'                => 50,
+                'coverage-text'                  => '/tmp/coverage.txt',
                 'coverageTextShowUncoveredFiles' => true,
-                'coverageTextShowOnlySummary' => true,
-                'json' => '/tmp/logfile.json',
-                'plain' => '/tmp/logfile.txt',
-                'tap' => '/tmp/logfile.tap',
-                'junit' => '/tmp/logfile.xml',
-                'testdox-html' => '/tmp/testdox.html',
-                'testdox-text' => '/tmp/testdox.txt',
-                'testdox-xml' => '/tmp/testdox.xml',
+                'coverageTextShowOnlySummary'    => true,
+                'json'                           => '/tmp/logfile.json',
+                'plain'                          => '/tmp/logfile.txt',
+                'tap'                            => '/tmp/logfile.tap',
+                'junit'                          => '/tmp/logfile.xml',
+                'testdox-html'                   => '/tmp/testdox.html',
+                'testdox-text'                   => '/tmp/testdox.txt',
+                'testdox-xml'                    => '/tmp/testdox.xml',
             ],
             $this->configuration->getLoggingConfiguration()
         );
@@ -342,16 +348,16 @@ class ConfigurationTest extends TestCase
                     TEST_FILES_PATH . '.',
                     '/path/to/lib',
                 ],
-                'ini' => ['foo' => ['value' => 'bar'], 'highlight.keyword' => ['value' => '#123456'], 'highlight.string' => ['value' => 'TEST_FILES_PATH']],
-                'const' => ['FOO' => ['value' => false], 'BAR' => ['value' => true]],
-                'var' => ['foo' => ['value' => false]],
-                'env' => ['foo' => ['value' => true], 'bar' => ['value' => 'true', 'verbatim' => true], 'foo_force' => ['value' => 'forced', 'force' => true]],
-                'post' => ['foo' => ['value' => 'bar']],
-                'get' => ['foo' => ['value' => 'bar']],
+                'ini'    => ['foo' => ['value' => 'bar'], 'highlight.keyword' => ['value' => '#123456'], 'highlight.string' => ['value' => 'TEST_FILES_PATH']],
+                'const'  => ['FOO' => ['value' => false], 'BAR' => ['value' => true]],
+                'var'    => ['foo' => ['value' => false]],
+                'env'    => ['foo' => ['value' => true], 'bar' => ['value' => 'true', 'verbatim' => true], 'foo_force' => ['value' => 'forced', 'force' => true]],
+                'post'   => ['foo' => ['value' => 'bar']],
+                'get'    => ['foo' => ['value' => 'bar']],
                 'cookie' => ['foo' => ['value' => 'bar']],
                 'server' => ['foo' => ['value' => 'bar']],
-                'files' => ['foo' => ['value' => 'bar']],
-                'request' => ['foo' => ['value' => 'bar']],
+                'files'  => ['foo' => ['value' => 'bar']],
+                'request'=> ['foo' => ['value' => 'bar']],
             ],
             $this->configuration->getPHPConfiguration()
         );
@@ -363,7 +369,7 @@ class ConfigurationTest extends TestCase
     public function testPHPConfigurationIsHandledCorrectly(): void
     {
         $savedIniHighlightKeyword = \ini_get('highlight.keyword');
-        $savedIniHighlightString = \ini_get('highlight.string');
+        $savedIniHighlightString  = \ini_get('highlight.string');
 
         $this->configuration->handlePHPConfiguration();
 
@@ -374,7 +380,7 @@ class ConfigurationTest extends TestCase
         $this->assertFalse(\FOO);
         $this->assertTrue(\BAR);
         $this->assertFalse($GLOBALS['foo']);
-        $this->assertTrue((bool)$_ENV['foo']);
+        $this->assertTrue((bool) $_ENV['foo']);
         $this->assertEquals(1, \getenv('foo'));
         $this->assertEquals('bar', $_POST['foo']);
         $this->assertEquals('bar', $_GET['foo']);
@@ -455,42 +461,42 @@ class ConfigurationTest extends TestCase
     {
         $this->assertEquals(
             [
-                'backupGlobals' => true,
-                'backupStaticAttributes' => false,
-                'beStrictAboutChangesToGlobalState' => false,
-                'bootstrap' => '/path/to/bootstrap.php',
-                'cacheTokens' => false,
-                'columns' => 80,
-                'colors' => 'never',
-                'stderr' => false,
-                'convertDeprecationsToExceptions' => true,
-                'convertErrorsToExceptions' => true,
-                'convertNoticesToExceptions' => true,
-                'convertWarningsToExceptions' => true,
-                'forceCoversAnnotation' => false,
-                'stopOnFailure' => false,
-                'stopOnWarning' => false,
-                'reportUselessTests' => false,
-                'strictCoverage' => false,
-                'disallowTestOutput' => false,
-                'defaultTimeLimit' => 123,
-                'enforceTimeLimit' => false,
-                'extensionsDirectory' => '/tmp',
-                'printerClass' => 'PHPUnit\TextUI\ResultPrinter',
-                'testSuiteLoaderClass' => 'PHPUnit\Runner\StandardTestSuiteLoader',
-                'defaultTestSuite' => 'My Test Suite',
-                'verbose' => false,
-                'timeoutForSmallTests' => 1,
-                'timeoutForMediumTests' => 10,
-                'timeoutForLargeTests' => 60,
+                'backupGlobals'                              => true,
+                'backupStaticAttributes'                     => false,
+                'beStrictAboutChangesToGlobalState'          => false,
+                'bootstrap'                                  => '/path/to/bootstrap.php',
+                'cacheTokens'                                => false,
+                'columns'                                    => 80,
+                'colors'                                     => 'never',
+                'stderr'                                     => false,
+                'convertDeprecationsToExceptions'            => true,
+                'convertErrorsToExceptions'                  => true,
+                'convertNoticesToExceptions'                 => true,
+                'convertWarningsToExceptions'                => true,
+                'forceCoversAnnotation'                      => false,
+                'stopOnFailure'                              => false,
+                'stopOnWarning'                              => false,
+                'reportUselessTests'                         => false,
+                'strictCoverage'                             => false,
+                'disallowTestOutput'                         => false,
+                'defaultTimeLimit'                           => 123,
+                'enforceTimeLimit'                           => false,
+                'extensionsDirectory'                        => '/tmp',
+                'printerClass'                               => 'PHPUnit\TextUI\ResultPrinter',
+                'testSuiteLoaderClass'                       => 'PHPUnit\Runner\StandardTestSuiteLoader',
+                'defaultTestSuite'                           => 'My Test Suite',
+                'verbose'                                    => false,
+                'timeoutForSmallTests'                       => 1,
+                'timeoutForMediumTests'                      => 10,
+                'timeoutForLargeTests'                       => 60,
                 'beStrictAboutResourceUsageDuringSmallTests' => false,
-                'disallowTodoAnnotatedTests' => false,
-                'failOnWarning' => false,
-                'failOnRisky' => false,
-                'ignoreDeprecatedCodeUnitsFromCodeCoverage' => false,
-                'executionOrder' => TestSuiteSorter::ORDER_DEFAULT,
-                'executionOrderDefects' => TestSuiteSorter::ORDER_DEFAULT,
-                'resolveDependencies' => false,
+                'disallowTodoAnnotatedTests'                 => false,
+                'failOnWarning'                              => false,
+                'failOnRisky'                                => false,
+                'ignoreDeprecatedCodeUnitsFromCodeCoverage'  => false,
+                'executionOrder'                             => TestSuiteSorter::ORDER_DEFAULT,
+                'executionOrderDefects'                      => TestSuiteSorter::ORDER_DEFAULT,
+                'resolveDependencies'                        => false,
             ],
             $this->configuration->getPHPUnitConfiguration()
         );
@@ -556,16 +562,9 @@ class ConfigurationTest extends TestCase
         );
 
         $config = $configuration->getTestSuiteConfiguration();
-        $tests = $config->tests();
+        $tests  = $config->tests();
 
         $this->assertCount(1, $tests);
-    }
-
-    protected function setUp(): void
-    {
-        $this->configuration = Configuration::getInstance(
-            TEST_FILES_PATH . 'configuration.xml'
-        );
     }
 
     /**

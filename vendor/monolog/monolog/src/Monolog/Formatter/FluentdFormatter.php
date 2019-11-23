@@ -11,6 +11,8 @@
 
 namespace Monolog\Formatter;
 
+use Monolog\Utils;
+
 /**
  * Class FluentdFormatter
  *
@@ -45,7 +47,7 @@ class FluentdFormatter implements FormatterInterface
             throw new \RuntimeException('PHP\'s json extension is required to use Monolog\'s FluentdUnixFormatter');
         }
 
-        $this->levelTag = (bool)$levelTag;
+        $this->levelTag = (bool) $levelTag;
     }
 
     public function isUsingLevelsInTag()
@@ -71,7 +73,7 @@ class FluentdFormatter implements FormatterInterface
             $message['level_name'] = $record['level_name'];
         }
 
-        return json_encode(array($tag, $record['datetime']->getTimestamp(), $message));
+        return Utils::jsonEncode(array($tag, $record['datetime']->getTimestamp(), $message));
     }
 
     public function formatBatch(array $records)

@@ -13,6 +13,7 @@ namespace Monolog\Handler;
 
 use Monolog\Formatter\ChromePHPFormatter;
 use Monolog\Logger;
+use Monolog\Utils;
 
 /**
  * Handler sending logs to the ChromePHP extension (http://www.chromephp.com/)
@@ -43,7 +44,7 @@ class ChromePHPHandler extends AbstractProcessingHandler
     /**
      * Tracks whether we sent too much data
      *
-     * Chrome limits the headers to 256KB, so when we sent 240KB we stop sending
+     * Chrome limits the headers to 4KB, so when we sent 3KB we stop sending
      *
      * @var bool
      */
@@ -58,7 +59,7 @@ class ChromePHPHandler extends AbstractProcessingHandler
     protected static $sendHeaders = true;
 
     /**
-     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param int  $level  The minimum logging level at which this handler will be triggered
      * @param bool $bubble Whether the messages that are handled can bubble up the stack or not
      */
     public function __construct($level = Logger::DEBUG, $bubble = true)
@@ -88,30 +89,6 @@ class ChromePHPHandler extends AbstractProcessingHandler
             self::$json['rows'] = array_merge(self::$json['rows'], $messages);
             $this->send();
         }
-    }
-
-    /**
-     * BC getter for the sendHeaders property that has been made static
-     */
-    public function __get($property)
-    {
-        if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property ' . $property);
-        }
-
-        return static::$sendHeaders;
-    }
-
-    /**
-     * BC setter for the sendHeaders property that has been made static
-     */
-    public function __set($property, $value)
-    {
-        if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property ' . $property);
-        }
-
-        static::$sendHeaders = $value;
     }
 
     /**
@@ -158,9 +135,9 @@ class ChromePHPHandler extends AbstractProcessingHandler
             self::$json['request_uri'] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         }
 
-        $json = @json_encode(self::$json);
+        $json = Utils::jsonEncode(self::$json, null, true);
         $data = base64_encode(utf8_encode($json));
-        if (strlen($data) > 240 * 1024) {
+        if (strlen($data) > 3 * 1024) {
             self::$overflowed = true;
 
             $record = array(
@@ -173,7 +150,7 @@ class ChromePHPHandler extends AbstractProcessingHandler
                 'extra' => array(),
             );
             self::$json['rows'][count(self::$json['rows']) - 1] = $this->getFormatter()->format($record);
-            $json = @json_encode(self::$json);
+            $json = Utils::jsonEncode(self::$json, null, true);
             $data = base64_encode(utf8_encode($json));
         }
 
@@ -207,5 +184,29 @@ class ChromePHPHandler extends AbstractProcessingHandler
         }
 
         return preg_match(self::USER_AGENT_REGEX, $_SERVER['HTTP_USER_AGENT']);
+    }
+
+    /**
+     * BC getter for the sendHeaders property that has been made static
+     */
+    public function __get($property)
+    {
+        if ('sendHeaders' !== $property) {
+            throw new \InvalidArgumentException('Undefined property '.$property);
+        }
+
+        return static::$sendHeaders;
+    }
+
+    /**
+     * BC setter for the sendHeaders property that has been made static
+     */
+    public function __set($property, $value)
+    {
+        if ('sendHeaders' !== $property) {
+            throw new \InvalidArgumentException('Undefined property '.$property);
+        }
+
+        static::$sendHeaders = $value;
     }
 }

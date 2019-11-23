@@ -20,7 +20,7 @@
 
 namespace Mockery\Adapter\Phpunit\Legacy;
 
-if (class_exists('PHPUnit_Framework_TestCase') && !class_exists('PHPUnit\Framework\TestCase')) {
+if (class_exists('PHPUnit_Framework_TestCase') && ! class_exists('PHPUnit\Util\Blacklist')) {
     class_alias('PHPUnit_Framework_ExpectationFailedException', 'PHPUnit\Framework\ExpectationFailedException');
     class_alias('PHPUnit_Framework_Test', 'PHPUnit\Framework\Test');
     class_alias('PHPUnit_Framework_TestCase', 'PHPUnit\Framework\TestCase');
@@ -40,7 +40,7 @@ class TestListenerTrait
      * endTest is called after each test and checks if \Mockery::close() has
      * been called, and will let the test fail if it hasn't.
      *
-     * @param Test $test
+     * @param Test  $test
      * @param float $time
      */
     public function endTest(Test $test, $time)

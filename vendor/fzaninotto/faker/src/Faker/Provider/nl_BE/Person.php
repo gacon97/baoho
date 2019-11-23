@@ -34,7 +34,7 @@ class Person extends \Faker\Provider\Person
         'Malak', 'Manon', 'Margaux', 'Margot', 'Marie', 'Marion', 'Maya', 'Merel',
         'Mila', 'Nina', 'Noa', 'Noémie', 'Noor', 'Nora', 'Océane', 'Olivia', 'Pauline',
         'Rania', 'Robin', 'Romane', 'Roos', 'Salma', 'Sara', 'Sarah', 'Senne',
-        'Siebe', 'Sofia', 'Tess', 'Victoria', 'Wout', 'Yana', 'Yasmine', 'Zoé', 'Zoë'
+        'Siebe', 'Sofia','Tess', 'Victoria', 'Wout', 'Yana', 'Yasmine', 'Zoé', 'Zoë'
     );
 
     protected static $lastName = array(
@@ -79,28 +79,28 @@ class Person extends \Faker\Provider\Person
      *  males, even for females. The last part is used to check if it's
      *  a valid number.
      *
-     * @link https://nl.wikipedia.org/wiki/Rijksregisternummer
+     *  @link https://nl.wikipedia.org/wiki/Rijksregisternummer
      *
-     * @param string|null $gender 'male', 'female' or null for any
-     * @return string
+     *  @param string|null $gender 'male', 'female' or null for any
+     *  @return string
      */
     public static function rrn($gender = null)
     {
         $middle = self::numberBetween(1, 997);
         if ($gender === static::GENDER_MALE) {
-            $middle = $middle % 2 === 1 ? $middle : $middle + 1;
+            $middle = $middle %2 === 1 ? $middle : $middle+1;
         } elseif ($gender === static::GENDER_FEMALE) {
-            $middle = $middle % 2 === 0 ? $middle : $middle + 1;
+            $middle = $middle %2 === 0 ? $middle : $middle+1;
         }
         $middle = sprintf('%03d', $middle);
-
+        
         $date = DateTime::dateTimeThisCentury();
         $dob = sprintf('%06d', $date->format('ymd'));
         $help = $date->format('Y') >= 2000 ? 2 : null;
 
-        $check = intval($help . $dob . $middle);
+        $check = intval($help.$dob.$middle);
         $rest = sprintf('%02d', 97 - ($check % 97));
-
-        return $dob . $middle . $rest;
+        
+        return $dob.$middle.$rest;
     }
 }

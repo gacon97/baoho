@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner\Filter;
 
 use PHPUnit\Framework\TestSuite;
@@ -66,11 +65,11 @@ class NameFilterIterator extends RecursiveFilterIterator
         $accepted = @\preg_match($this->filter, $name, $matches);
 
         if ($accepted && isset($this->filterMax)) {
-            $set = \end($matches);
+            $set      = \end($matches);
             $accepted = $set >= $this->filterMin && $set <= $this->filterMax;
         }
 
-        return (bool)$accepted;
+        return (bool) $accepted;
     }
 
     /**

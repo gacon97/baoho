@@ -18,9 +18,10 @@ namespace Symfony\Component\VarDumper\Caster;
  */
 class LinkStub extends ConstStub
 {
+    public $inVendor = false;
+
     private static $vendorRoots;
     private static $composerRoots;
-    public $inVendor = false;
 
     public function __construct($label, int $line = 0, $href = null)
     {
@@ -65,14 +66,14 @@ class LinkStub extends ConstStub
     private function getComposerRoot($file, &$inVendor)
     {
         if (null === self::$vendorRoots) {
-            self::$vendorRoots = array();
+            self::$vendorRoots = [];
 
             foreach (get_declared_classes() as $class) {
                 if ('C' === $class[0] && 0 === strpos($class, 'ComposerAutoloaderInit')) {
                     $r = new \ReflectionClass($class);
-                    $v = \dirname(\dirname($r->getFileName()));
-                    if (file_exists($v . '/composer/installed.json')) {
-                        self::$vendorRoots[] = $v . \DIRECTORY_SEPARATOR;
+                    $v = \dirname($r->getFileName(), 2);
+                    if (file_exists($v.'/composer/installed.json')) {
+                        self::$vendorRoots[] = $v.\DIRECTORY_SEPARATOR;
                     }
                 }
             }
@@ -90,7 +91,7 @@ class LinkStub extends ConstStub
         }
 
         $parent = $dir;
-        while (!@file_exists($parent . '/composer.json')) {
+        while (!@file_exists($parent.'/composer.json')) {
             if (!@file_exists($parent)) {
                 // open_basedir restriction in effect
                 break;
@@ -102,6 +103,6 @@ class LinkStub extends ConstStub
             $parent = \dirname($parent);
         }
 
-        return self::$composerRoots[$dir] = $parent . \DIRECTORY_SEPARATOR;
+        return self::$composerRoots[$dir] = $parent.\DIRECTORY_SEPARATOR;
     }
 }

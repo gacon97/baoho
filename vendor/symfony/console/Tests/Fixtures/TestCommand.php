@@ -10,9 +10,10 @@ class TestCommand extends Command
     {
         $this
             ->setName('namespace:name')
-            ->setAliases(array('name'))
+            ->setAliases(['name'])
             ->setDescription('description')
-            ->setHelp('help');
+            ->setHelp('help')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

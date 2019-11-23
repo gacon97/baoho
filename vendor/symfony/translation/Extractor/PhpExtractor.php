@@ -24,47 +24,7 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     const MESSAGE_TOKEN = 300;
     const METHOD_ARGUMENTS_TOKEN = 1000;
     const DOMAIN_TOKEN = 1001;
-    /**
-     * The sequence that captures translation messages.
-     *
-     * @var array
-     */
-    protected $sequences = array(
-        array(
-            '->',
-            'trans',
-            '(',
-            self::MESSAGE_TOKEN,
-            ',',
-            self::METHOD_ARGUMENTS_TOKEN,
-            ',',
-            self::DOMAIN_TOKEN,
-        ),
-        array(
-            '->',
-            'transChoice',
-            '(',
-            self::MESSAGE_TOKEN,
-            ',',
-            self::METHOD_ARGUMENTS_TOKEN,
-            ',',
-            self::METHOD_ARGUMENTS_TOKEN,
-            ',',
-            self::DOMAIN_TOKEN,
-        ),
-        array(
-            '->',
-            'trans',
-            '(',
-            self::MESSAGE_TOKEN,
-        ),
-        array(
-            '->',
-            'transChoice',
-            '(',
-            self::MESSAGE_TOKEN,
-        ),
-    );
+
     /**
      * Prefix for new found message.
      *
@@ -73,15 +33,56 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     private $prefix = '';
 
     /**
+     * The sequence that captures translation messages.
+     *
+     * @var array
+     */
+    protected $sequences = [
+        [
+            '->',
+            'trans',
+            '(',
+            self::MESSAGE_TOKEN,
+            ',',
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ],
+        [
+            '->',
+            'transChoice',
+            '(',
+            self::MESSAGE_TOKEN,
+            ',',
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ],
+        [
+            '->',
+            'trans',
+            '(',
+            self::MESSAGE_TOKEN,
+        ],
+        [
+            '->',
+            'transChoice',
+            '(',
+            self::MESSAGE_TOKEN,
+        ],
+    ];
+
+    /**
      * {@inheritdoc}
      */
     public function extract($resource, MessageCatalogue $catalog)
     {
         $files = $this->extractFiles($resource);
         foreach ($files as $file) {
-            $this->parseTokens(token_get_all(file_get_contents($file)), $catalog);
+            $this->parseTokens(token_get_all(file_get_contents($file)), $catalog, $file);
 
-            // PHP 7 memory manager will not release after token_get_all(), see https://bugs.php.net/70098
             gc_mem_caches();
         }
     }
@@ -99,7 +100,7 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
      *
      * @param mixed $token
      *
-     * @return string
+     * @return string|null
      */
     protected function normalizeToken($token)
     {
@@ -108,77 +109,6 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         }
 
         return $token;
-    }
-
-    /**
-     * Extracts trans message from PHP tokens.
-     *
-     * @param array $tokens
-     * @param MessageCatalogue $catalog
-     */
-    protected function parseTokens($tokens, MessageCatalogue $catalog)
-    {
-        $tokenIterator = new \ArrayIterator($tokens);
-
-        for ($key = 0; $key < $tokenIterator->count(); ++$key) {
-            foreach ($this->sequences as $sequence) {
-                $message = '';
-                $domain = 'messages';
-                $tokenIterator->seek($key);
-
-                foreach ($sequence as $sequenceKey => $item) {
-                    $this->seekToNextRelevantToken($tokenIterator);
-
-                    if ($this->normalizeToken($tokenIterator->current()) === $item) {
-                        $tokenIterator->next();
-                        continue;
-                    } elseif (self::MESSAGE_TOKEN === $item) {
-                        $message = $this->getValue($tokenIterator);
-
-                        if (\count($sequence) === ($sequenceKey + 1)) {
-                            break;
-                        }
-                    } elseif (self::METHOD_ARGUMENTS_TOKEN === $item) {
-                        $this->skipMethodArgument($tokenIterator);
-                    } elseif (self::DOMAIN_TOKEN === $item) {
-                        $domain = $this->getValue($tokenIterator);
-
-                        break;
-                    } else {
-                        break;
-                    }
-                }
-
-                if ($message) {
-                    $catalog->set($message, $this->prefix . $message, $domain);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return bool
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function canBeExtracted($file)
-    {
-        return $this->isFile($file) && 'php' === pathinfo($file, PATHINFO_EXTENSION);
-    }
-
-    /**
-     * @param string|array $directory
-     *
-     * @return array
-     */
-    protected function extractFromDirectory($directory)
-    {
-        $finder = new Finder();
-
-        return $finder->files()->name('*.php')->in($directory);
     }
 
     /**
@@ -223,9 +153,14 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     {
         $message = '';
         $docToken = '';
+        $docPart = '';
 
         for (; $tokenIterator->valid(); $tokenIterator->next()) {
             $t = $tokenIterator->current();
+            if ('.' === $t) {
+                // Concatenate with next token
+                continue;
+            }
             if (!isset($t[1])) {
                 break;
             }
@@ -236,19 +171,105 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
                     break;
                 case T_ENCAPSED_AND_WHITESPACE:
                 case T_CONSTANT_ENCAPSED_STRING:
-                    $message .= $t[1];
+                    if ('' === $docToken) {
+                        $message .= PhpStringTokenParser::parse($t[1]);
+                    } else {
+                        $docPart = $t[1];
+                    }
                     break;
                 case T_END_HEREDOC:
-                    return PhpStringTokenParser::parseDocString($docToken, $message);
+                    $message .= PhpStringTokenParser::parseDocString($docToken, $docPart);
+                    $docToken = '';
+                    $docPart = '';
+                    break;
+                case T_WHITESPACE:
+                    break;
                 default:
                     break 2;
             }
         }
 
-        if ($message) {
-            $message = PhpStringTokenParser::parse($message);
-        }
-
         return $message;
+    }
+
+    /**
+     * Extracts trans message from PHP tokens.
+     *
+     * @param array  $tokens
+     * @param string $filename
+     */
+    protected function parseTokens($tokens, MessageCatalogue $catalog/*, string $filename*/)
+    {
+        if (\func_num_args() < 3 && __CLASS__ !== \get_class($this) && __CLASS__ !== (new \ReflectionMethod($this, __FUNCTION__))->getDeclaringClass()->getName() && !$this instanceof \PHPUnit\Framework\MockObject\MockObject && !$this instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
+            @trigger_error(sprintf('The "%s()" method will have a new "string $filename" argument in version 5.0, not defining it is deprecated since Symfony 4.3.', __METHOD__), E_USER_DEPRECATED);
+        }
+        $filename = 2 < \func_num_args() ? func_get_arg(2) : '';
+
+        $tokenIterator = new \ArrayIterator($tokens);
+
+        for ($key = 0; $key < $tokenIterator->count(); ++$key) {
+            foreach ($this->sequences as $sequence) {
+                $message = '';
+                $domain = 'messages';
+                $tokenIterator->seek($key);
+
+                foreach ($sequence as $sequenceKey => $item) {
+                    $this->seekToNextRelevantToken($tokenIterator);
+
+                    if ($this->normalizeToken($tokenIterator->current()) === $item) {
+                        $tokenIterator->next();
+                        continue;
+                    } elseif (self::MESSAGE_TOKEN === $item) {
+                        $message = $this->getValue($tokenIterator);
+
+                        if (\count($sequence) === ($sequenceKey + 1)) {
+                            break;
+                        }
+                    } elseif (self::METHOD_ARGUMENTS_TOKEN === $item) {
+                        $this->skipMethodArgument($tokenIterator);
+                    } elseif (self::DOMAIN_TOKEN === $item) {
+                        $domainToken = $this->getValue($tokenIterator);
+                        if ('' !== $domainToken) {
+                            $domain = $domainToken;
+                        }
+
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+
+                if ($message) {
+                    $catalog->set($message, $this->prefix.$message, $domain);
+                    $metadata = $catalog->getMetadata($message, $domain) ?? [];
+                    $normalizedFilename = preg_replace('{[\\\\/]+}', '/', $filename);
+                    $metadata['sources'][] = $normalizedFilename.':'.$tokens[$key][2];
+                    $catalog->setMetadata($message, $metadata, $domain);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return bool
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function canBeExtracted($file)
+    {
+        return $this->isFile($file) && 'php' === pathinfo($file, PATHINFO_EXTENSION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extractFromDirectory($directory)
+    {
+        $finder = new Finder();
+
+        return $finder->files()->name('*.php')->in($directory);
     }
 }

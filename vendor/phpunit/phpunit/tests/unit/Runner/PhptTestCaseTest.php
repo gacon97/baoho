@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\TestCase;
@@ -67,6 +66,24 @@ EOF;
      */
     private $phpProcess;
 
+    protected function setUp(): void
+    {
+        $this->dirname  = \sys_get_temp_dir();
+        $this->filename = $this->dirname . '/phpunit.phpt';
+        \touch($this->filename);
+
+        $this->phpProcess = $this->getMockForAbstractClass(AbstractPhpProcess::class, [], '', false);
+        $this->testCase   = new PhptTestCase($this->filename, $this->phpProcess);
+    }
+
+    protected function tearDown(): void
+    {
+        @\unlink($this->filename);
+
+        $this->phpProcess = null;
+        $this->testCase   = null;
+    }
+
     public function testAlwaysReportsNumberOfAssertionsIsOne(): void
     {
         $this->assertSame(1, $this->testCase->getNumAssertions());
@@ -84,10 +101,10 @@ EOF;
         $fileSection = '<?php echo "Hello PHPUnit!"; ?>' . \PHP_EOL;
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with($fileSection)
-            ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with($fileSection)
+             ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
 
         $this->testCase->run();
     }
@@ -108,10 +125,10 @@ EOF
         $renderedCode = "<?php echo '" . $this->dirname . "' . '" . $this->filename . "'; ?>" . \PHP_EOL;
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with($renderedCode)
-            ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with($renderedCode)
+             ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
 
         $this->testCase->run();
     }
@@ -127,10 +144,10 @@ EOF
         $renderedCode = "<?php echo 'skip: ' . '" . $this->filename . "'; ?>" . \PHP_EOL;
 
         $this->phpProcess
-            ->expects($this->at(0))
-            ->method('runJob')
-            ->with($renderedCode)
-            ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
+             ->expects($this->at(0))
+             ->method('runJob')
+             ->with($renderedCode)
+             ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
 
         $this->testCase->run();
     }
@@ -146,10 +163,10 @@ EOF
         $this->setPhpContent($phptContent);
 
         $this->phpProcess
-            ->expects($this->at(0))
-            ->method('runJob')
-            ->with($skipifSection)
-            ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
+             ->expects($this->at(0))
+             ->method('runJob')
+             ->with($skipifSection)
+             ->will($this->returnValue(['stdout' => '', 'stderr' => '']));
 
         $this->testCase->run();
     }
@@ -165,10 +182,10 @@ EOF
         $this->setPhpContent($phptContent);
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with($skipifSection)
-            ->will($this->returnValue(['stdout' => 'skip: Reason', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with($skipifSection)
+             ->will($this->returnValue(['stdout' => 'skip: Reason', 'stderr' => '']));
 
         $this->testCase->run();
     }
@@ -184,46 +201,45 @@ EOF
         $this->setPhpContent($phptContent);
 
         $this->phpProcess
-            ->expects($this->at(1))
-            ->method('runJob')
-            ->with($cleanSection);
+             ->expects($this->at(1))
+             ->method('runJob')
+             ->with($cleanSection);
 
         $this->testCase->run();
     }
 
-    public function testShouldThrowsAnExceptionWhenPhptFileIsEmpty(): void
+    public function testShouldSkipTestWhenPhptFileIsEmpty(): void
     {
         $this->setPhpContent('');
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Invalid PHPT file');
-
-        $this->testCase->run();
+        $result = $this->testCase->run();
+        $this->assertCount(1, $result->skipped());
+        $this->assertSame('Invalid PHPT file', $result->skipped()[0]->thrownException()->getMessage());
     }
 
-    public function testShouldThrowsAnExceptionWhenFileSectionIsMissing(): void
+    public function testShouldSkipTestWhenFileSectionIsMissing(): void
     {
         $this->setPhpContent(
             <<<EOF
 --TEST--
-Something to decribe it
+Something to describe it
 --EXPECT--
 Something
 EOF
         );
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Invalid PHPT file');
+        $result = $this->testCase->run();
 
-        $this->testCase->run();
+        $this->assertCount(1, $result->skipped());
+        $this->assertSame('Invalid PHPT file', $result->skipped()[0]->thrownException()->getMessage());
     }
 
-    public function testShouldThrowsAnExceptionWhenThereIsNoExpecOrExpectifOrExpecregexSectionInPhptFile(): void
+    public function testShouldSkipTestWhenThereIsNoExpecOrExpectifOrExpecregexSectionInPhptFile(): void
     {
         $this->setPhpContent(
             <<<EOF
 --TEST--
-Something to decribe it
+Something to describe it
 --FILE--
 <?php
 echo "Hello world!\n";
@@ -231,10 +247,30 @@ echo "Hello world!\n";
 EOF
         );
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Invalid PHPT file');
+        $result = $this->testCase->run();
 
-        $this->testCase->run();
+        $this->assertCount(1, $result->skipped());
+        $skipMessage = $result->skipped()[0]->thrownException()->getMessage();
+        $this->assertSame('Invalid PHPT file', $skipMessage);
+    }
+
+    public function testShouldSkipTestWhenSectionHeaderIsMalformed(): void
+    {
+        $this->setPhpContent(
+            <<<EOF
+----
+--TEST--
+This is not going to work out
+--EXPECT--
+Tears and misery
+EOF
+        );
+
+        $result = $this->testCase->run();
+
+        $this->assertCount(1, $result->skipped());
+        $skipMessage = $result->skipped()[0]->thrownException()->getMessage();
+        $this->assertSame('Invalid PHPT file: empty section header', $skipMessage);
     }
 
     public function testShouldValidateExpectSession(): void
@@ -242,10 +278,10 @@ EOF
         $this->setPhpContent(self::EXPECT_CONTENT);
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with(self::FILE_SECTION)
-            ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with(self::FILE_SECTION)
+             ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
 
         $result = $this->testCase->run();
 
@@ -257,10 +293,10 @@ EOF
         $this->setPhpContent(self::EXPECTF_CONTENT);
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with(self::FILE_SECTION)
-            ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with(self::FILE_SECTION)
+             ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
 
         $result = $this->testCase->run();
 
@@ -272,32 +308,14 @@ EOF
         $this->setPhpContent(self::EXPECTREGEX_CONTENT);
 
         $this->phpProcess
-            ->expects($this->once())
-            ->method('runJob')
-            ->with(self::FILE_SECTION)
-            ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
+             ->expects($this->once())
+             ->method('runJob')
+             ->with(self::FILE_SECTION)
+             ->will($this->returnValue(['stdout' => 'Hello PHPUnit!', 'stderr' => '']));
 
         $result = $this->testCase->run();
 
         $this->assertTrue($result->wasSuccessful());
-    }
-
-    protected function setUp(): void
-    {
-        $this->dirname = \sys_get_temp_dir();
-        $this->filename = $this->dirname . '/phpunit.phpt';
-        \touch($this->filename);
-
-        $this->phpProcess = $this->getMockForAbstractClass(AbstractPhpProcess::class, [], '', false);
-        $this->testCase = new PhptTestCase($this->filename, $this->phpProcess);
-    }
-
-    protected function tearDown(): void
-    {
-        @\unlink($this->filename);
-
-        $this->phpProcess = null;
-        $this->testCase = null;
     }
 
     /**
@@ -323,8 +341,8 @@ EOF
             $content,
             [
                 "\r\n" => \PHP_EOL,
-                "\r" => \PHP_EOL,
-                "\n" => \PHP_EOL,
+                "\r"   => \PHP_EOL,
+                "\n"   => \PHP_EOL,
             ]
         );
     }

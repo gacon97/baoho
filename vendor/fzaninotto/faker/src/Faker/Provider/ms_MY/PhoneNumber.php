@@ -21,9 +21,9 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
     /**
      * @link https://en.wikipedia.org/wiki/Telephone_numbers_in_Malaysia#Mobile_phone_codes_and_IP_telephony
      */
-    protected static $zeroOneOnePrefix = array('10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22', '23', '32');
-    protected static $zeroOneFourPrefix = array('2', '3', '4', '5', '6', '7', '8', '9');
-    protected static $zeroOneFivePrefix = array('1', '2', '3', '4', '5', '6', '9');
+    protected static $zeroOneOnePrefix = array('10','11','12','13','14','15','16','17','18','19','20','22','23','32');
+    protected static $zeroOneFourPrefix = array('2','3','4','5','6','7','8','9');
+    protected static $zeroOneFivePrefix = array('1','2','3','4','5','6','9');
 
     /**
      * @link https://en.wikipedia.org/wiki/Telephone_numbers_in_Malaysia#Mobile_phone_codes_and_IP_telephony
@@ -87,6 +87,31 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
     );
 
     /**
+     * Return a Malaysian Mobile Phone Number.
+     *
+     * @example '+6012-345-6789'
+     *
+     * @param bool $countryCodePrefix true, false
+     * @param bool $formatting true, false
+     *
+     * @return string
+     */
+    public function mobileNumber($countryCodePrefix = true, $formatting = true)
+    {
+        if ($formatting) {
+            $format = static::randomElement(static::$mobileNumberFormatsWithFormatting);
+        } else {
+            $format = static::randomElement(static::$mobileNumberFormats);
+        }
+
+        if ($countryCodePrefix) {
+            return static::countryCodePrefix($formatting) . static::numerify($this->generator->parse($format));
+        } else {
+            return static::numerify($this->generator->parse($format));
+        }
+    }
+
+    /**
      * Return prefix digits for 011 numbers
      *
      * @example '10'
@@ -120,49 +145,6 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
     public static function zeroOneFivePrefix()
     {
         return static::numerify(static::randomElement(static::$zeroOneFivePrefix));
-    }
-
-    /**
-     * Return a Malaysian Country Code Prefix.
-     *
-     * @example '+6'
-     *
-     * @param bool $formatting true, false
-     *
-     * @return string
-     */
-    public static function countryCodePrefix($formatting = true)
-    {
-        if ($formatting) {
-            return static::randomElement(static::$plusSymbol) . static::randomElement(static::$countryCodePrefix);
-        } else {
-            return static::randomElement(static::$countryCodePrefix);
-        }
-    }
-
-    /**
-     * Return a Malaysian Mobile Phone Number.
-     *
-     * @example '+6012-345-6789'
-     *
-     * @param bool $countryCodePrefix true, false
-     * @param bool $formatting true, false
-     *
-     * @return string
-     */
-    public function mobileNumber($countryCodePrefix = true, $formatting = true)
-    {
-        if ($formatting) {
-            $format = static::randomElement(static::$mobileNumberFormatsWithFormatting);
-        } else {
-            $format = static::randomElement(static::$mobileNumberFormats);
-        }
-
-        if ($countryCodePrefix) {
-            return static::countryCodePrefix($formatting) . static::numerify($this->generator->parse($format));
-        } else {
-            return static::numerify($this->generator->parse($format));
-        }
     }
 
     /**
@@ -212,6 +194,24 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
             return static::countryCodePrefix($formatting) . static::numerify($this->generator->parse($format));
         } else {
             return static::numerify($this->generator->parse($format));
+        }
+    }
+
+    /**
+     * Return a Malaysian Country Code Prefix.
+     *
+     * @example '+6'
+     *
+     * @param bool $formatting true, false
+     *
+     * @return string
+     */
+    public static function countryCodePrefix($formatting = true)
+    {
+        if ($formatting) {
+            return static::randomElement(static::$plusSymbol) . static::randomElement(static::$countryCodePrefix);
+        } else {
+            return static::randomElement(static::$countryCodePrefix);
         }
     }
 }

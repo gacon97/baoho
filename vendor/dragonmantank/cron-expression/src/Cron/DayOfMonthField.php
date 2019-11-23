@@ -3,6 +3,7 @@
 namespace Cron;
 
 use DateTime;
+use DateTimeInterface;
 
 /**
  * Day of month field.  Allows: * , / - ? L W
@@ -24,15 +25,22 @@ use DateTime;
  */
 class DayOfMonthField extends AbstractField
 {
+    /**
+     * @inheritDoc
+     */
     protected $rangeStart = 1;
+
+    /**
+     * @inheritDoc
+     */
     protected $rangeEnd = 31;
 
     /**
      * Get the nearest day of the week for a given day in a month
      *
-     * @param int $currentYear Current year
+     * @param int $currentYear  Current year
      * @param int $currentMonth Current month
-     * @param int $targetDay Target day of the month
+     * @param int $targetDay    Target day of the month
      *
      * @return \DateTime Returns the nearest date
      */
@@ -40,7 +48,7 @@ class DayOfMonthField extends AbstractField
     {
         $tday = str_pad($targetDay, 2, '0', STR_PAD_LEFT);
         $target = DateTime::createFromFormat('Y-m-d', "$currentYear-$currentMonth-$tday");
-        $currentWeekday = (int)$target->format('N');
+        $currentWeekday = (int) $target->format('N');
 
         if ($currentWeekday < 6) {
             return $target;
@@ -59,7 +67,10 @@ class DayOfMonthField extends AbstractField
         }
     }
 
-    public function isSatisfiedBy(DateTime $date, $value)
+    /**
+     * @inheritDoc
+     */
+    public function isSatisfiedBy(DateTimeInterface $date, $value)
     {
         // ? states that the field value is to be skipped
         if ($value == '?') {
@@ -79,23 +90,26 @@ class DayOfMonthField extends AbstractField
             $targetDay = substr($value, 0, strpos($value, 'W'));
             // Find out if the current day is the nearest day of the week
             return $date->format('j') == self::getNearestWeekday(
-                    $date->format('Y'),
-                    $date->format('m'),
-                    $targetDay
-                )->format('j');
+                $date->format('Y'),
+                $date->format('m'),
+                $targetDay
+            )->format('j');
         }
 
         return $this->isSatisfied($date->format('d'), $value);
     }
 
-    public function increment(DateTime $date, $invert = false)
+    /**
+     * @inheritDoc
+     *
+     * @param \DateTime|\DateTimeImmutable &$date
+     */
+    public function increment(DateTimeInterface &$date, $invert = false)
     {
         if ($invert) {
-            $date->modify('previous day');
-            $date->setTime(23, 59);
+            $date = $date->modify('previous day')->setTime(23, 59);
         } else {
-            $date->modify('next day');
-            $date->setTime(0, 0);
+            $date = $date->modify('next day')->setTime(0, 0);
         }
 
         return $this;

@@ -46,7 +46,7 @@ class SymfonyStyle extends OutputStyle
         $this->bufferedOutput = new BufferedOutput($output->getVerbosity(), false, clone $output->getFormatter());
         // Windows cmd wraps lines as soon as the terminal width is reached, whether there are following chars or not.
         $width = (new Terminal())->getWidth() ?: self::MAX_LINE_LENGTH;
-        $this->lineLength = min($width - (int)(\DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
+        $this->lineLength = min($width - (int) (\DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
 
         parent::__construct($output);
     }
@@ -55,15 +55,15 @@ class SymfonyStyle extends OutputStyle
      * Formats a message as a block of text.
      *
      * @param string|array $messages The message to write in the block
-     * @param string|null $type The block type (added in [] on first line)
-     * @param string|null $style The style to apply to the whole block
-     * @param string $prefix The prefix for the block
-     * @param bool $padding Whether to add vertical padding
-     * @param bool $escape Whether to escape the message
+     * @param string|null  $type     The block type (added in [] on first line)
+     * @param string|null  $style    The style to apply to the whole block
+     * @param string       $prefix   The prefix for the block
+     * @param bool         $padding  Whether to add vertical padding
+     * @param bool         $escape   Whether to escape the message
      */
     public function block($messages, $type = null, $style = null, $prefix = ' ', $padding = false, $escape = true)
     {
-        $messages = \is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? array_values($messages) : [$messages];
 
         $this->autoPrependBlock();
         $this->writeln($this->createBlock($messages, $type, $style, $prefix, $padding, $escape));
@@ -76,10 +76,10 @@ class SymfonyStyle extends OutputStyle
     public function title($message)
     {
         $this->autoPrependBlock();
-        $this->writeln(array(
+        $this->writeln([
             sprintf('<comment>%s</>', OutputFormatter::escapeTrailingBackslash($message)),
             sprintf('<comment>%s</>', str_repeat('=', Helper::strlenWithoutDecoration($this->getFormatter(), $message))),
-        ));
+        ]);
         $this->newLine();
     }
 
@@ -89,10 +89,10 @@ class SymfonyStyle extends OutputStyle
     public function section($message)
     {
         $this->autoPrependBlock();
-        $this->writeln(array(
+        $this->writeln([
             sprintf('<comment>%s</>', OutputFormatter::escapeTrailingBackslash($message)),
             sprintf('<comment>%s</>', str_repeat('-', Helper::strlenWithoutDecoration($this->getFormatter(), $message))),
-        ));
+        ]);
         $this->newLine();
     }
 
@@ -117,7 +117,7 @@ class SymfonyStyle extends OutputStyle
     {
         $this->autoPrependText();
 
-        $messages = \is_array($message) ? array_values($message) : array($message);
+        $messages = \is_array($message) ? array_values($message) : [$message];
         foreach ($messages as $message) {
             $this->writeln(sprintf(' %s', $message));
         }
@@ -154,7 +154,7 @@ class SymfonyStyle extends OutputStyle
      */
     public function warning($message)
     {
-        $this->block($message, 'WARNING', 'fg=white;bg=red', ' ', true);
+        $this->block($message, 'WARNING', 'fg=black;bg=yellow', ' ', true);
     }
 
     /**
@@ -307,7 +307,7 @@ class SymfonyStyle extends OutputStyle
     public function writeln($messages, $type = self::OUTPUT_NORMAL)
     {
         if (!is_iterable($messages)) {
-            $messages = array($messages);
+            $messages = [$messages];
         }
 
         foreach ($messages as $message) {
@@ -322,7 +322,7 @@ class SymfonyStyle extends OutputStyle
     public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
     {
         if (!is_iterable($messages)) {
-            $messages = array($messages);
+            $messages = [$messages];
         }
 
         foreach ($messages as $message) {
@@ -392,7 +392,7 @@ class SymfonyStyle extends OutputStyle
     {
         $indentLength = 0;
         $prefixLength = Helper::strlenWithoutDecoration($this->getFormatter(), $prefix);
-        $lines = array();
+        $lines = [];
 
         if (null !== $type) {
             $type = sprintf('[%s] ', $type);
@@ -422,10 +422,10 @@ class SymfonyStyle extends OutputStyle
 
         foreach ($lines as $i => &$line) {
             if (null !== $type) {
-                $line = $firstLineIndex === $i ? $type . $line : $lineIndentation . $line;
+                $line = $firstLineIndex === $i ? $type.$line : $lineIndentation.$line;
             }
 
-            $line = $prefix . $line;
+            $line = $prefix.$line;
             $line .= str_repeat(' ', $this->lineLength - Helper::strlenWithoutDecoration($this->getFormatter(), $line));
 
             if ($style) {

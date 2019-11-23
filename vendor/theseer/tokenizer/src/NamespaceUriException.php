@@ -1,8 +1,6 @@
-<?php declare(strict_types=1);
-
+<?php declare(strict_types = 1);
 namespace TheSeer\Tokenizer;
 
-class NamespaceUriException extends Exception
-{
+class NamespaceUriException extends Exception {
 
 }

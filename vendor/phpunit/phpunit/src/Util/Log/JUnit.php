@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\Log;
 
 use DOMDocument;
@@ -46,7 +45,7 @@ class JUnit extends Printer implements TestListener
     /**
      * @var bool
      */
-    protected $reportUselessTests = false;
+    protected $reportRiskyTests = false;
 
     /**
      * @var bool
@@ -105,9 +104,9 @@ class JUnit extends Printer implements TestListener
      *
      * @throws \PHPUnit\Framework\Exception
      */
-    public function __construct($out = null, bool $reportUselessTests = false)
+    public function __construct($out = null, bool $reportRiskyTests = false)
     {
-        $this->document = new DOMDocument('1.0', 'UTF-8');
+        $this->document               = new DOMDocument('1.0', 'UTF-8');
         $this->document->formatOutput = true;
 
         $this->root = $this->document->createElement('testsuites');
@@ -115,7 +114,7 @@ class JUnit extends Printer implements TestListener
 
         parent::__construct($out);
 
-        $this->reportUselessTests = $reportUselessTests;
+        $this->reportRiskyTests = $reportRiskyTests;
     }
 
     /**
@@ -176,7 +175,7 @@ class JUnit extends Printer implements TestListener
      */
     public function addRiskyTest(Test $test, \Throwable $t, float $time): void
     {
-        if (!$this->reportUselessTests || $this->currentTestCase === null) {
+        if (!$this->reportRiskyTests || $this->currentTestCase === null) {
             return;
         }
 
@@ -227,13 +226,13 @@ class JUnit extends Printer implements TestListener
         }
 
         $this->testSuiteLevel++;
-        $this->testSuites[$this->testSuiteLevel] = $testSuite;
-        $this->testSuiteTests[$this->testSuiteLevel] = 0;
+        $this->testSuites[$this->testSuiteLevel]          = $testSuite;
+        $this->testSuiteTests[$this->testSuiteLevel]      = 0;
         $this->testSuiteAssertions[$this->testSuiteLevel] = 0;
-        $this->testSuiteErrors[$this->testSuiteLevel] = 0;
-        $this->testSuiteFailures[$this->testSuiteLevel] = 0;
-        $this->testSuiteSkipped[$this->testSuiteLevel] = 0;
-        $this->testSuiteTimes[$this->testSuiteLevel] = 0;
+        $this->testSuiteErrors[$this->testSuiteLevel]     = 0;
+        $this->testSuiteFailures[$this->testSuiteLevel]   = 0;
+        $this->testSuiteSkipped[$this->testSuiteLevel]    = 0;
+        $this->testSuiteTimes[$this->testSuiteLevel]      = 0;
     }
 
     /**
@@ -300,7 +299,7 @@ class JUnit extends Printer implements TestListener
         $testCase = $this->document->createElement('testcase');
         $testCase->setAttribute('name', $test->getName());
 
-        $class = new ReflectionClass($test);
+        $class      = new ReflectionClass($test);
         $methodName = $test->getName(!$usesDataprovider);
 
         if ($class->hasMethod($methodName)) {
@@ -378,8 +377,7 @@ class JUnit extends Printer implements TestListener
      * This is a "hack" needed for the integration of
      * PHPUnit with Phing.
      */
-    public function setWriteDocument(/*bool*/
-        $flag): void
+    public function setWriteDocument(/*bool*/ $flag): void
     {
         if (\is_bool($flag)) {
             $this->writeDocument = $flag;
@@ -404,7 +402,7 @@ class JUnit extends Printer implements TestListener
         }
 
         $buffer .= TestFailure::exceptionToString($t) . "\n" .
-            Filter::getFilteredStacktrace($t);
+                   Filter::getFilteredStacktrace($t);
 
         $fault = $this->document->createElement(
             $type,

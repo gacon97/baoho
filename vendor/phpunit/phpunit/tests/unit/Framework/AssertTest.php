@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Util\Xml;
@@ -18,7 +17,7 @@ class AssertTest extends TestCase
     {
         return [
             'error syntax in expected JSON' => ['{"Mascott"::}', '{"Mascott" : "Tux"}'],
-            'error UTF-8 in actual JSON' => ['{"Mascott" : "Tux"}', '{"Mascott" : :}'],
+            'error UTF-8 in actual JSON'    => ['{"Mascott" : "Tux"}', '{"Mascott" : :}'],
         ];
     }
 
@@ -206,9 +205,9 @@ class AssertTest extends TestCase
 
     public function testAssertArraySubsetWithNoStrictCheckAndObjects(): void
     {
-        $obj = new \stdClass;
+        $obj       = new \stdClass;
         $reference = &$obj;
-        $array = ['a' => $obj];
+        $array     = ['a' => $obj];
 
         $this->assertArraySubset(['a' => $reference], $array);
         $this->assertArraySubset(['a' => new \stdClass], $array);
@@ -216,9 +215,9 @@ class AssertTest extends TestCase
 
     public function testAssertArraySubsetWithStrictCheckAndObjects(): void
     {
-        $obj = new \stdClass;
+        $obj       = new \stdClass;
         $reference = &$obj;
-        $array = ['a' => $obj];
+        $array     = ['a' => $obj];
 
         $this->assertArraySubset(['a' => $reference], $array, true);
 
@@ -292,7 +291,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyAcceptsArrayObjectValue(): void
     {
-        $array = new \ArrayObject;
+        $array        = new \ArrayObject;
         $array['foo'] = 'bar';
 
         $this->assertArrayHasKey('foo', $array);
@@ -300,7 +299,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyProperlyFailsWithArrayObjectValue(): void
     {
-        $array = new \ArrayObject;
+        $array        = new \ArrayObject;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -310,7 +309,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyAcceptsArrayAccessValue(): void
     {
-        $array = new \SampleArrayAccess;
+        $array        = new \SampleArrayAccess;
         $array['foo'] = 'bar';
 
         $this->assertArrayHasKey('foo', $array);
@@ -318,7 +317,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyProperlyFailsWithArrayAccessValue(): void
     {
-        $array = new \SampleArrayAccess;
+        $array        = new \SampleArrayAccess;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -328,7 +327,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayNotHasKeyAcceptsArrayAccessValue(): void
     {
-        $array = new \ArrayObject;
+        $array        = new \ArrayObject;
         $array['foo'] = 'bar';
 
         $this->assertArrayNotHasKey('bar', $array);
@@ -336,7 +335,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayNotHasKeyPropertlyFailsWithArrayAccessValue(): void
     {
-        $array = new \ArrayObject;
+        $array        = new \ArrayObject;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -967,6 +966,30 @@ XML;
         $this->assertObjectHasAttribute('foo', $o);
     }
 
+    public function testAssertObjectHasAttributeNumericAttribute(): void
+    {
+        $object           = new \stdClass;
+        $object->{'2020'} = 'Tokyo';
+
+        $this->assertObjectHasAttribute('2020', $object);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $this->assertObjectHasAttribute('2018', $object);
+    }
+
+    public function testAssertObjectHasAttributeMultiByteAttribute(): void
+    {
+        $object         = new \stdClass;
+        $object->{'東京'} = 2020;
+
+        $this->assertObjectHasAttribute('東京', $object);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $this->assertObjectHasAttribute('長野', $object);
+    }
+
     public function testAssertObjectNotHasAttribute(): void
     {
         $o = new \Author('Terry Pratchett');
@@ -976,6 +999,30 @@ XML;
         $this->expectException(AssertionFailedError::class);
 
         $this->assertObjectNotHasAttribute('name', $o);
+    }
+
+    public function testAssertObjectNotHasAttributeNumericAttribute(): void
+    {
+        $object           = new \stdClass;
+        $object->{'2020'} = 'Tokyo';
+
+        $this->assertObjectNotHasAttribute('2018', $object);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $this->assertObjectNotHasAttribute('2020', $object);
+    }
+
+    public function testAssertObjectNotHasAttributeMultiByteAttribute(): void
+    {
+        $object         = new \stdClass;
+        $object->{'東京'} = 2020;
+
+        $this->assertObjectNotHasAttribute('長野', $object);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $this->assertObjectNotHasAttribute('東京', $object);
     }
 
     public function testAssertFinite(): void
@@ -1738,7 +1785,7 @@ XML;
 
     public function testObjectHasOnTheFlyAttribute(): void
     {
-        $obj = new \stdClass;
+        $obj      = new \stdClass;
         $obj->foo = 'bar';
 
         $this->assertObjectHasAttribute('foo', $obj);
@@ -1750,7 +1797,7 @@ XML;
 
     public function testObjectNotHasOnTheFlyAttribute(): void
     {
-        $obj = new \stdClass;
+        $obj      = new \stdClass;
         $obj->foo = 'bar';
 
         $this->assertObjectNotHasAttribute('bar', $obj);
@@ -1957,7 +2004,7 @@ XML;
 
     public function testAssertThatIdenticalTo(): void
     {
-        $value = new \stdClass;
+        $value      = new \stdClass;
         $constraint = $this->identicalTo($value);
 
         $this->assertThat($value, $constraint);
@@ -2167,7 +2214,7 @@ XML;
 
     public function testAssertAttributeEmpty(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeEmpty('a', $o);
@@ -2181,7 +2228,7 @@ XML;
 
     public function testAssertAttributeNotEmpty(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = ['b'];
 
         $this->assertAttributeNotEmpty('a', $o);
@@ -2252,7 +2299,7 @@ XML;
 
     public function testAssertAttributeCount(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeCount(0, 'a', $o);
@@ -2276,7 +2323,7 @@ XML;
 
     public function testAssertAttributeNotCount(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeNotCount(1, 'a', $o);
@@ -2348,8 +2395,8 @@ XML;
     public function testAssertJsonStringEqualsJsonString(): void
     {
         $expected = '{"Mascott" : "Tux"}';
-        $actual = '{"Mascott" : "Tux"}';
-        $message = 'Given Json strings do not match';
+        $actual   = '{"Mascott" : "Tux"}';
+        $message  = 'Given Json strings do not match';
 
         $this->assertJsonStringEqualsJsonString($expected, $actual, $message);
     }
@@ -2370,8 +2417,8 @@ XML;
     public function testAssertJsonStringNotEqualsJsonString(): void
     {
         $expected = '{"Mascott" : "Beastie"}';
-        $actual = '{"Mascott" : "Tux"}';
-        $message = 'Given Json strings do match';
+        $actual   = '{"Mascott" : "Tux"}';
+        $message  = 'Given Json strings do match';
 
         $this->assertJsonStringNotEqualsJsonString($expected, $actual, $message);
     }
@@ -2391,8 +2438,8 @@ XML;
 
     public function testAssertJsonStringEqualsJsonFile(): void
     {
-        $file = TEST_FILES_PATH . 'JsonData/simpleObject.json';
-        $actual = \json_encode(['Mascott' => 'Tux']);
+        $file    = TEST_FILES_PATH . 'JsonData/simpleObject.json';
+        $actual  = \json_encode(['Mascott' => 'Tux']);
         $message = '';
 
         $this->assertJsonStringEqualsJsonFile($file, $actual, $message);
@@ -2400,8 +2447,8 @@ XML;
 
     public function testAssertJsonStringEqualsJsonFileExpectingExpectationFailedException(): void
     {
-        $file = TEST_FILES_PATH . 'JsonData/simpleObject.json';
-        $actual = \json_encode(['Mascott' => 'Beastie']);
+        $file    = TEST_FILES_PATH . 'JsonData/simpleObject.json';
+        $actual  = \json_encode(['Mascott' => 'Beastie']);
         $message = '';
 
         try {
@@ -2420,8 +2467,8 @@ XML;
 
     public function testAssertJsonStringNotEqualsJsonFile(): void
     {
-        $file = TEST_FILES_PATH . 'JsonData/simpleObject.json';
-        $actual = \json_encode(['Mascott' => 'Beastie']);
+        $file    = TEST_FILES_PATH . 'JsonData/simpleObject.json';
+        $actual  = \json_encode(['Mascott' => 'Beastie']);
         $message = '';
 
         $this->assertJsonStringNotEqualsJsonFile($file, $actual, $message);
@@ -2430,15 +2477,15 @@ XML;
     public function testAssertJsonFileNotEqualsJsonFile(): void
     {
         $fileExpected = TEST_FILES_PATH . 'JsonData/simpleObject.json';
-        $fileActual = TEST_FILES_PATH . 'JsonData/arrayObject.json';
-        $message = '';
+        $fileActual   = TEST_FILES_PATH . 'JsonData/arrayObject.json';
+        $message      = '';
 
         $this->assertJsonFileNotEqualsJsonFile($fileExpected, $fileActual, $message);
     }
 
     public function testAssertJsonFileEqualsJsonFile(): void
     {
-        $file = TEST_FILES_PATH . 'JsonData/simpleObject.json';
+        $file    = TEST_FILES_PATH . 'JsonData/simpleObject.json';
         $message = '';
 
         $this->assertJsonFileEqualsJsonFile($file, $file, $message);
@@ -2462,7 +2509,7 @@ XML;
 
     public function testAssertAttributeInstanceOf(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = new \stdClass;
 
         $this->assertAttributeInstanceOf(\stdClass::class, 'a', $o);
@@ -2486,7 +2533,7 @@ XML;
 
     public function testAssertAttributeNotInstanceOf(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = new \stdClass;
 
         $this->assertAttributeNotInstanceOf(\Exception::class, 'a', $o);
@@ -2512,7 +2559,7 @@ XML;
 
     public function testAssertAttributeInternalType(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = 1;
 
         $this->assertAttributeInternalType('integer', 'a', $o);
@@ -2529,7 +2576,7 @@ XML;
 
     public function testAssertAttributeNotInternalType(): void
     {
-        $o = new \stdClass;
+        $o    = new \stdClass;
         $o->a = 1;
 
         $this->assertAttributeNotInternalType('string', 'a', $o);
@@ -3005,10 +3052,42 @@ XML;
         $this->fail();
     }
 
+    public function testIterableContainsSameObjectCanBeAsserted(): void
+    {
+        $object   = new \stdClass;
+        $iterable = [$object];
+
+        $this->assertContains($object, $iterable);
+
+        try {
+            $this->assertContains(new \stdClass, $iterable);
+        } catch (AssertionFailedError $e) {
+            return;
+        }
+
+        $this->fail();
+    }
+
+    public function testIterableNotContainsSameObjectCanBeAsserted(): void
+    {
+        $object   = new \stdClass;
+        $iterable = [$object];
+
+        $this->assertNotContains(new \stdClass, $iterable);
+
+        try {
+            $this->assertNotContains($object, $iterable);
+        } catch (AssertionFailedError $e) {
+            return;
+        }
+
+        $this->fail();
+    }
+
     protected function sameValues(): array
     {
-        $object = new \SampleClass(4, 8, 15);
-        $file = TEST_FILES_PATH . 'foo.xml';
+        $object   = new \SampleClass(4, 8, 15);
+        $file     = TEST_FILES_PATH . 'foo.xml';
         $resource = \fopen($file, 'r');
 
         return [
@@ -3037,21 +3116,21 @@ XML;
     protected function notEqualValues(): array
     {
         // cyclic dependencies
-        $book1 = new \Book;
-        $book1->author = new \Author('Terry Pratchett');
+        $book1                  = new \Book;
+        $book1->author          = new \Author('Terry Pratchett');
         $book1->author->books[] = $book1;
-        $book2 = new \Book;
-        $book2->author = new \Author('Terry Pratch');
+        $book2                  = new \Book;
+        $book2->author          = new \Author('Terry Pratch');
         $book2->author->books[] = $book2;
 
-        $book3 = new \Book;
+        $book3         = new \Book;
         $book3->author = 'Terry Pratchett';
-        $book4 = new \stdClass;
+        $book4         = new \stdClass;
         $book4->author = 'Terry Pratchett';
 
-        $object1 = new \SampleClass(4, 8, 15);
-        $object2 = new \SampleClass(16, 23, 42);
-        $object3 = new \SampleClass(4, 8, 15);
+        $object1  = new \SampleClass(4, 8, 15);
+        $object2  = new \SampleClass(16, 23, 42);
+        $object3  = new \SampleClass(4, 8, 15);
         $storage1 = new \SplObjectStorage;
         $storage1->attach($object1);
         $storage2 = new \SplObjectStorage;
@@ -3079,9 +3158,9 @@ XML;
             [\NAN, \NAN],
             // arrays
             [[], [0 => 1]],
-            [[0 => 1], []],
-            [[0 => null], []],
-            [[0 => 1, 1 => 2], [0 => 1, 1 => 3]],
+            [[0     => 1], []],
+            [[0     => null], []],
+            [[0     => 1, 1 => 2], [0     => 1, 1 => 3]],
             [['a', 'b' => [1, 2]], ['a', 'b' => [2, 1]]],
             // objects
             [new \SampleClass(4, 8, 15), new \SampleClass(16, 23, 42)],
@@ -3162,7 +3241,7 @@ XML;
             // different types
             [new \SampleClass(4, 8, 15), false],
             [false, new \SampleClass(4, 8, 15)],
-            [[0 => 1, 1 => 2], false],
+            [[0        => 1, 1 => 2], false],
             [false, [0 => 1, 1 => 2]],
             [[], new \stdClass],
             [new \stdClass, []],
@@ -3178,15 +3257,15 @@ XML;
     protected function equalValues(): array
     {
         // cyclic dependencies
-        $book1 = new \Book;
-        $book1->author = new \Author('Terry Pratchett');
+        $book1                  = new \Book;
+        $book1->author          = new \Author('Terry Pratchett');
         $book1->author->books[] = $book1;
-        $book2 = new \Book;
-        $book2->author = new \Author('Terry Pratchett');
+        $book2                  = new \Book;
+        $book2->author          = new \Author('Terry Pratchett');
         $book2->author->books[] = $book2;
 
-        $object1 = new \SampleClass(4, 8, 15);
-        $object2 = new \SampleClass(4, 8, 15);
+        $object1  = new \SampleClass(4, 8, 15);
+        $object2  = new \SampleClass(4, 8, 15);
         $storage1 = new \SplObjectStorage;
         $storage1->attach($object1);
         $storage2 = new \SplObjectStorage;
@@ -3280,8 +3359,8 @@ XML;
             ['0', 0],
             [2.3, '2.3'],
             ['2.3', 2.3],
-            [(string)(1 / 3), 1 - 2 / 3],
-            [1 / 3, (string)(1 - 2 / 3)],
+            [(string) (1 / 3), 1 - 2 / 3],
+            [1 / 3, (string) (1 - 2 / 3)],
             ['string representation', new \ClassWithToString],
             [new \ClassWithToString, 'string representation'],
         ];

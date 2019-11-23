@@ -20,12 +20,6 @@ class Translator extends Translation\Translator
      */
     protected static $messages = array();
 
-    public function __construct($locale, Translation\Formatter\MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
-    {
-        $this->addLoader('array', new Translation\Loader\ArrayLoader());
-        parent::__construct($locale, $formatter, $cacheDir, $debug);
-    }
-
     /**
      * Return a singleton instance of Translator.
      *
@@ -40,6 +34,12 @@ class Translator extends Translation\Translator
         }
 
         return static::$singleton;
+    }
+
+    public function __construct($locale, Translation\Formatter\MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
+    {
+        $this->addLoader('array', new Translation\Loader\ArrayLoader());
+        parent::__construct($locale, $formatter, $cacheDir, $debug);
     }
 
     /**
@@ -59,7 +59,7 @@ class Translator extends Translation\Translator
             return true;
         }
 
-        if (file_exists($filename = __DIR__ . '/Lang/' . $locale . '.php')) {
+        if (file_exists($filename = __DIR__.'/Lang/'.$locale.'.php')) {
             static::$messages[$locale] = require $filename;
             $this->addResource('array', static::$messages[$locale], $locale);
 
@@ -70,10 +70,26 @@ class Translator extends Translation\Translator
     }
 
     /**
+     * Init messages language from matching file in Lang directory.
+     *
+     * @param string $locale
+     *
+     * @return bool
+     */
+    protected function loadMessagesFromFile($locale)
+    {
+        if (isset(static::$messages[$locale])) {
+            return true;
+        }
+
+        return $this->resetMessages($locale);
+    }
+
+    /**
      * Set messages of a locale and take file first if present.
      *
      * @param string $locale
-     * @param array $messages
+     * @param array  $messages
      *
      * @return $this
      */
@@ -113,7 +129,7 @@ class Translator extends Translation\Translator
     {
         $locale = preg_replace_callback('/[-_]([a-z]{2,})/', function ($matches) {
             // _2-letters is a region, _3+-letters is a variant
-            return '_' . call_user_func(strlen($matches[1]) > 2 ? 'ucfirst' : 'strtoupper', $matches[1]);
+            return '_'.call_user_func(strlen($matches[1]) > 2 ? 'ucfirst' : 'strtoupper', $matches[1]);
         }, strtolower($locale));
 
         if ($this->loadMessagesFromFile($locale)) {
@@ -123,21 +139,5 @@ class Translator extends Translation\Translator
         }
 
         return false;
-    }
-
-    /**
-     * Init messages language from matching file in Lang directory.
-     *
-     * @param string $locale
-     *
-     * @return bool
-     */
-    protected function loadMessagesFromFile($locale)
-    {
-        if (isset(static::$messages[$locale])) {
-            return true;
-        }
-
-        return $this->resetMessages($locale);
     }
 }

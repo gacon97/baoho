@@ -31,7 +31,7 @@ class DumpServer
     public function __construct(string $host, LoggerInterface $logger = null)
     {
         if (false === strpos($host, '://')) {
-            $host = 'tcp://' . $host;
+            $host = 'tcp://'.$host;
         }
 
         $this->host = $host;
@@ -52,12 +52,12 @@ class DumpServer
         }
 
         foreach ($this->getMessages() as $clientId => $message) {
-            $payload = @unserialize(base64_decode($message), array('allowed_classes' => array(Data::class, Stub::class)));
+            $payload = @unserialize(base64_decode($message), ['allowed_classes' => [Data::class, Stub::class]]);
 
             // Impossible to decode the message, give up.
             if (false === $payload) {
                 if ($this->logger) {
-                    $this->logger->warning('Unable to decode a message from {clientId} client.', array('clientId' => $clientId));
+                    $this->logger->warning('Unable to decode a message from {clientId} client.', ['clientId' => $clientId]);
                 }
 
                 continue;
@@ -65,7 +65,7 @@ class DumpServer
 
             if (!\is_array($payload) || \count($payload) < 2 || !$payload[0] instanceof Data || !\is_array($payload[1])) {
                 if ($this->logger) {
-                    $this->logger->warning('Invalid payload from {clientId} client. Expected an array of two elements (Data $data, array $context)', array('clientId' => $clientId));
+                    $this->logger->warning('Invalid payload from {clientId} client. Expected an array of two elements (Data $data, array $context)', ['clientId' => $clientId]);
                 }
 
                 continue;
@@ -84,8 +84,8 @@ class DumpServer
 
     private function getMessages(): iterable
     {
-        $sockets = array((int)$this->socket => $this->socket);
-        $write = array();
+        $sockets = [(int) $this->socket => $this->socket];
+        $write = [];
 
         while (true) {
             $read = $sockets;
@@ -94,12 +94,12 @@ class DumpServer
             foreach ($read as $stream) {
                 if ($this->socket === $stream) {
                     $stream = stream_socket_accept($this->socket);
-                    $sockets[(int)$stream] = $stream;
+                    $sockets[(int) $stream] = $stream;
                 } elseif (feof($stream)) {
-                    unset($sockets[(int)$stream]);
+                    unset($sockets[(int) $stream]);
                     fclose($stream);
                 } else {
-                    yield (int)$stream => fgets($stream);
+                    yield (int) $stream => fgets($stream);
                 }
             }
         }

@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler;
 
 $parent = __DIR__;
-while (!@file_exists($parent . '/vendor/autoload.php')) {
+while (!@file_exists($parent.'/vendor/autoload.php')) {
     if (!@file_exists($parent)) {
         // open_basedir restriction in effect
         break;
@@ -16,7 +16,7 @@ while (!@file_exists($parent . '/vendor/autoload.php')) {
     $parent = dirname($parent);
 }
 
-require $parent . '/vendor/autoload.php';
+require $parent.'/vendor/autoload.php';
 
 error_reporting(-1);
 ini_set('html_errors', 0);
@@ -60,14 +60,14 @@ class TestSessionHandler extends AbstractSessionHandler
         $this->data = $data;
     }
 
-    public function open($path, $name)
+    public function open($path, $name): bool
     {
         echo __FUNCTION__, "\n";
 
         return parent::open($path, $name);
     }
 
-    public function validateId($sessionId)
+    public function validateId($sessionId): bool
     {
         echo __FUNCTION__, "\n";
 
@@ -77,7 +77,7 @@ class TestSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    public function read($sessionId)
+    public function read($sessionId): string
     {
         echo __FUNCTION__, "\n";
 
@@ -87,7 +87,7 @@ class TestSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    public function updateTimestamp($sessionId, $data)
+    public function updateTimestamp($sessionId, $data): bool
     {
         echo __FUNCTION__, "\n";
 
@@ -97,7 +97,7 @@ class TestSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    public function write($sessionId, $data)
+    public function write($sessionId, $data): bool
     {
         echo __FUNCTION__, "\n";
 
@@ -107,42 +107,42 @@ class TestSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    public function destroy($sessionId)
+    public function destroy($sessionId): bool
     {
         echo __FUNCTION__, "\n";
 
         return parent::destroy($sessionId);
     }
 
-    public function close()
+    public function close(): bool
     {
         echo __FUNCTION__, "\n";
 
         return true;
     }
 
-    public function gc($maxLifetime)
+    public function gc($maxLifetime): bool
     {
         echo __FUNCTION__, "\n";
 
         return true;
     }
 
-    protected function doRead($sessionId)
+    protected function doRead($sessionId): string
     {
-        echo __FUNCTION__ . ': ', $this->data, "\n";
+        echo __FUNCTION__.': ', $this->data, "\n";
 
         return $this->data;
     }
 
-    protected function doWrite($sessionId, $data)
+    protected function doWrite($sessionId, $data): bool
     {
-        echo __FUNCTION__ . ': ', $data, "\n";
+        echo __FUNCTION__.': ', $data, "\n";
 
         return true;
     }
 
-    protected function doDestroy($sessionId)
+    protected function doDestroy($sessionId): bool
     {
         echo __FUNCTION__, "\n";
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace phpDocumentor\Reflection;
 
 interface DocBlockFactoryInterface

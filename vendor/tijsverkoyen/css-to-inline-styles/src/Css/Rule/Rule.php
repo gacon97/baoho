@@ -3,6 +3,7 @@
 namespace TijsVerkoyen\CssToInlineStyles\Css\Rule;
 
 use Symfony\Component\CssSelector\Node\Specificity;
+use TijsVerkoyen\CssToInlineStyles\Css\Property\Property;
 
 final class Rule
 {
@@ -12,7 +13,7 @@ final class Rule
     private $selector;
 
     /**
-     * @var array
+     * @var Property[]
      */
     private $properties;
 
@@ -29,10 +30,10 @@ final class Rule
     /**
      * Rule constructor.
      *
-     * @param string $selector
-     * @param Property[] $properties
+     * @param string      $selector
+     * @param Property[]  $properties
      * @param Specificity $specificity
-     * @param int $order
+     * @param int         $order
      */
     public function __construct($selector, array $properties, Specificity $specificity, $order)
     {
@@ -55,7 +56,7 @@ final class Rule
     /**
      * Get properties
      *
-     * @return array
+     * @return Property[]
      */
     public function getProperties()
     {

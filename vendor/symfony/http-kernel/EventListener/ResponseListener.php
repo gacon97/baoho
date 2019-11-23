@@ -19,6 +19,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * ResponseListener fixes the Response headers based on the Request.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.3
  */
 class ResponseListener implements EventSubscriberInterface
 {
@@ -27,13 +29,6 @@ class ResponseListener implements EventSubscriberInterface
     public function __construct(string $charset)
     {
         $this->charset = $charset;
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::RESPONSE => 'onKernelResponse',
-        );
     }
 
     /**
@@ -52,5 +47,12 @@ class ResponseListener implements EventSubscriberInterface
         }
 
         $response->prepare($event->getRequest());
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
     }
 }

@@ -50,7 +50,7 @@ class MockArraySessionStorage implements SessionStorageInterface
     /**
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * @var MetadataBag
@@ -60,7 +60,7 @@ class MockArraySessionStorage implements SessionStorageInterface
     /**
      * @var array|SessionBagInterface[]
      */
-    protected $bags = array();
+    protected $bags = [];
 
     public function __construct(string $name = 'MOCKSESSID', MetadataBag $metaBag = null)
     {
@@ -166,7 +166,7 @@ class MockArraySessionStorage implements SessionStorageInterface
         }
 
         // clear out the session
-        $this->data = array();
+        $this->data = [];
 
         // reconnect the bags to the session
         $this->loadSession();
@@ -204,6 +204,15 @@ class MockArraySessionStorage implements SessionStorageInterface
         return $this->started;
     }
 
+    public function setMetadataBag(MetadataBag $bag = null)
+    {
+        if (null === $bag) {
+            $bag = new MetadataBag();
+        }
+
+        $this->metadataBag = $bag;
+    }
+
     /**
      * Gets the MetadataBag.
      *
@@ -212,15 +221,6 @@ class MockArraySessionStorage implements SessionStorageInterface
     public function getMetadataBag()
     {
         return $this->metadataBag;
-    }
-
-    public function setMetadataBag(MetadataBag $bag = null)
-    {
-        if (null === $bag) {
-            $bag = new MetadataBag();
-        }
-
-        $this->metadataBag = $bag;
     }
 
     /**
@@ -238,11 +238,11 @@ class MockArraySessionStorage implements SessionStorageInterface
 
     protected function loadSession()
     {
-        $bags = array_merge($this->bags, array($this->metadataBag));
+        $bags = array_merge($this->bags, [$this->metadataBag]);
 
         foreach ($bags as $bag) {
             $key = $bag->getStorageKey();
-            $this->data[$key] = isset($this->data[$key]) ? $this->data[$key] : array();
+            $this->data[$key] = isset($this->data[$key]) ? $this->data[$key] : [];
             $bag->initialize($this->data[$key]);
         }
 

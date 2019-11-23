@@ -26,11 +26,26 @@ class MetadataBagTest extends TestCase
      */
     protected $bag;
 
-    protected $array = array();
+    protected $array = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->bag = new MetadataBag();
+        $this->array = [MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 0];
+        $this->bag->initialize($this->array);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->array = [];
+        $this->bag = null;
+        parent::tearDown();
+    }
 
     public function testInitialize()
     {
-        $sessionMetadata = array();
+        $sessionMetadata = [];
 
         $bag1 = new MetadataBag();
         $bag1->initialize($sessionMetadata);
@@ -67,7 +82,7 @@ class MetadataBagTest extends TestCase
     public function testGetLifetime()
     {
         $bag = new MetadataBag();
-        $array = array(MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 1000);
+        $array = [MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 1000];
         $bag->initialize($array);
         $this->assertEquals(1000, $bag->getLifetime());
     }
@@ -96,11 +111,11 @@ class MetadataBagTest extends TestCase
         $timeStamp = time();
 
         $created = $timeStamp - 15;
-        $sessionMetadata = array(
+        $sessionMetadata = [
             MetadataBag::CREATED => $created,
             MetadataBag::UPDATED => $created,
             MetadataBag::LIFETIME => 1000,
-        );
+        ];
         $bag->initialize($sessionMetadata);
 
         $this->assertEquals($created, $sessionMetadata[MetadataBag::UPDATED]);
@@ -112,28 +127,13 @@ class MetadataBagTest extends TestCase
         $timeStamp = time();
 
         $created = $timeStamp - 45;
-        $sessionMetadata = array(
+        $sessionMetadata = [
             MetadataBag::CREATED => $created,
             MetadataBag::UPDATED => $created,
             MetadataBag::LIFETIME => 1000,
-        );
+        ];
         $bag->initialize($sessionMetadata);
 
         $this->assertEquals($timeStamp, $sessionMetadata[MetadataBag::UPDATED]);
-    }
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->bag = new MetadataBag();
-        $this->array = array(MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 0);
-        $this->bag->initialize($this->array);
-    }
-
-    protected function tearDown()
-    {
-        $this->array = array();
-        $this->bag = null;
-        parent::tearDown();
     }
 }

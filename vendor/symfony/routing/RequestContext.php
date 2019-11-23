@@ -31,7 +31,7 @@ class RequestContext
     private $httpPort;
     private $httpsPort;
     private $queryString;
-    private $parameters = array();
+    private $parameters = [];
 
     public function __construct(string $baseUrl = '', string $method = 'GET', string $host = 'localhost', string $scheme = 'http', int $httpPort = 80, int $httpsPort = 443, string $path = '/', string $queryString = '')
     {
@@ -207,7 +207,7 @@ class RequestContext
      */
     public function setHttpPort($httpPort)
     {
-        $this->httpPort = (int)$httpPort;
+        $this->httpPort = (int) $httpPort;
 
         return $this;
     }
@@ -231,7 +231,7 @@ class RequestContext
      */
     public function setHttpsPort($httpsPort)
     {
-        $this->httpsPort = (int)$httpsPort;
+        $this->httpsPort = (int) $httpsPort;
 
         return $this;
     }
@@ -256,7 +256,7 @@ class RequestContext
     public function setQueryString($queryString)
     {
         // string cast to be fault-tolerant, accepting null
-        $this->queryString = (string)$queryString;
+        $this->queryString = (string) $queryString;
 
         return $this;
     }
@@ -306,14 +306,14 @@ class RequestContext
      */
     public function hasParameter($name)
     {
-        return array_key_exists($name, $this->parameters);
+        return \array_key_exists($name, $this->parameters);
     }
 
     /**
      * Sets a parameter value.
      *
-     * @param string $name A parameter name
-     * @param mixed $parameter The parameter value
+     * @param string $name      A parameter name
+     * @param mixed  $parameter The parameter value
      *
      * @return $this
      */

@@ -41,16 +41,16 @@ class HtmlExtension extends AbstractExtension
      */
     public function getPseudoClassTranslators()
     {
-        return array(
-            'checked' => array($this, 'translateChecked'),
-            'link' => array($this, 'translateLink'),
-            'disabled' => array($this, 'translateDisabled'),
-            'enabled' => array($this, 'translateEnabled'),
-            'selected' => array($this, 'translateSelected'),
-            'invalid' => array($this, 'translateInvalid'),
-            'hover' => array($this, 'translateHover'),
-            'visited' => array($this, 'translateVisited'),
-        );
+        return [
+            'checked' => [$this, 'translateChecked'],
+            'link' => [$this, 'translateLink'],
+            'disabled' => [$this, 'translateDisabled'],
+            'enabled' => [$this, 'translateEnabled'],
+            'selected' => [$this, 'translateSelected'],
+            'invalid' => [$this, 'translateInvalid'],
+            'hover' => [$this, 'translateHover'],
+            'visited' => [$this, 'translateVisited'],
+        ];
     }
 
     /**
@@ -58,9 +58,9 @@ class HtmlExtension extends AbstractExtension
      */
     public function getFunctionTranslators()
     {
-        return array(
-            'lang' => array($this, 'translateLang'),
-        );
+        return [
+            'lang' => [$this, 'translateLang'],
+        ];
     }
 
     /**
@@ -70,8 +70,8 @@ class HtmlExtension extends AbstractExtension
     {
         return $xpath->addCondition(
             '(@checked '
-            . "and (name(.) = 'input' or name(.) = 'command')"
-            . "and (@type = 'checkbox' or @type = 'radio'))"
+            ."and (name(.) = 'input' or name(.) = 'command')"
+            ."and (@type = 'checkbox' or @type = 'radio'))"
         );
     }
 
@@ -90,24 +90,24 @@ class HtmlExtension extends AbstractExtension
     {
         return $xpath->addCondition(
             '('
-            . '@disabled and'
-            . '('
-            . "(name(.) = 'input' and @type != 'hidden')"
-            . " or name(.) = 'button'"
-            . " or name(.) = 'select'"
-            . " or name(.) = 'textarea'"
-            . " or name(.) = 'command'"
-            . " or name(.) = 'fieldset'"
-            . " or name(.) = 'optgroup'"
-            . " or name(.) = 'option'"
-            . ')'
-            . ') or ('
-            . "(name(.) = 'input' and @type != 'hidden')"
-            . " or name(.) = 'button'"
-            . " or name(.) = 'select'"
-            . " or name(.) = 'textarea'"
-            . ')'
-            . ' and ancestor::fieldset[@disabled]'
+                .'@disabled and'
+                .'('
+                    ."(name(.) = 'input' and @type != 'hidden')"
+                    ." or name(.) = 'button'"
+                    ." or name(.) = 'select'"
+                    ." or name(.) = 'textarea'"
+                    ." or name(.) = 'command'"
+                    ." or name(.) = 'fieldset'"
+                    ." or name(.) = 'optgroup'"
+                    ." or name(.) = 'option'"
+                .')'
+            .') or ('
+                ."(name(.) = 'input' and @type != 'hidden')"
+                ." or name(.) = 'button'"
+                ." or name(.) = 'select'"
+                ." or name(.) = 'textarea'"
+            .')'
+            .' and ancestor::fieldset[@disabled]'
         );
         // todo: in the second half, add "and is not a descendant of that fieldset element's first legend element child, if any."
     }
@@ -119,32 +119,32 @@ class HtmlExtension extends AbstractExtension
     {
         return $xpath->addCondition(
             '('
-            . '@href and ('
-            . "name(.) = 'a'"
-            . " or name(.) = 'link'"
-            . " or name(.) = 'area'"
-            . ')'
-            . ') or ('
-            . '('
-            . "name(.) = 'command'"
-            . " or name(.) = 'fieldset'"
-            . " or name(.) = 'optgroup'"
-            . ')'
-            . ' and not(@disabled)'
-            . ') or ('
-            . '('
-            . "(name(.) = 'input' and @type != 'hidden')"
-            . " or name(.) = 'button'"
-            . " or name(.) = 'select'"
-            . " or name(.) = 'textarea'"
-            . " or name(.) = 'keygen'"
-            . ')'
-            . ' and not (@disabled or ancestor::fieldset[@disabled])'
-            . ') or ('
-            . "name(.) = 'option' and not("
-            . '@disabled or ancestor::optgroup[@disabled]'
-            . ')'
-            . ')'
+                .'@href and ('
+                    ."name(.) = 'a'"
+                    ." or name(.) = 'link'"
+                    ." or name(.) = 'area'"
+                .')'
+            .') or ('
+                .'('
+                    ."name(.) = 'command'"
+                    ." or name(.) = 'fieldset'"
+                    ." or name(.) = 'optgroup'"
+                .')'
+                .' and not(@disabled)'
+            .') or ('
+                .'('
+                    ."(name(.) = 'input' and @type != 'hidden')"
+                    ." or name(.) = 'button'"
+                    ." or name(.) = 'select'"
+                    ." or name(.) = 'textarea'"
+                    ." or name(.) = 'keygen'"
+                .')'
+                .' and not (@disabled or ancestor::fieldset[@disabled])'
+            .') or ('
+                ."name(.) = 'option' and not("
+                    .'@disabled or ancestor::optgroup[@disabled]'
+                .')'
+            .')'
         );
     }
 
@@ -158,16 +158,16 @@ class HtmlExtension extends AbstractExtension
         $arguments = $function->getArguments();
         foreach ($arguments as $token) {
             if (!($token->isString() || $token->isIdentifier())) {
-                throw new ExpressionErrorException('Expected a single string or identifier for :lang(), got ' . implode(', ', $arguments));
+                throw new ExpressionErrorException('Expected a single string or identifier for :lang(), got '.implode(', ', $arguments));
             }
         }
 
         return $xpath->addCondition(sprintf(
             'ancestor-or-self::*[@lang][1][starts-with(concat('
-            . "translate(@%s, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '-')"
-            . ', %s)]',
+            ."translate(@%s, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '-')"
+            .', %s)]',
             'lang',
-            Translator::getXpathLiteral(strtolower($arguments[0]->getValue()) . '-')
+            Translator::getXpathLiteral(strtolower($arguments[0]->getValue()).'-')
         ));
     }
 

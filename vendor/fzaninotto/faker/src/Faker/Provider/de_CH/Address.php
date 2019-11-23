@@ -119,6 +119,36 @@ class Address extends \Faker\Provider\Address
     );
 
     /**
+     * Returns a random city name.
+     * @example Luzern
+     * @return string
+     */
+    public function cityName()
+    {
+        return static::randomElement(static::$cityNames);
+    }
+
+    /**
+     * Returns a random street suffix.
+     * @example str.
+     * @return string
+     */
+    public function streetSuffixShort()
+    {
+        return static::randomElement(static::$streetSuffixShort);
+    }
+
+    /**
+     * Returns a random street suffix.
+     * @example Strasse
+     * @return string
+     */
+    public function streetSuffixLong()
+    {
+        return static::randomElement(static::$streetSuffixLong);
+    }
+
+    /**
      * Returns a canton
      * @example array('BE' => 'Bern')
      * @return array
@@ -151,35 +181,5 @@ class Address extends \Faker\Provider\Address
     public static function buildingNumber()
     {
         return static::regexify(self::numerify(static::randomElement(static::$buildingNumber)));
-    }
-
-    /**
-     * Returns a random city name.
-     * @example Luzern
-     * @return string
-     */
-    public function cityName()
-    {
-        return static::randomElement(static::$cityNames);
-    }
-
-    /**
-     * Returns a random street suffix.
-     * @example str.
-     * @return string
-     */
-    public function streetSuffixShort()
-    {
-        return static::randomElement(static::$streetSuffixShort);
-    }
-
-    /**
-     * Returns a random street suffix.
-     * @example Strasse
-     * @return string
-     */
-    public function streetSuffixLong()
-    {
-        return static::randomElement(static::$streetSuffixLong);
     }
 }

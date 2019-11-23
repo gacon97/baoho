@@ -27,8 +27,8 @@ class ChoiceQuestion extends Question
 
     /**
      * @param string $question The question to ask to the user
-     * @param array $choices The list of available choices
-     * @param mixed $default The default answer to return
+     * @param array  $choices  The list of available choices
+     * @param mixed  $default  The default answer to return
      */
     public function __construct(string $question, array $choices, $default = null)
     {
@@ -54,16 +54,6 @@ class ChoiceQuestion extends Question
     }
 
     /**
-     * Returns whether the choices are multiselect.
-     *
-     * @return bool
-     */
-    public function isMultiselect()
-    {
-        return $this->multiselect;
-    }
-
-    /**
      * Sets multiselect option.
      *
      * When multiselect is set to true, multiple choices can be answered.
@@ -78,6 +68,16 @@ class ChoiceQuestion extends Question
         $this->setValidator($this->getDefaultValidator());
 
         return $this;
+    }
+
+    /**
+     * Returns whether the choices are multiselect.
+     *
+     * @return bool
+     */
+    public function isMultiselect()
+    {
+        return $this->multiselect;
     }
 
     /**
@@ -129,22 +129,20 @@ class ChoiceQuestion extends Question
         $isAssoc = $this->isAssoc($choices);
 
         return function ($selected) use ($choices, $errorMessage, $multiselect, $isAssoc) {
-            // Collapse all spaces.
-            $selectedChoices = str_replace(' ', '', $selected);
-
             if ($multiselect) {
                 // Check for a separated comma values
-                if (!preg_match('/^[^,]+(?:,[^,]+)*$/', $selectedChoices, $matches)) {
+                if (!preg_match('/^[^,]+(?:,[^,]+)*$/', $selected, $matches)) {
                     throw new InvalidArgumentException(sprintf($errorMessage, $selected));
                 }
-                $selectedChoices = explode(',', $selectedChoices);
+
+                $selectedChoices = array_map('trim', explode(',', $selected));
             } else {
-                $selectedChoices = array($selected);
+                $selectedChoices = [trim($selected)];
             }
 
-            $multiselectChoices = array();
+            $multiselectChoices = [];
             foreach ($selectedChoices as $value) {
-                $results = array();
+                $results = [];
                 foreach ($choices as $key => $choice) {
                     if ($choice === $value) {
                         $results[] = $key;
@@ -171,7 +169,7 @@ class ChoiceQuestion extends Question
                     throw new InvalidArgumentException(sprintf($errorMessage, $value));
                 }
 
-                $multiselectChoices[] = (string)$result;
+                $multiselectChoices[] = (string) $result;
             }
 
             if ($multiselect) {

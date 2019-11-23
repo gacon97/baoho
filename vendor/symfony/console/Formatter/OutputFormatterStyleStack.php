@@ -37,7 +37,7 @@ class OutputFormatterStyleStack implements ResetInterface
      */
     public function reset()
     {
-        $this->styles = array();
+        $this->styles = [];
     }
 
     /**
@@ -91,14 +91,6 @@ class OutputFormatterStyleStack implements ResetInterface
     }
 
     /**
-     * @return OutputFormatterStyleInterface
-     */
-    public function getEmptyStyle()
-    {
-        return $this->emptyStyle;
-    }
-
-    /**
      * @return $this
      */
     public function setEmptyStyle(OutputFormatterStyleInterface $emptyStyle)
@@ -106,5 +98,13 @@ class OutputFormatterStyleStack implements ResetInterface
         $this->emptyStyle = $emptyStyle;
 
         return $this;
+    }
+
+    /**
+     * @return OutputFormatterStyleInterface
+     */
+    public function getEmptyStyle()
+    {
+        return $this->emptyStyle;
     }
 }

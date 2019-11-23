@@ -22,6 +22,8 @@ use Webmozart\Assert\Assert;
  */
 final class Version extends BaseTag implements Factory\StaticMethod
 {
+    protected $name = 'version';
+
     /**
      * PCRE regular expression matching a version vector.
      * Assumes the "x" modifier.
@@ -37,7 +39,7 @@ final class Version extends BaseTag implements Factory\StaticMethod
         # around the actual version vector.
         [^\s\:]+\:\s*\$[^\$]+\$
     )';
-    protected $name = 'version';
+
     /** @var string The version vector. */
     private $version = '';
 

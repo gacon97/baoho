@@ -63,7 +63,7 @@ class MountManager implements FilesystemInterface
     /**
      * Mount filesystems.
      *
-     * @param string $prefix
+     * @param string              $prefix
      * @param FilesystemInterface $filesystem
      *
      * @throws InvalidArgumentException
@@ -72,7 +72,7 @@ class MountManager implements FilesystemInterface
      */
     public function mountFilesystem($prefix, FilesystemInterface $filesystem)
     {
-        if (!is_string($prefix)) {
+        if ( ! is_string($prefix)) {
             throw new InvalidArgumentException(__METHOD__ . ' expects argument #1 to be a string.');
         }
 
@@ -92,7 +92,7 @@ class MountManager implements FilesystemInterface
      */
     public function getFilesystem($prefix)
     {
-        if (!isset($this->filesystems[$prefix])) {
+        if ( ! isset($this->filesystems[$prefix])) {
             throw new FilesystemNotFoundException('No filesystem mounted with prefix ' . $prefix);
         }
 
@@ -116,7 +116,7 @@ class MountManager implements FilesystemInterface
 
         $path = array_shift($arguments);
 
-        if (!is_string($path)) {
+        if ( ! is_string($path)) {
             throw new InvalidArgumentException('First argument should be a string');
         }
 
@@ -128,7 +128,7 @@ class MountManager implements FilesystemInterface
 
     /**
      * @param string $directory
-     * @param bool $recursive
+     * @param bool   $recursive
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -152,7 +152,7 @@ class MountManager implements FilesystemInterface
      * Call forwarder.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -169,7 +169,7 @@ class MountManager implements FilesystemInterface
     /**
      * @param string $from
      * @param string $to
-     * @param array $config
+     * @param array  $config
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -201,9 +201,9 @@ class MountManager implements FilesystemInterface
     /**
      * List with plugin adapter.
      *
-     * @param array $keys
+     * @param array  $keys
      * @param string $directory
-     * @param bool $recursive
+     * @param bool   $recursive
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -223,7 +223,7 @@ class MountManager implements FilesystemInterface
      *
      * @param string $from
      * @param string $to
-     * @param array $config
+     * @param array  $config
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -259,7 +259,7 @@ class MountManager implements FilesystemInterface
      * Invoke a plugin on a filesystem mounted on a given prefix.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      * @param string $prefix
      *
      * @throws FilesystemNotFoundException
@@ -279,6 +279,22 @@ class MountManager implements FilesystemInterface
         $callback = [$filesystem, $method];
 
         return call_user_func_array($callback, $arguments);
+    }
+
+    /**
+     * @param string $path
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return string[] [:prefix, :path]
+     */
+    protected function getPrefixAndPath($path)
+    {
+        if (strpos($path, '://') < 1) {
+            throw new InvalidArgumentException('No prefix detected in path: ' . $path);
+        }
+
+        return explode('://', $path, 2);
     }
 
     /**
@@ -410,9 +426,9 @@ class MountManager implements FilesystemInterface
     /**
      * Write a new file.
      *
-     * @param string $path The path of the new file.
+     * @param string $path     The path of the new file.
      * @param string $contents The file contents.
-     * @param array $config An optional configuration array.
+     * @param array  $config   An optional configuration array.
      *
      * @throws FileExistsException
      *
@@ -428,9 +444,9 @@ class MountManager implements FilesystemInterface
     /**
      * Write a new file using a stream.
      *
-     * @param string $path The path of the new file.
+     * @param string   $path     The path of the new file.
      * @param resource $resource The file handle.
-     * @param array $config An optional configuration array.
+     * @param array    $config   An optional configuration array.
      *
      * @throws InvalidArgumentException If $resource is not a file handle.
      * @throws FileExistsException
@@ -447,9 +463,9 @@ class MountManager implements FilesystemInterface
     /**
      * Update an existing file.
      *
-     * @param string $path The path of the existing file.
+     * @param string $path     The path of the existing file.
      * @param string $contents The file contents.
-     * @param array $config An optional configuration array.
+     * @param array  $config   An optional configuration array.
      *
      * @throws FileNotFoundException
      *
@@ -465,9 +481,9 @@ class MountManager implements FilesystemInterface
     /**
      * Update an existing file using a stream.
      *
-     * @param string $path The path of the existing file.
+     * @param string   $path     The path of the existing file.
      * @param resource $resource The file handle.
-     * @param array $config An optional configuration array.
+     * @param array    $config   An optional configuration array.
      *
      * @throws InvalidArgumentException If $resource is not a file handle.
      * @throws FileNotFoundException
@@ -484,7 +500,7 @@ class MountManager implements FilesystemInterface
     /**
      * Rename a file.
      *
-     * @param string $path Path to the existing file.
+     * @param string $path    Path to the existing file.
      * @param string $newpath The new path of the file.
      *
      * @throws FileExistsException   Thrown if $newpath exists.
@@ -535,7 +551,7 @@ class MountManager implements FilesystemInterface
      * Create a directory.
      *
      * @param string $dirname The name of the new directory.
-     * @param array $config An optional configuration array.
+     * @param array  $config  An optional configuration array.
      *
      * @return bool True on success, false on failure.
      */
@@ -549,7 +565,7 @@ class MountManager implements FilesystemInterface
     /**
      * Set the visibility for a file.
      *
-     * @param string $path The path to the file.
+     * @param string $path       The path to the file.
      * @param string $visibility One of 'public' or 'private'.
      *
      * @throws FileNotFoundException
@@ -566,9 +582,9 @@ class MountManager implements FilesystemInterface
     /**
      * Create a file or update if exists.
      *
-     * @param string $path The path to the file.
+     * @param string $path     The path to the file.
      * @param string $contents The file contents.
-     * @param array $config An optional configuration array.
+     * @param array  $config   An optional configuration array.
      *
      * @return bool True on success, false on failure.
      */
@@ -582,9 +598,9 @@ class MountManager implements FilesystemInterface
     /**
      * Create a file or update if exists.
      *
-     * @param string $path The path to the file.
+     * @param string   $path     The path to the file.
      * @param resource $resource The file handle.
-     * @param array $config An optional configuration array.
+     * @param array    $config   An optional configuration array.
      *
      * @throws InvalidArgumentException Thrown if $resource is not a resource.
      *
@@ -618,7 +634,7 @@ class MountManager implements FilesystemInterface
      *
      * @deprecated
      *
-     * @param string $path The path to the file.
+     * @param string  $path    The path to the file.
      * @param Handler $handler An optional existing handler to populate.
      *
      * @return Handler Either a file or directory handler.
@@ -628,21 +644,5 @@ class MountManager implements FilesystemInterface
         list($prefix, $path) = $this->getPrefixAndPath($path);
 
         return $this->getFilesystem($prefix)->get($path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @throws InvalidArgumentException
-     *
-     * @return string[] [:prefix, :path]
-     */
-    protected function getPrefixAndPath($path)
-    {
-        if (strpos($path, '://') < 1) {
-            throw new InvalidArgumentException('No prefix detected in path: ' . $path);
-        }
-
-        return explode('://', $path, 2);
     }
 }

@@ -43,7 +43,7 @@ class TrustProxies
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param \Closure                 $next
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
@@ -82,6 +82,27 @@ class TrustProxies
     }
 
     /**
+     * Specify the IP addresses to trust explicitly.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param array                    $trustedIps
+     */
+    private function setTrustedProxyIpAddressesToSpecificIps(Request $request, $trustedIps)
+    {
+        $request->setTrustedProxies((array) $trustedIps, $this->getTrustedHeaderNames());
+    }
+
+    /**
+     * Set the trusted proxy to be the IP address calling this servers
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    private function setTrustedProxyIpAddressesToTheCallingIp(Request $request)
+    {
+        $request->setTrustedProxies([$request->server->get('REMOTE_ADDR')], $this->getTrustedHeaderNames());
+    }
+
+    /**
      * Retrieve trusted header name(s), falling back to defaults if config not set.
      *
      * @return int A bit field of Request::HEADER_*, to set which headers to trust from your proxies.
@@ -104,26 +125,5 @@ class TrustProxies
 
         // Should never reach this point
         return $headers;
-    }
-
-    /**
-     * Specify the IP addresses to trust explicitly.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param array $trustedIps
-     */
-    private function setTrustedProxyIpAddressesToSpecificIps(Request $request, $trustedIps)
-    {
-        $request->setTrustedProxies((array)$trustedIps, $this->getTrustedHeaderNames());
-    }
-
-    /**
-     * Set the trusted proxy to be the IP address calling this servers
-     *
-     * @param \Illuminate\Http\Request $request
-     */
-    private function setTrustedProxyIpAddressesToTheCallingIp(Request $request)
-    {
-        $request->setTrustedProxies([$request->server->get('REMOTE_ADDR')], $this->getTrustedHeaderNames());
     }
 }

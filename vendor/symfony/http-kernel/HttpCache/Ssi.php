@@ -70,7 +70,7 @@ class Ssi extends AbstractSurrogate
 
         $i = 1;
         while (isset($chunks[$i])) {
-            $options = array();
+            $options = [];
             preg_match_all('/(virtual)="([^"]*?)"/', $chunks[$i], $matches, PREG_SET_ORDER);
             foreach ($matches as $set) {
                 $options[$set[1]] = $set[2];
@@ -80,7 +80,7 @@ class Ssi extends AbstractSurrogate
                 throw new \RuntimeException('Unable to process an SSI tag without a "virtual" attribute.');
             }
 
-            $chunks[$i] = sprintf('<?php echo $this->surrogate->handle($this, %s, \'\', false) ?>' . "\n",
+            $chunks[$i] = sprintf('<?php echo $this->surrogate->handle($this, %s, \'\', false) ?>'."\n",
                 var_export($options['virtual'], true)
             );
             ++$i;
@@ -94,5 +94,7 @@ class Ssi extends AbstractSurrogate
 
         // remove SSI/1.0 from the Surrogate-Control header
         $this->removeFromControl($response);
+
+        return $response;
     }
 }

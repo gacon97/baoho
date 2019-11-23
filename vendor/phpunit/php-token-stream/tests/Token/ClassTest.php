@@ -22,25 +22,30 @@ class PHP_Token_ClassTest extends TestCase
      */
     private $function;
 
-    /**
-     * @covers PHP_Token_CLASS::getKeywords
-     */
+    protected function setUp()
+    {
+        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'source2.php') as $token) {
+            if ($token instanceof PHP_Token_CLASS) {
+                $this->class = $token;
+            }
+
+            if ($token instanceof PHP_Token_FUNCTION) {
+                $this->function = $token;
+                break;
+            }
+        }
+    }
+
     public function testGetClassKeywords()
     {
         $this->assertEquals('abstract', $this->class->getKeywords());
     }
 
-    /**
-     * @covers PHP_Token_FUNCTION::getKeywords
-     */
     public function testGetFunctionKeywords()
     {
         $this->assertEquals('abstract,static', $this->function->getKeywords());
     }
 
-    /**
-     * @covers PHP_Token_FUNCTION::getVisibility
-     */
     public function testGetFunctionVisibility()
     {
         $this->assertEquals('public', $this->function->getVisibility());
@@ -48,9 +53,7 @@ class PHP_Token_ClassTest extends TestCase
 
     public function testIssue19()
     {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'issue19.php');
-
-        foreach ($ts as $token) {
+        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'issue19.php') as $token) {
             if ($token instanceof PHP_Token_CLASS) {
                 $this->assertFalse($token->hasInterfaces());
             }
@@ -127,9 +130,7 @@ class PHP_Token_ClassTest extends TestCase
      */
     public function testClassWithMethodNamedEmptyIsHandledCorrectly()
     {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'class_with_method_named_empty.php');
-
-        $classes = $ts->getClasses();
+        $classes = (new PHP_Token_Stream(TEST_FILES_PATH . 'class_with_method_named_empty.php'))->getClasses();
 
         $this->assertArrayHasKey('class_with_method_named_empty', $classes);
         $this->assertArrayHasKey('empty', $classes['class_with_method_named_empty']['methods']);
@@ -140,30 +141,12 @@ class PHP_Token_ClassTest extends TestCase
      */
     public function testAnonymousFunctionDoesNotAffectStartAndEndLineOfMethod()
     {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'php-code-coverage-issue-424.php');
-
-        $classes = $ts->getClasses();
+        $classes = (new PHP_Token_Stream(TEST_FILES_PATH . 'php-code-coverage-issue-424.php'))->getClasses();
 
         $this->assertSame(5, $classes['Example']['methods']['even']['startLine']);
         $this->assertSame(12, $classes['Example']['methods']['even']['endLine']);
 
         $this->assertSame(7, $classes['Example']['methods']['anonymousFunction:7#28']['startLine']);
         $this->assertSame(9, $classes['Example']['methods']['anonymousFunction:7#28']['endLine']);
-    }
-
-    protected function setUp()
-    {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'source2.php');
-
-        foreach ($ts as $token) {
-            if ($token instanceof PHP_Token_CLASS) {
-                $this->class = $token;
-            }
-
-            if ($token instanceof PHP_Token_FUNCTION) {
-                $this->function = $token;
-                break;
-            }
-        }
     }
 }

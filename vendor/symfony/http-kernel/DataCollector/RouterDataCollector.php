@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 /**
- * RouterDataCollector.
- *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class RouterDataCollector extends DataCollector
@@ -54,15 +52,22 @@ class RouterDataCollector extends DataCollector
     {
         $this->controllers = new \SplObjectStorage();
 
-        $this->data = array(
+        $this->data = [
             'redirect' => false,
             'url' => null,
             'route' => null,
-        );
+        ];
+    }
+
+    protected function guessRoute(Request $request, $controller)
+    {
+        return 'n/a';
     }
 
     /**
      * Remembers the controller associated to each request.
+     *
+     * @final since Symfony 4.3
      */
     public function onKernelController(FilterControllerEvent $event)
     {
@@ -99,10 +104,5 @@ class RouterDataCollector extends DataCollector
     public function getName()
     {
         return 'router';
-    }
-
-    protected function guessRoute(Request $request, $controller)
-    {
-        return 'n/a';
     }
 }
