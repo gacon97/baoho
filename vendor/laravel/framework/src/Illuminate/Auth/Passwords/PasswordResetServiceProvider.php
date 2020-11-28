@@ -24,16 +24,6 @@ class PasswordResetServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['auth.password', 'auth.password.broker'];
-    }
-
-    /**
      * Register the password broker instance.
      *
      * @return void
@@ -47,5 +37,15 @@ class PasswordResetServiceProvider extends ServiceProvider
         $this->app->bind('auth.password.broker', function ($app) {
             return $app->make('auth.password')->broker();
         });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['auth.password', 'auth.password.broker'];
     }
 }

@@ -1,0 +1,45 @@
+runtime: php
+env: flex
+
+runtime_config:
+  document_root: public
+
+# Ensure we skip ".env", which is only for local development
+skip_files:
+  - .env
+
+env_variables:
+  ## Put production environment variables here.
+  APP_KEY: base64:h61+CzMtAeom8OefrKWbXhVSWtjTsLj+ZafIINwIaTY=
+  APP_STORAGE: /tmp
+  VIEW_COMPILED_PATH: /tmp
+  BROADCAST_DRIVER: log
+  CACHE_DRIVER: file
+  SESSION_DRIVER: file
+  SESSION_LIFETIME: 120
+  QUEUE_DRIVER: sync
+
+  REDIS_HOST: 127.0.0.1
+  REDIS_PASSWORD: null
+  REDIS_PORT: 6379
+
+  MAIL_DRIVER: smtp
+  MAIL_HOST: smtp.mailtrap.io
+  MAIL_PORT: 2525
+  MAIL_USERNAME: null
+  MAIL_PASSWORD: null
+  MAIL_ENCRYPTION: null
+
+  PUSHER_APP_ID:
+  PUSHER_APP_KEY:
+  PUSHER_APP_SECRET:
+  PUSHER_APP_CLUSTER: mt1
+
+  MIX_PUSHER_APP_KEY: "${PUSHER_APP_KEY}"
+  MIX_PUSHER_APP_CLUSTER: "${PUSHER_APP_CLUSTER}"
+
+  ## Set these environment variables according to your CloudSQL configuration.
+  DB_DATABASE: baoho
+  DB_USERNAME: root
+  DB_PASSWORD: secret
+  DB_SOCKET: "/cloudsql/baoho-259104:asia-northeast1:baoho"

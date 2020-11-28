@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -16,9 +15,9 @@ use stdClass;
 /**
  * @covers \SebastianBergmann\Comparator\MockObjectComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class MockObjectComparatorTest extends TestCase
 {
@@ -27,10 +26,16 @@ final class MockObjectComparatorTest extends TestCase
      */
     private $comparator;
 
+    protected function setUp(): void
+    {
+        $this->comparator = new MockObjectComparator;
+        $this->comparator->setFactory(new Factory);
+    }
+
     public function acceptsSucceedsProvider()
     {
         $testmock = $this->createMock(TestClass::class);
-        $stdmock = $this->createMock(stdClass::class);
+        $stdmock  = $this->createMock(stdClass::class);
 
         return [
             [$testmock, $testmock],
@@ -53,11 +58,11 @@ final class MockObjectComparatorTest extends TestCase
     public function assertEqualsSucceedsProvider()
     {
         // cyclic dependencies
-        $book1 = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
-        $book1->author = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
+        $book1                  = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
+        $book1->author          = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
         $book1->author->books[] = $book1;
-        $book2 = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
-        $book2->author = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
+        $book2                  = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
+        $book2->author          = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
         $book2->author->books[] = $book2;
 
         $object1 = $this->getMockBuilder(SampleClass::class)->setMethods(null)->setConstructorArgs([4, 8, 15])->getMock();
@@ -78,20 +83,20 @@ final class MockObjectComparatorTest extends TestCase
 
     public function assertEqualsFailsProvider()
     {
-        $typeMessage = 'is not instance of expected class';
+        $typeMessage  = 'is not instance of expected class';
         $equalMessage = 'Failed asserting that two objects are equal.';
 
         // cyclic dependencies
-        $book1 = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
-        $book1->author = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
+        $book1                  = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
+        $book1->author          = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratchett'])->getMock();
         $book1->author->books[] = $book1;
-        $book2 = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
-        $book1->author = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratch'])->getMock();
+        $book2                  = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
+        $book1->author          = $this->getMockBuilder(Author::class)->setMethods(null)->setConstructorArgs(['Terry Pratch'])->getMock();
         $book2->author->books[] = $book2;
 
-        $book3 = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
+        $book3         = $this->getMockBuilder(Book::class)->setMethods(null)->getMock();
         $book3->author = 'Terry Pratchett';
-        $book4 = $this->createMock(stdClass::class);
+        $book4         = $this->createMock(stdClass::class);
         $book4->author = 'Terry Pratchett';
 
         $object1 = $this->getMockBuilder(SampleClass::class)->setMethods(null)->setConstructorArgs([4, 8, 15])->getMock();
@@ -121,7 +126,7 @@ final class MockObjectComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -131,7 +136,7 @@ final class MockObjectComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -159,11 +164,5 @@ final class MockObjectComparatorTest extends TestCase
         $this->expectExceptionMessage($message);
 
         $this->comparator->assertEquals($expected, $actual, $delta);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new MockObjectComparator;
-        $this->comparator->setFactory(new Factory);
     }
 }

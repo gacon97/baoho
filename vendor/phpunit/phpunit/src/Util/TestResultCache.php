@@ -10,7 +10,6 @@
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\Test;
-use PHPUnit\Util\Filesystem;
 
 class TestResultCache implements \Serializable, TestResultCacheInterface
 {
@@ -64,14 +63,9 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
      */
     private $times = [];
 
-    public function __construct($filepath = null)
+    public function __construct($filename = null)
     {
-        if ($filepath !== null && \is_dir($filepath)) {
-            // cache path provided, use default cache filename in that location
-            $filepath = $filepath . \DIRECTORY_SEPARATOR . self::DEFAULT_RESULT_CACHE_FILENAME;
-        }
-
-        $this->cacheFilename = $filepath ?? $_ENV['PHPUNIT_RESULT_CACHE'] ?? self::DEFAULT_RESULT_CACHE_FILENAME;
+        $this->cacheFilename = $filename ?? $_ENV['PHPUNIT_RESULT_CACHE'] ?? self::DEFAULT_RESULT_CACHE_FILENAME;
     }
 
     public function persist(): void
@@ -85,7 +79,7 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
             return;
         }
 
-        if (!Filesystem::createDirectory(\dirname($this->cacheFilename))) {
+        if (!$this->createDirectory(\dirname($this->cacheFilename))) {
             throw new Exception(
                 \sprintf(
                     'Cannot create directory "%s" for result cache file',
@@ -192,5 +186,10 @@ class TestResultCache implements \Serializable, TestResultCacheInterface
                 }
             }
         }
+    }
+
+    private function createDirectory(string $directory): bool
+    {
+        return !(!\is_dir($directory) && !@\mkdir($directory, 0777, true) && !\is_dir($directory));
     }
 }

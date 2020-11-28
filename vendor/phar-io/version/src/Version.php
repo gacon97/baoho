@@ -10,8 +10,7 @@
 
 namespace PharIo\Version;
 
-class Version
-{
+class Version {
     /**
      * @var VersionNumber
      */
@@ -40,8 +39,7 @@ class Version
     /**
      * @param string $versionString
      */
-    public function __construct($versionString)
-    {
+    public function __construct($versionString) {
         $this->ensureVersionStringIsValid($versionString);
 
         $this->versionString = $versionString;
@@ -50,24 +48,21 @@ class Version
     /**
      * @return PreReleaseSuffix
      */
-    public function getPreReleaseSuffix()
-    {
+    public function getPreReleaseSuffix() {
         return $this->preReleaseSuffix;
     }
 
     /**
      * @return string
      */
-    public function getVersionString()
-    {
+    public function getVersionString() {
         return $this->versionString;
     }
 
     /**
      * @return bool
      */
-    public function hasPreReleaseSuffix()
-    {
+    public function hasPreReleaseSuffix() {
         return $this->preReleaseSuffix !== null;
     }
 
@@ -76,8 +71,7 @@ class Version
      *
      * @return bool
      */
-    public function isGreaterThan(Version $version)
-    {
+    public function isGreaterThan(Version $version) {
         if ($version->getMajor()->getValue() > $this->getMajor()->getValue()) {
             return false;
         }
@@ -120,32 +114,28 @@ class Version
     /**
      * @return VersionNumber
      */
-    public function getMajor()
-    {
+    public function getMajor() {
         return $this->major;
     }
 
     /**
      * @return VersionNumber
      */
-    public function getMinor()
-    {
+    public function getMinor() {
         return $this->minor;
     }
 
     /**
      * @return VersionNumber
      */
-    public function getPatch()
-    {
+    public function getPatch() {
         return $this->patch;
     }
 
     /**
      * @param array $matches
      */
-    private function parseVersion(array $matches)
-    {
+    private function parseVersion(array $matches) {
         $this->major = new VersionNumber($matches['Major']);
         $this->minor = new VersionNumber($matches['Minor']);
         $this->patch = isset($matches['Patch']) ? new VersionNumber($matches['Patch']) : new VersionNumber(null);
@@ -160,8 +150,7 @@ class Version
      *
      * @throws InvalidVersionException
      */
-    private function ensureVersionStringIsValid($version)
-    {
+    private function ensureVersionStringIsValid($version) {
         $regex = '/^v?
             (?<Major>(0|(?:[1-9][0-9]*)))
             \\.

@@ -77,7 +77,7 @@ class TraitEnumerator extends Enumerator
         foreach ($traits as $name) {
             if ($this->showItem($name)) {
                 $ret[$name] = [
-                    'name' => $name,
+                    'name'  => $name,
                     'style' => self::IS_CLASS,
                     'value' => $this->presentSignature($name),
                 ];

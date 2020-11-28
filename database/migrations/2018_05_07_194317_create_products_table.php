@@ -17,10 +17,10 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             // $table->integer('category_id');
             $table->integer('category_id')->unsigned();
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+//            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             // $table->integer('sub_category_id');
             $table->integer('sub_category_id')->unsigned();
-            $table->foreign('sub_category_id')->references('id')->on('sub_categories')->onDelete('cascade');
+//            $table->foreign('sub_category_id')->references('id')->on('sub_categories')->onDelete('cascade');
             $table->string('name')->unique();
             $table->integer('discount')->nullable();
             $table->integer('price');

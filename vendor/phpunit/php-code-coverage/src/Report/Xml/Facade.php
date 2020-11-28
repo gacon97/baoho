@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -274,7 +273,7 @@ final class Facade
     {
         $filename = \sprintf('%s/%s.xml', $this->getTargetDirectory(), $name);
 
-        $document->formatOutput = true;
+        $document->formatOutput       = true;
         $document->preserveWhiteSpace = false;
         $this->initTargetDirectory(\dirname($filename));
 

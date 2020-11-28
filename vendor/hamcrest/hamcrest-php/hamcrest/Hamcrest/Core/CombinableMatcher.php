@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Core;
 
 /*
@@ -18,6 +17,28 @@ class CombinableMatcher extends BaseMatcher
     public function __construct(Matcher $matcher)
     {
         $this->_matcher = $matcher;
+    }
+
+    public function matches($item)
+    {
+        return $this->_matcher->matches($item);
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendDescriptionOf($this->_matcher);
+    }
+
+    /** Diversion from Hamcrest-Java... Logical "and" not permitted */
+    public function andAlso(Matcher $other)
+    {
+        return new self(new AllOf($this->_templatedListWith($other)));
+    }
+
+    /** Diversion from Hamcrest-Java... Logical "or" not permitted */
+    public function orElse(Matcher $other)
+    {
+        return new self(new AnyOf($this->_templatedListWith($other)));
     }
 
     /**
@@ -46,28 +67,6 @@ class CombinableMatcher extends BaseMatcher
     public static function either(Matcher $matcher)
     {
         return new self($matcher);
-    }
-
-    public function matches($item)
-    {
-        return $this->_matcher->matches($item);
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendDescriptionOf($this->_matcher);
-    }
-
-    /** Diversion from Hamcrest-Java... Logical "and" not permitted */
-    public function andAlso(Matcher $other)
-    {
-        return new self(new AllOf($this->_templatedListWith($other)));
-    }
-
-    /** Diversion from Hamcrest-Java... Logical "or" not permitted */
-    public function orElse(Matcher $other)
-    {
-        return new self(new AnyOf($this->_templatedListWith($other)));
     }
 
     // -- Private Methods

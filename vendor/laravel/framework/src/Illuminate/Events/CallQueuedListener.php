@@ -56,9 +56,9 @@ class CallQueuedListener implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  string $class
-     * @param  string $method
-     * @param  array $data
+     * @param  string  $class
+     * @param  string  $method
+     * @param  array  $data
      * @return void
      */
     public function __construct($class, $method, $data)
@@ -71,7 +71,7 @@ class CallQueuedListener implements ShouldQueue
     /**
      * Handle the queued job.
      *
-     * @param  \Illuminate\Container\Container $container
+     * @param  \Illuminate\Container\Container  $container
      * @return void
      */
     public function handle(Container $container)
@@ -88,11 +88,27 @@ class CallQueuedListener implements ShouldQueue
     }
 
     /**
+     * Set the job instance of the given class if necessary.
+     *
+     * @param  \Illuminate\Contracts\Queue\Job  $job
+     * @param  mixed  $instance
+     * @return mixed
+     */
+    protected function setJobInstanceIfNecessary(Job $job, $instance)
+    {
+        if (in_array(InteractsWithQueue::class, class_uses_recursive($instance))) {
+            $instance->setJob($job);
+        }
+
+        return $instance;
+    }
+
+    /**
      * Call the failed method on the job instance.
      *
      * The event instance and the exception will be passed.
      *
-     * @param  \Exception $e
+     * @param  \Exception  $e
      * @return void
      */
     public function failed($e)
@@ -105,6 +121,18 @@ class CallQueuedListener implements ShouldQueue
 
         if (method_exists($handler, 'failed')) {
             call_user_func_array([$handler, 'failed'], $parameters);
+        }
+    }
+
+    /**
+     * Unserialize the data if needed.
+     *
+     * @return void
+     */
+    protected function prepareData()
+    {
+        if (is_string($this->data)) {
+            $this->data = unserialize($this->data);
         }
     }
 
@@ -128,33 +156,5 @@ class CallQueuedListener implements ShouldQueue
         $this->data = array_map(function ($data) {
             return is_object($data) ? clone $data : $data;
         }, $this->data);
-    }
-
-    /**
-     * Set the job instance of the given class if necessary.
-     *
-     * @param  \Illuminate\Contracts\Queue\Job $job
-     * @param  mixed $instance
-     * @return mixed
-     */
-    protected function setJobInstanceIfNecessary(Job $job, $instance)
-    {
-        if (in_array(InteractsWithQueue::class, class_uses_recursive($instance))) {
-            $instance->setJob($job);
-        }
-
-        return $instance;
-    }
-
-    /**
-     * Unserialize the data if needed.
-     *
-     * @return void
-     */
-    protected function prepareData()
-    {
-        if (is_string($this->data)) {
-            $this->data = unserialize($this->data);
-        }
     }
 }

@@ -27,6 +27,11 @@ class CodeCoverageTest extends TestCase
      */
     private $coverage;
 
+    protected function setUp()
+    {
+        $this->coverage = new CodeCoverage;
+    }
+
     public function testCanBeConstructedForXdebugWithoutGivenFilterObject()
     {
         if (PHP_SAPI == 'phpdbg') {
@@ -52,7 +57,7 @@ class CodeCoverageTest extends TestCase
             $this->markTestSkipped('Requires PHP CLI and Xdebug');
         }
 
-        $filter = new Filter;
+        $filter   = new Filter;
         $coverage = new CodeCoverage(null, $filter);
 
         $this->assertAttributeInstanceOf(
@@ -89,7 +94,7 @@ class CodeCoverageTest extends TestCase
             $this->markTestSkipped('Requires PHPDBG');
         }
 
-        $filter = new Filter;
+        $filter   = new Filter;
         $coverage = new CodeCoverage(null, $filter);
 
         $this->assertAttributeInstanceOf(
@@ -219,10 +224,10 @@ class CodeCoverageTest extends TestCase
 
         $this->assertEquals(
             [
-                'BankAccountTest::testBalanceIsInitiallyZero' => ['size' => 'unknown', 'status' => -1],
-                'BankAccountTest::testBalanceCannotBecomeNegative' => ['size' => 'unknown', 'status' => -1],
+                'BankAccountTest::testBalanceIsInitiallyZero'       => ['size' => 'unknown', 'status' => -1],
+                'BankAccountTest::testBalanceCannotBecomeNegative'  => ['size' => 'unknown', 'status' => -1],
                 'BankAccountTest::testBalanceCannotBecomeNegative2' => ['size' => 'unknown', 'status' => -1],
-                'BankAccountTest::testDepositWithdrawMoney' => ['size' => 'unknown', 'status' => -1]
+                'BankAccountTest::testDepositWithdrawMoney'         => ['size' => 'unknown', 'status' => -1]
             ],
             $coverage->getTests()
         );
@@ -386,6 +391,21 @@ class CodeCoverageTest extends TestCase
         );
     }
 
+    /**
+     * @return \ReflectionMethod
+     */
+    private function getLinesToBeIgnored()
+    {
+        $getLinesToBeIgnored = new \ReflectionMethod(
+            'SebastianBergmann\CodeCoverage\CodeCoverage',
+            'getLinesToBeIgnored'
+        );
+
+        $getLinesToBeIgnored->setAccessible(true);
+
+        return $getLinesToBeIgnored;
+    }
+
     public function testGetLinesToBeIgnoredWhenIgnoreIsDisabled()
     {
         $this->coverage->setDisableIgnoredLines(true);
@@ -475,25 +495,5 @@ class CodeCoverageTest extends TestCase
         $this->expectException(CoveredCodeNotExecutedException::class);
 
         $this->coverage->append($data, 'File1.php', true, $linesToBeCovered, $linesToBeUsed);
-    }
-
-    protected function setUp()
-    {
-        $this->coverage = new CodeCoverage;
-    }
-
-    /**
-     * @return \ReflectionMethod
-     */
-    private function getLinesToBeIgnored()
-    {
-        $getLinesToBeIgnored = new \ReflectionMethod(
-            'SebastianBergmann\CodeCoverage\CodeCoverage',
-            'getLinesToBeIgnored'
-        );
-
-        $getLinesToBeIgnored->setAccessible(true);
-
-        return $getLinesToBeIgnored;
     }
 }

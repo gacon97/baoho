@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Html;
 
 use SebastianBergmann\CodeCoverage\Node\AbstractNode as Node;
@@ -40,7 +39,7 @@ final class Directory extends Renderer
 
         $template->setVar(
             [
-                'id' => $node->getId(),
+                'id'    => $node->getId(),
                 'items' => $items,
             ]
         );
@@ -51,17 +50,17 @@ final class Directory extends Renderer
     protected function renderItem(Node $node, bool $total = false): string
     {
         $data = [
-            'numClasses' => $node->getNumClassesAndTraits(),
-            'numTestedClasses' => $node->getNumTestedClassesAndTraits(),
-            'numMethods' => $node->getNumFunctionsAndMethods(),
-            'numTestedMethods' => $node->getNumTestedFunctionsAndMethods(),
-            'linesExecutedPercent' => $node->getLineExecutedPercent(false),
+            'numClasses'                   => $node->getNumClassesAndTraits(),
+            'numTestedClasses'             => $node->getNumTestedClassesAndTraits(),
+            'numMethods'                   => $node->getNumFunctionsAndMethods(),
+            'numTestedMethods'             => $node->getNumTestedFunctionsAndMethods(),
+            'linesExecutedPercent'         => $node->getLineExecutedPercent(false),
             'linesExecutedPercentAsString' => $node->getLineExecutedPercent(),
-            'numExecutedLines' => $node->getNumExecutedLines(),
-            'numExecutableLines' => $node->getNumExecutableLines(),
-            'testedMethodsPercent' => $node->getTestedFunctionsAndMethodsPercent(false),
+            'numExecutedLines'             => $node->getNumExecutedLines(),
+            'numExecutableLines'           => $node->getNumExecutableLines(),
+            'testedMethodsPercent'         => $node->getTestedFunctionsAndMethodsPercent(false),
             'testedMethodsPercentAsString' => $node->getTestedFunctionsAndMethodsPercent(),
-            'testedClassesPercent' => $node->getTestedClassesAndTraitsPercent(false),
+            'testedClassesPercent'         => $node->getTestedClassesAndTraitsPercent(false),
             'testedClassesPercentAsString' => $node->getTestedClassesAndTraitsPercent(),
         ];
 

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Driver;
 
 use SebastianBergmann\CodeCoverage\Filter;
@@ -99,7 +98,7 @@ final class Xdebug implements Driver
     {
         if (!isset($this->cacheNumLines[$fileName])) {
             $buffer = \file_get_contents($fileName);
-            $lines = \substr_count($buffer, "\n");
+            $lines  = \substr_count($buffer, "\n");
 
             if (\substr($buffer, -1) !== "\n") {
                 $lines++;

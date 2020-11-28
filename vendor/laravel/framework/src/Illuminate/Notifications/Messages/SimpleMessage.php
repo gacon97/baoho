@@ -90,7 +90,7 @@ class SimpleMessage
     /**
      * Set the "level" of the notification (success, error, etc.).
      *
-     * @param  string $level
+     * @param  string  $level
      * @return $this
      */
     public function level($level)
@@ -103,7 +103,7 @@ class SimpleMessage
     /**
      * Set the subject of the notification.
      *
-     * @param  string $subject
+     * @param  string  $subject
      * @return $this
      */
     public function subject($subject)
@@ -116,7 +116,7 @@ class SimpleMessage
     /**
      * Set the greeting of the notification.
      *
-     * @param  string $greeting
+     * @param  string  $greeting
      * @return $this
      */
     public function greeting($greeting)
@@ -129,7 +129,7 @@ class SimpleMessage
     /**
      * Set the salutation of the notification.
      *
-     * @param  string $salutation
+     * @param  string  $salutation
      * @return $this
      */
     public function salutation($salutation)
@@ -142,7 +142,7 @@ class SimpleMessage
     /**
      * Add a line of text to the notification.
      *
-     * @param  mixed $line
+     * @param  mixed  $line
      * @return $this
      */
     public function line($line)
@@ -153,14 +153,14 @@ class SimpleMessage
     /**
      * Add a line of text to the notification.
      *
-     * @param  mixed $line
+     * @param  mixed  $line
      * @return $this
      */
     public function with($line)
     {
         if ($line instanceof Action) {
             $this->action($line->text, $line->url);
-        } elseif (!$this->actionText) {
+        } elseif (! $this->actionText) {
             $this->introLines[] = $this->formatLine($line);
         } else {
             $this->outroLines[] = $this->formatLine($line);
@@ -170,10 +170,29 @@ class SimpleMessage
     }
 
     /**
+     * Format the given line of text.
+     *
+     * @param  \Illuminate\Contracts\Support\Htmlable|string|array  $line
+     * @return \Illuminate\Contracts\Support\Htmlable|string
+     */
+    protected function formatLine($line)
+    {
+        if ($line instanceof Htmlable) {
+            return $line;
+        }
+
+        if (is_array($line)) {
+            return implode(' ', array_map('trim', $line));
+        }
+
+        return trim(implode(' ', array_map('trim', preg_split('/\\r\\n|\\r|\\n/', $line))));
+    }
+
+    /**
      * Configure the "call to action" button.
      *
-     * @param  string $text
-     * @param  string $url
+     * @param  string  $text
+     * @param  string  $url
      * @return $this
      */
     public function action($text, $url)
@@ -201,24 +220,5 @@ class SimpleMessage
             'actionText' => $this->actionText,
             'actionUrl' => $this->actionUrl,
         ];
-    }
-
-    /**
-     * Format the given line of text.
-     *
-     * @param  \Illuminate\Contracts\Support\Htmlable|string|array $line
-     * @return \Illuminate\Contracts\Support\Htmlable|string
-     */
-    protected function formatLine($line)
-    {
-        if ($line instanceof Htmlable) {
-            return $line;
-        }
-
-        if (is_array($line)) {
-            return implode(' ', array_map('trim', $line));
-        }
-
-        return trim(implode(' ', array_map('trim', preg_split('/\\r\\n|\\r|\\n/', $line))));
     }
 }

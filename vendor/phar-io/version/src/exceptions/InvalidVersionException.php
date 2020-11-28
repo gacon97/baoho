@@ -2,6 +2,5 @@
 
 namespace PharIo\Version;
 
-class InvalidVersionException extends \InvalidArgumentException implements Exception
-{
+class InvalidVersionException extends \InvalidArgumentException implements Exception {
 }

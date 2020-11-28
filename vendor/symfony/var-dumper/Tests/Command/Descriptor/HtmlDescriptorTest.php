@@ -21,13 +21,13 @@ class HtmlDescriptorTest extends TestCase
 {
     private static $timezone;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         self::$timezone = date_default_timezone_get();
         date_default_timezone_set('UTC');
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass()
     {
         date_default_timezone_set(self::$timezone);
     }
@@ -39,11 +39,11 @@ class HtmlDescriptorTest extends TestCase
         $dumper->method('dump')->willReturn('[DUMPED]');
         $descriptor = new HtmlDescriptor($dumper);
 
-        $descriptor->describe($output, new Data([[123]]), ['timestamp' => 1544804268.3668], 1);
+        $descriptor->describe($output, new Data(array(array(123))), array('timestamp' => 1544804268.3668), 1);
 
         $this->assertStringMatchesFormat('<style>%A</style><script>%A</script>%A', $output->fetch(), 'styles & scripts are output');
 
-        $descriptor->describe($output, new Data([[123]]), ['timestamp' => 1544804268.3668], 1);
+        $descriptor->describe($output, new Data(array(array(123))), array('timestamp' => 1544804268.3668), 1);
 
         $this->assertStringNotMatchesFormat('<style>%A</style><script>%A</script>%A', $output->fetch(), 'styles & scripts are output only once');
     }
@@ -58,21 +58,21 @@ class HtmlDescriptorTest extends TestCase
         $dumper->method('dump')->willReturn('[DUMPED]');
         $descriptor = new HtmlDescriptor($dumper);
 
-        $descriptor->describe($output, new Data([[123]]), $context + ['timestamp' => 1544804268.3668], 1);
+        $descriptor->describe($output, new Data(array(array(123))), $context + array('timestamp' => 1544804268.3668), 1);
 
         $this->assertStringMatchesFormat(trim($expectedOutput), trim(preg_replace('@<style>.*</style><script>.*</script>@s', '', $output->fetch())));
     }
 
     public function provideContext()
     {
-        yield 'source' => [
-            [
-                'source' => [
+        yield 'source' => array(
+            array(
+                'source' => array(
                     'name' => 'CliDescriptorTest.php',
                     'line' => 30,
                     'file' => '/Users/ogi/symfony/src/Symfony/Component/VarDumper/Tests/Command/Descriptor/CliDescriptorTest.php',
-                ],
-            ],
+                ),
+            ),
             <<<TXT
 <article data-dedup-id="%s">
     <header>
@@ -92,19 +92,19 @@ class HtmlDescriptorTest extends TestCase
     </section>
 </article>
 TXT
-        ];
+        );
 
-        yield 'source full' => [
-            [
-                'source' => [
+        yield 'source full' => array(
+            array(
+                'source' => array(
                     'name' => 'CliDescriptorTest.php',
                     'project_dir' => 'src/Symfony/',
                     'line' => 30,
                     'file_relative' => 'src/Symfony/Component/VarDumper/Tests/Command/Descriptor/CliDescriptorTest.php',
                     'file' => '/Users/ogi/symfony/src/Symfony/Component/VarDumper/Tests/Command/Descriptor/CliDescriptorTest.php',
                     'file_link' => 'phpstorm://open?file=/Users/ogi/symfony/src/Symfony/Component/VarDumper/Tests/Command/Descriptor/CliDescriptorTest.php&line=30',
-                ],
-            ],
+                ),
+            ),
             <<<TXT
 <article data-dedup-id="%s">
     <header>
@@ -128,15 +128,15 @@ TXT
     </section>
 </article>
 TXT
-        ];
+        );
 
-        yield 'cli' => [
-            [
-                'cli' => [
+        yield 'cli' => array(
+            array(
+                'cli' => array(
                     'identifier' => 'd8bece1c',
                     'command_line' => 'bin/phpunit',
-                ],
-            ],
+                ),
+            ),
             <<<TXT
 <article data-dedup-id="d8bece1c">
     <header>
@@ -156,17 +156,17 @@ TXT
     </section>
 </article>
 TXT
-        ];
+        );
 
-        yield 'request' => [
-            [
-                'request' => [
+        yield 'request' => array(
+            array(
+                'request' => array(
                     'identifier' => 'd8bece1c',
-                    'controller' => new Data([['FooController.php']]),
+                    'controller' => new Data(array(array('FooController.php'))),
                     'method' => 'GET',
                     'uri' => 'http://localhost/foo',
-                ],
-            ],
+                ),
+            ),
             <<<TXT
 <article data-dedup-id="d8bece1c">
     <header>
@@ -190,6 +190,6 @@ TXT
     </section>
 </article>
 TXT
-        ];
+        );
     }
 }

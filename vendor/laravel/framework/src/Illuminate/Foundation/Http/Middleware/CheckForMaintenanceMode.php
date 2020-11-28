@@ -26,7 +26,7 @@ class CheckForMaintenanceMode
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application $app
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void
      */
     public function __construct(Application $app)
@@ -37,8 +37,8 @@ class CheckForMaintenanceMode
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Closure $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
      * @return mixed
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
@@ -46,9 +46,9 @@ class CheckForMaintenanceMode
     public function handle($request, Closure $next)
     {
         if ($this->app->isDownForMaintenance()) {
-            $data = json_decode(file_get_contents($this->app->storagePath() . '/framework/down'), true);
+            $data = json_decode(file_get_contents($this->app->storagePath().'/framework/down'), true);
 
-            if (isset($data['allowed']) && IpUtils::checkIp($request->ip(), (array)$data['allowed'])) {
+            if (isset($data['allowed']) && IpUtils::checkIp($request->ip(), (array) $data['allowed'])) {
                 return $next($request);
             }
 
@@ -65,7 +65,7 @@ class CheckForMaintenanceMode
     /**
      * Determine if the request has a URI that should be accessible in maintenance mode.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     protected function inExceptArray($request)

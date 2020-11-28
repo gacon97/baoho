@@ -36,7 +36,7 @@ class ModelMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        if (parent::handle() === false && !$this->option('force')) {
+        if (parent::handle() === false && ! $this->option('force')) {
             return;
         }
 
@@ -119,16 +119,16 @@ class ModelMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         if ($this->option('pivot')) {
-            return __DIR__ . '/stubs/pivot.model.stub';
+            return __DIR__.'/stubs/pivot.model.stub';
         }
 
-        return __DIR__ . '/stubs/model.stub';
+        return __DIR__.'/stubs/model.stub';
     }
 
     /**
      * Get the default namespace for the class.
      *
-     * @param  string $rootNamespace
+     * @param  string  $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)

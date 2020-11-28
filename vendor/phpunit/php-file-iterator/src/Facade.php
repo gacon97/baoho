@@ -16,8 +16,8 @@ class Facade
      * @param array|string $paths
      * @param array|string $suffixes
      * @param array|string $prefixes
-     * @param array $exclude
-     * @param bool $commonPath
+     * @param array        $exclude
+     * @param bool         $commonPath
      *
      * @return array
      */
@@ -52,8 +52,8 @@ class Facade
 
         if ($commonPath) {
             return [
-                'commonPath' => $this->getCommonPath($files),
-                'files' => $files
+              'commonPath' => $this->getCommonPath($files),
+              'files'      => $files
             ];
         }
 
@@ -83,8 +83,8 @@ class Facade
         }
 
         $common = '';
-        $done = false;
-        $j = 0;
+        $done   = false;
+        $j      = 0;
         $count--;
 
         while (!$done) {

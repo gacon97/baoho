@@ -26,18 +26,6 @@ class ValidationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            'validator', 'validation.presence',
-        ];
-    }
-
-    /**
      * Register the validation factory.
      *
      * @return void
@@ -68,5 +56,17 @@ class ValidationServiceProvider extends ServiceProvider
         $this->app->singleton('validation.presence', function ($app) {
             return new DatabasePresenceVerifier($app['db']);
         });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'validator', 'validation.presence',
+        ];
     }
 }

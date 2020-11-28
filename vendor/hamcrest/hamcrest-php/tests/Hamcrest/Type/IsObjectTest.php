@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Type;
 
 class IsObjectTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Type\IsObject::objectValue();
+    }
 
     public function testEvaluatesToTrueIfArgumentMatchesType()
     {
@@ -26,10 +30,5 @@ class IsObjectTest extends \Hamcrest\AbstractMatcherTest
     {
         $this->assertMismatchDescription('was null', objectValue(), null);
         $this->assertMismatchDescription('was a string "foo"', objectValue(), 'foo');
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Type\IsObject::objectValue();
     }
 }

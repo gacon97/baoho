@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use DateTime;
@@ -18,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\DateTimeComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class DateTimeComparatorTest extends TestCase
 {
@@ -28,6 +27,11 @@ final class DateTimeComparatorTest extends TestCase
      * @var DateTimeComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new DateTimeComparator;
+    }
 
     public function acceptsFailsProvider()
     {
@@ -205,10 +209,5 @@ final class DateTimeComparatorTest extends TestCase
                 new DateTimeImmutable('2013-03-29 04:13:35', new DateTimeZone('America/New_York'))
             )
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new DateTimeComparator;
     }
 }

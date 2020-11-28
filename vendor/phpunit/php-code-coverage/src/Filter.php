@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage;
 
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
@@ -37,7 +36,7 @@ final class Filter
     public function addDirectoryToWhitelist(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
         $facade = new FileIteratorFacade;
-        $files = $facade->getFilesAsArray($directory, $suffix, $prefix);
+        $files  = $facade->getFilesAsArray($directory, $suffix, $prefix);
 
         foreach ($files as $file) {
             $this->addFileToWhitelist($file);
@@ -70,7 +69,7 @@ final class Filter
     public function removeDirectoryFromWhitelist(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
         $facade = new FileIteratorFacade;
-        $files = $facade->getFilesAsArray($directory, $suffix, $prefix);
+        $files  = $facade->getFilesAsArray($directory, $suffix, $prefix);
 
         foreach ($files as $file) {
             $this->removeFileFromWhitelist($file);

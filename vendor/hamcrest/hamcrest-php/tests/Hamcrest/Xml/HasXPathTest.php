@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Xml;
 
 class HasXPathTest extends \Hamcrest\AbstractMatcherTest
@@ -44,6 +43,11 @@ XML;
     </body>
 </html>
 HTML;
+    }
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Xml\HasXPath::hasXPath('/users/user');
     }
 
     public function testMatchesWhenXPathIsFound()
@@ -190,10 +194,5 @@ HTML;
             hasXPath('/users/user/id', 'Frank'),
             self::$doc
         );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Xml\HasXPath::hasXPath('/users/user');
     }
 }

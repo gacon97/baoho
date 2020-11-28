@@ -23,7 +23,7 @@ class KernelForTest extends Kernel
 
     public function registerBundles()
     {
-        return [];
+        return array();
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
@@ -35,8 +35,13 @@ class KernelForTest extends Kernel
         return $this->booted;
     }
 
-    public function getProjectDir(): string
+    public function getCacheDir()
     {
-        return __DIR__;
+        return $this->getProjectDir().'/Tests/Fixtures/cache.'.$this->environment;
+    }
+
+    public function getLogDir()
+    {
+        return $this->getProjectDir().'/Tests/Fixtures/logs';
     }
 }

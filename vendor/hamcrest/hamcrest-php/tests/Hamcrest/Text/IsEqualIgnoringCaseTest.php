@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Text;
 
 class IsEqualIgnoringCaseTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Text\IsEqualIgnoringCase::equalToIgnoringCase('irrelevant');
+    }
 
     public function testIgnoresCaseOfCharsInString()
     {
@@ -32,10 +36,5 @@ class IsEqualIgnoringCaseTest extends \Hamcrest\AbstractMatcherTest
             'equalToIgnoringCase("heLLo")',
             equalToIgnoringCase('heLLo')
         );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Text\IsEqualIgnoringCase::equalToIgnoringCase('irrelevant');
     }
 }

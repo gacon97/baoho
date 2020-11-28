@@ -36,31 +36,31 @@ class Iterator extends \FilterIterator
     private $exclude = [];
 
     /**
-     * @param string $basePath
+     * @param string    $basePath
      * @param \Iterator $iterator
-     * @param array $suffixes
-     * @param array $prefixes
-     * @param array $exclude
+     * @param array     $suffixes
+     * @param array     $prefixes
+     * @param array     $exclude
      */
     public function __construct(string $basePath, \Iterator $iterator, array $suffixes = [], array $prefixes = [], array $exclude = [])
     {
         $this->basePath = \realpath($basePath);
         $this->prefixes = $prefixes;
         $this->suffixes = $suffixes;
-        $this->exclude = \array_filter(\array_map('realpath', $exclude));
+        $this->exclude  = \array_filter(\array_map('realpath', $exclude));
 
         parent::__construct($iterator);
     }
 
     public function accept()
     {
-        $current = $this->getInnerIterator()->current();
+        $current  = $this->getInnerIterator()->current();
         $filename = $current->getFilename();
         $realPath = $current->getRealPath();
 
         return $this->acceptPath($realPath) &&
-            $this->acceptPrefix($filename) &&
-            $this->acceptSuffix($filename);
+               $this->acceptPrefix($filename) &&
+               $this->acceptSuffix($filename);
     }
 
     private function acceptPath(string $path): bool
@@ -100,7 +100,7 @@ class Iterator extends \FilterIterator
         foreach ($subStrings as $string) {
             if (($type === self::PREFIX && \strpos($filename, $string) === 0) ||
                 ($type === self::SUFFIX &&
-                    \substr($filename, -1 * \strlen($string)) === $string)) {
+                 \substr($filename, -1 * \strlen($string)) === $string)) {
                 $matched = true;
 
                 break;

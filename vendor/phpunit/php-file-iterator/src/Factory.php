@@ -16,7 +16,7 @@ class Factory
      * @param array|string $paths
      * @param array|string $suffixes
      * @param array|string $prefixes
-     * @param array $exclude
+     * @param array        $exclude
      *
      * @return \AppendIterator
      */
@@ -26,7 +26,7 @@ class Factory
             $paths = [$paths];
         }
 
-        $paths = $this->getPathsAfterResolvingWildcards($paths);
+        $paths   = $this->getPathsAfterResolvingWildcards($paths);
         $exclude = $this->getPathsAfterResolvingWildcards($exclude);
 
         if (\is_string($prefixes)) {

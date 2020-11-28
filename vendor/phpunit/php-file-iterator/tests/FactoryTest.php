@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\FileIterator;
 
 use PHPUnit\Framework\TestCase;
@@ -27,10 +26,16 @@ class FactoryTest extends TestCase
      */
     private $factory;
 
+    protected function setUp(): void
+    {
+        $this->root    = __DIR__;
+        $this->factory = new Factory;
+    }
+
     public function testFindFilesInTestDirectory(): void
     {
         $iterator = $this->factory->getFileIterator($this->root, 'Test.php');
-        $files = \iterator_to_array($iterator);
+        $files    = \iterator_to_array($iterator);
 
         $this->assertGreaterThanOrEqual(1, \count($files));
     }
@@ -38,14 +43,8 @@ class FactoryTest extends TestCase
     public function testFindFilesWithExcludedNonExistingSubdirectory(): void
     {
         $iterator = $this->factory->getFileIterator($this->root, 'Test.php', '', [$this->root . '/nonExistingDir']);
-        $files = \iterator_to_array($iterator);
+        $files    = \iterator_to_array($iterator);
 
         $this->assertGreaterThanOrEqual(1, \count($files));
-    }
-
-    protected function setUp(): void
-    {
-        $this->root = __DIR__;
-        $this->factory = new Factory;
     }
 }

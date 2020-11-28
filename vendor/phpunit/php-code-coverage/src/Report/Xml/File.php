@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 class File
@@ -24,7 +23,7 @@ class File
 
     public function __construct(\DOMElement $context)
     {
-        $this->dom = $context->ownerDocument;
+        $this->dom         = $context->ownerDocument;
         $this->contextNode = $context;
     }
 

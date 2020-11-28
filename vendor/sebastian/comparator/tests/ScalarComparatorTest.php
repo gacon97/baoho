@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -15,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\ScalarComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class ScalarComparatorTest extends TestCase
 {
@@ -25,6 +24,11 @@ final class ScalarComparatorTest extends TestCase
      * @var ScalarComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ScalarComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -84,7 +88,7 @@ final class ScalarComparatorTest extends TestCase
     public function assertEqualsFailsProvider()
     {
         $stringException = 'Failed asserting that two strings are equal.';
-        $otherException = 'matches expected';
+        $otherException  = 'matches expected';
 
         return [
             ['string', 'other string', $stringException],
@@ -118,7 +122,7 @@ final class ScalarComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -128,7 +132,7 @@ final class ScalarComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -156,10 +160,5 @@ final class ScalarComparatorTest extends TestCase
         $this->expectExceptionMessage($message);
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new ScalarComparator;
     }
 }

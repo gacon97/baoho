@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -16,9 +15,9 @@ use stdClass;
 /**
  * @covers \SebastianBergmann\Comparator\TypeComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class TypeComparatorTest extends TestCase
 {
@@ -26,6 +25,11 @@ final class TypeComparatorTest extends TestCase
      * @var TypeComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new TypeComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -71,7 +75,7 @@ final class TypeComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -99,10 +103,5 @@ final class TypeComparatorTest extends TestCase
         $this->expectExceptionMessage('does not match expected type');
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new TypeComparator;
     }
 }

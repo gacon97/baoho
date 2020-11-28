@@ -13,19 +13,17 @@ class CreateProductMaterialsTable extends Migration
      */
     public function up()
     {
-        if (Schema::hasTable('products')) {
 
             Schema::create('product_materials', function (Blueprint $table) {
                 $table->increments('id');
                 // $table->integer('product_id');
                 $table->integer('product_id')->unsigned();
-                $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+//                $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
                 // $table->integer('material_id');
                 $table->integer('material_id')->unsigned();
-                $table->foreign('material_id')->references('id')->on('materials')->onDelete('cascade');
+//                $table->foreign('material_id')->references('id')->on('materials')->onDelete('cascade');
                 $table->timestamps();
             });
-        }
     }
 
     /**
@@ -35,6 +33,6 @@ class CreateProductMaterialsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product__materials');
+        Schema::dropIfExists('product_materials');
     }
 }

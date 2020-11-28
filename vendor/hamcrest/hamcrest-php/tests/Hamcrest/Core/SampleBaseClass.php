@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Core;
 
 class SampleBaseClass

@@ -10,8 +10,7 @@
 
 namespace PharIo\Version;
 
-interface VersionConstraint
-{
+interface VersionConstraint {
     /**
      * @param Version $version
      *

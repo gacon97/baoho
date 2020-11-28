@@ -17,8 +17,8 @@
 
                                 <div class="col-md-6">
                                     <input id="name" type="text"
-                                           class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
-                                           name="name" value="{{ old('name') }}" required autofocus>
+                                           class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                           name="email" value="{{ old('email') }}" required autofocus>
 
                                     @if ($errors->has('name'))
                                         <span class="invalid-feedback">

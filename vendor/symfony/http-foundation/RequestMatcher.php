@@ -36,29 +36,32 @@ class RequestMatcher implements RequestMatcherInterface
     /**
      * @var string[]
      */
-    private $methods = [];
+    private $methods = array();
 
     /**
      * @var string[]
      */
-    private $ips = [];
+    private $ips = array();
 
     /**
      * @var array
      */
-    private $attributes = [];
+    private $attributes = array();
 
     /**
      * @var string[]
      */
-    private $schemes = [];
+    private $schemes = array();
 
     /**
+     * @param string|null          $path
+     * @param string|null          $host
      * @param string|string[]|null $methods
      * @param string|string[]|null $ips
+     * @param array                $attributes
      * @param string|string[]|null $schemes
      */
-    public function __construct(string $path = null, string $host = null, $methods = null, $ips = null, array $attributes = [], $schemes = null, int $port = null)
+    public function __construct(string $path = null, string $host = null, $methods = null, $ips = null, array $attributes = array(), $schemes = null, int $port = null)
     {
         $this->matchPath($path);
         $this->matchHost($host);
@@ -79,7 +82,7 @@ class RequestMatcher implements RequestMatcherInterface
      */
     public function matchScheme($scheme)
     {
-        $this->schemes = null !== $scheme ? array_map('strtolower', (array) $scheme) : [];
+        $this->schemes = null !== $scheme ? array_map('strtolower', (array) $scheme) : array();
     }
 
     /**
@@ -97,7 +100,7 @@ class RequestMatcher implements RequestMatcherInterface
      *
      * @param int|null $port The port number to connect to
      */
-    public function matchPort(?int $port)
+    public function matchPort(int $port = null)
     {
         $this->port = $port;
     }
@@ -129,7 +132,7 @@ class RequestMatcher implements RequestMatcherInterface
      */
     public function matchIps($ips)
     {
-        $this->ips = null !== $ips ? (array) $ips : [];
+        $this->ips = null !== $ips ? (array) $ips : array();
     }
 
     /**
@@ -139,7 +142,7 @@ class RequestMatcher implements RequestMatcherInterface
      */
     public function matchMethod($method)
     {
-        $this->methods = null !== $method ? array_map('strtoupper', (array) $method) : [];
+        $this->methods = null !== $method ? array_map('strtoupper', (array) $method) : array();
     }
 
     /**

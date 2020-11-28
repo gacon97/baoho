@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Core;
 
 /*
@@ -22,25 +21,6 @@ class Every extends TypeSafeDiagnosingMatcher
         $this->_matcher = $matcher;
     }
 
-    /**
-     * @param Matcher $itemMatcher
-     *   A matcher to apply to every element in an array.
-     *
-     * @return \Hamcrest\Core\Every
-     *   Evaluates to TRUE for a collection in which every item matches $itemMatcher
-     *
-     * @factory
-     */
-    public static function everyItem(Matcher $itemMatcher)
-    {
-        return new self($itemMatcher);
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendText('every item is ')->appendDescriptionOf($this->_matcher);
-    }
-
     protected function matchesSafelyWithDiagnosticDescription($items, Description $mismatchDescription)
     {
         foreach ($items as $item) {
@@ -53,5 +33,24 @@ class Every extends TypeSafeDiagnosingMatcher
         }
 
         return true;
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendText('every item is ')->appendDescriptionOf($this->_matcher);
+    }
+
+    /**
+     * @param Matcher $itemMatcher
+     *   A matcher to apply to every element in an array.
+     *
+     * @return \Hamcrest\Core\Every
+     *   Evaluates to TRUE for a collection in which every item matches $itemMatcher
+     *
+     * @factory
+     */
+    public static function everyItem(Matcher $itemMatcher)
+    {
+        return new self($itemMatcher);
     }
 }

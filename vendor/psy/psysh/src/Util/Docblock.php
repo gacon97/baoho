@@ -32,15 +32,19 @@ class Docblock
      */
     public static $vectors = [
         'throws' => ['type', 'desc'],
-        'param' => ['type', 'var', 'desc'],
+        'param'  => ['type', 'var', 'desc'],
         'return' => ['type', 'desc'],
     ];
+
+    protected $reflector;
+
     /**
      * The description of the symbol.
      *
      * @var string
      */
     public $desc;
+
     /**
      * The tags defined in the docblock.
      *
@@ -54,13 +58,13 @@ class Docblock
      * @var array
      */
     public $tags;
+
     /**
      * The entire DocBlock comment that was parsed.
      *
      * @var string
      */
     public $comment;
-    protected $reflector;
 
     /**
      * Docblock constructor.
@@ -74,29 +78,17 @@ class Docblock
     }
 
     /**
-     * Whether or not a string begins with a @tag.
+     * Set and parse the docblock comment.
      *
-     * @param string $str
-     *
-     * @return bool
+     * @param string $comment The docblock
      */
-    public static function isTagged($str)
+    protected function setComment($comment)
     {
-        return isset($str[1]) && $str[0] === '@' && !\preg_match('/[^A-Za-z]/', $str[1]);
-    }
+        $this->desc    = '';
+        $this->tags    = [];
+        $this->comment = $comment;
 
-    /**
-     * The tag at the beginning of a string.
-     *
-     * @param string $str
-     *
-     * @return string|null
-     */
-    public static function strTag($str)
-    {
-        if (\preg_match('/^@[a-z0-9_]+/', $str, $matches)) {
-            return $matches[0];
-        }
+        $this->parseComment($comment);
     }
 
     /**
@@ -117,7 +109,7 @@ class Docblock
         \sort($lines);
 
         $first = \reset($lines);
-        $last = \end($lines);
+        $last  = \end($lines);
 
         // find the longest common substring
         $count = \min(\strlen($first), \strlen($last));
@@ -128,44 +120,6 @@ class Docblock
         }
 
         return $count;
-    }
-
-    /**
-     * Whether or not a docblock contains a given @tag.
-     *
-     * @param string $tag The name of the @tag to check for
-     *
-     * @return bool
-     */
-    public function hasTag($tag)
-    {
-        return \is_array($this->tags) && \array_key_exists($tag, $this->tags);
-    }
-
-    /**
-     * The value of a tag.
-     *
-     * @param string $tag
-     *
-     * @return array
-     */
-    public function tag($tag)
-    {
-        return $this->hasTag($tag) ? $this->tags[$tag] : null;
-    }
-
-    /**
-     * Set and parse the docblock comment.
-     *
-     * @param string $comment The docblock
-     */
-    protected function setComment($comment)
-    {
-        $this->desc = '';
-        $this->tags = [];
-        $this->comment = $comment;
-
-        $this->parseComment($comment);
     }
 
     /**
@@ -210,7 +164,7 @@ class Docblock
                 $this->desc = $body;
             } else {
                 // This block is tagged
-                $tag = \substr(self::strTag($body), 1);
+                $tag  = \substr(self::strTag($body), 1);
                 $body = \ltrim(\substr($body, \strlen($tag) + 2));
 
                 if (isset(self::$vectors[$tag])) {
@@ -232,6 +186,56 @@ class Docblock
                     $this->tags[$tag][] = $body;
                 }
             }
+        }
+    }
+
+    /**
+     * Whether or not a docblock contains a given @tag.
+     *
+     * @param string $tag The name of the @tag to check for
+     *
+     * @return bool
+     */
+    public function hasTag($tag)
+    {
+        return \is_array($this->tags) && \array_key_exists($tag, $this->tags);
+    }
+
+    /**
+     * The value of a tag.
+     *
+     * @param string $tag
+     *
+     * @return array
+     */
+    public function tag($tag)
+    {
+        return $this->hasTag($tag) ? $this->tags[$tag] : null;
+    }
+
+    /**
+     * Whether or not a string begins with a @tag.
+     *
+     * @param string $str
+     *
+     * @return bool
+     */
+    public static function isTagged($str)
+    {
+        return isset($str[1]) && $str[0] === '@' && !\preg_match('/[^A-Za-z]/', $str[1]);
+    }
+
+    /**
+     * The tag at the beginning of a string.
+     *
+     * @param string $str
+     *
+     * @return string|null
+     */
+    public static function strTag($str)
+    {
+        if (\preg_match('/^@[a-z0-9_]+/', $str, $matches)) {
+            return $matches[0];
         }
     }
 }

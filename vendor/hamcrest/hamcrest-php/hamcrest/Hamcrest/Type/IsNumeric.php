@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Type;
 
 /*
  Copyright (c) 2010 hamcrest.org
  */
-
 use Hamcrest\Core\IsTypeOf;
 
 /**
@@ -17,16 +15,6 @@ class IsNumeric extends IsTypeOf
     public function __construct()
     {
         parent::__construct('number');
-    }
-
-    /**
-     * Is the value a numeric?
-     *
-     * @factory
-     */
-    public static function numericValue()
-    {
-        return new self;
     }
 
     public function matches($item)
@@ -52,5 +40,15 @@ class IsNumeric extends IsTypeOf
         }
 
         return false;
+    }
+
+    /**
+     * Is the value a numeric?
+     *
+     * @factory
+     */
+    public static function numericValue()
+    {
+        return new self;
     }
 }

@@ -41,8 +41,8 @@ class ClearCommand extends Command
     /**
      * Create a new cache clear command instance.
      *
-     * @param  \Illuminate\Cache\CacheManager $cache
-     * @param  \Illuminate\Filesystem\Filesystem $files
+     * @param  \Illuminate\Cache\CacheManager  $cache
+     * @param  \Illuminate\Filesystem\Filesystem  $files
      * @return void
      */
     public function __construct(CacheManager $cache, Filesystem $files)
@@ -82,7 +82,7 @@ class ClearCommand extends Command
      */
     public function flushFacades()
     {
-        if (!$this->files->exists($storagePath = storage_path('framework/cache'))) {
+        if (! $this->files->exists($storagePath = storage_path('framework/cache'))) {
             return;
         }
 

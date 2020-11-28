@@ -1,9 +1,15 @@
 <?php
-
 namespace Hamcrest\Collection;
 
 class IsTraversableWithSizeTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Collection\IsTraversableWithSize::traversableWithSize(
+            equalTo(2)
+        );
+    }
 
     public function testMatchesWhenSizeIsCorrect()
     {
@@ -46,13 +52,6 @@ class IsTraversableWithSizeTest extends \Hamcrest\AbstractMatcherTest
         $this->assertDescription(
             'a traversable with size <3>',
             traversableWithSize(equalTo(3))
-        );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Collection\IsTraversableWithSize::traversableWithSize(
-            equalTo(2)
         );
     }
 }

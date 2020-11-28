@@ -9,26 +9,26 @@
                 <input type="submit" value=" ">
                 <div class="clearfix"></div>
             </form>
-            <div class="row search-box">
-                <div class="col-md-4 search-box-right">
-                    <div class="search-box-key">
-                        <span >Từ khóa gợi ý</span>
-                    </div>
-                    <p>Lorem ipsum distincti</p>
-                    <p>Lorem ipsum distincti</p>
-                    <p>Lorem ipsum distincti</p>
-                    <p>Lorem ipsum distincti</p>
-                </div>
-                <div class="col-md-8">
-                    <div class="search-box-product">
-                        <span>Sản phẩm gợi ý</span>
-                    </div>
-                    <div class="row search-box-product-row">
+{{--            <div class="row search-box">--}}
+{{--                <div class="col-md-4 search-box-right">--}}
+{{--                    <div class="search-box-key">--}}
+{{--                        <span >Từ khóa gợi ý</span>--}}
+{{--                    </div>--}}
+{{--                    <p>Lorem ipsum distincti</p>--}}
+{{--                    <p>Lorem ipsum distincti</p>--}}
+{{--                    <p>Lorem ipsum distincti</p>--}}
+{{--                    <p>Lorem ipsum distincti</p>--}}
+{{--                </div>--}}
+{{--                <div class="col-md-8">--}}
+{{--                    <div class="search-box-product">--}}
+{{--                        <span>Sản phẩm gợi ý</span>--}}
+{{--                    </div>--}}
+{{--                    <div class="row search-box-product-row">--}}
 
-                        
-                    </div>
-                </div>
-            </div>
+{{--                        --}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
         </div>
         <!-- header-bot -->
         <div class="col-md-4 logo_agile">

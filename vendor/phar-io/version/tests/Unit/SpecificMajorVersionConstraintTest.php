@@ -15,10 +15,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \PharIo\Version\SpecificMajorVersionConstraint
  */
-class SpecificMajorVersionConstraintTest extends TestCase
-{
-    public function versionProvider()
-    {
+class SpecificMajorVersionConstraintTest extends TestCase {
+    public function versionProvider() {
         return [
             // compliant versions
             [1, new Version('1.0.2'), true],
@@ -38,8 +36,7 @@ class SpecificMajorVersionConstraintTest extends TestCase
      * @param Version $version
      * @param bool $expectedResult
      */
-    public function testReturnsTrueForCompliantVersions($major, Version $version, $expectedResult)
-    {
+    public function testReturnsTrueForCompliantVersions($major, Version $version, $expectedResult) {
         $constraint = new SpecificMajorVersionConstraint('foo', $major);
 
         $this->assertSame($expectedResult, $constraint->complies($version));

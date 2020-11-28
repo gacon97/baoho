@@ -19,8 +19,8 @@ class WhoopsHandler
             $handler->handleUnconditionally(true);
 
             $this->registerApplicationPaths($handler)
-                ->registerBlacklist($handler)
-                ->registerEditor($handler);
+                 ->registerBlacklist($handler)
+                 ->registerEditor($handler);
         });
     }
 

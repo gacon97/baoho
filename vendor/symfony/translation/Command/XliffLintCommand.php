@@ -89,10 +89,10 @@ EOF
                 throw new RuntimeException('Please provide a filename or pipe file content to STDIN.');
             }
 
-            return $this->display($io, [$this->validate($stdin)]);
+            return $this->display($io, array($this->validate($stdin)));
         }
 
-        $filesInfo = [];
+        $filesInfo = array();
         foreach ($filenames as $filename) {
             if (!$this->isReadable($filename)) {
                 throw new RuntimeException(sprintf('File or directory "%s" is not readable.', $filename));
@@ -108,14 +108,14 @@ EOF
 
     private function validate($content, $file = null)
     {
-        $errors = [];
+        $errors = array();
 
         // Avoid: Warning DOMDocument::loadXML(): Empty string supplied as input
         if ('' === trim($content)) {
-            return ['file' => $file, 'valid' => true];
+            return array('file' => $file, 'valid' => true);
         }
 
-        $internal = libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
 
         $document = new \DOMDocument();
         $document->loadXML($content);
@@ -124,31 +124,26 @@ EOF
             $normalizedLocale = preg_quote(str_replace('-', '_', $targetLanguage), '/');
             // strict file names require translation files to be named '____.locale.xlf'
             // otherwise, both '____.locale.xlf' and 'locale.____.xlf' are allowed
-            // also, the regexp matching must be case-insensitive, as defined for 'target-language' values
-            // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html#target-language
-            $expectedFilenamePattern = $this->requireStrictFileNames ? sprintf('/^.*\.(?i:%s)\.xlf/', $normalizedLocale) : sprintf('/^(.*\.(?i:%s)\.xlf|(?i:%s)\..*\.xlf)/', $normalizedLocale, $normalizedLocale);
+            $expectedFilenamePattern = $this->requireStrictFileNames ? sprintf('/^.*\.%s\.xlf/', $normalizedLocale) : sprintf('/^(.*\.%s\.xlf|%s\..*\.xlf)/', $normalizedLocale, $normalizedLocale);
 
             if (0 === preg_match($expectedFilenamePattern, basename($file))) {
-                $errors[] = [
+                $errors[] = array(
                     'line' => -1,
                     'column' => -1,
                     'message' => sprintf('There is a mismatch between the language included in the file name ("%s") and the "%s" value used in the "target-language" attribute of the file.', basename($file), $targetLanguage),
-                ];
+                );
             }
         }
 
         foreach (XliffUtils::validateSchema($document) as $xmlError) {
-            $errors[] = [
+            $errors[] = array(
                 'line' => $xmlError['line'],
                 'column' => $xmlError['column'],
                 'message' => $xmlError['message'],
-            ];
+            );
         }
 
-        libxml_clear_errors();
-        libxml_use_internal_errors($internal);
-
-        return ['file' => $file, 'valid' => 0 === \count($errors), 'messages' => $errors];
+        return array('file' => $file, 'valid' => 0 === \count($errors), 'messages' => $errors);
     }
 
     private function display(SymfonyStyle $io, array $files)
@@ -215,7 +210,7 @@ EOF
         }
 
         foreach ($this->getDirectoryIterator($fileOrDirectory) as $file) {
-            if (!\in_array($file->getExtension(), ['xlf', 'xliff'])) {
+            if (!\in_array($file->getExtension(), array('xlf', 'xliff'))) {
                 continue;
             }
 
@@ -223,13 +218,10 @@ EOF
         }
     }
 
-    /**
-     * @return string|null
-     */
     private function getStdin()
     {
         if (0 !== ftell(STDIN)) {
-            return null;
+            return;
         }
 
         $inputs = '';
@@ -271,7 +263,7 @@ EOF
 
     private function getTargetLanguageFromFile(\DOMDocument $xliffContents): ?string
     {
-        foreach ($xliffContents->getElementsByTagName('file')[0]->attributes ?? [] as $attribute) {
+        foreach ($xliffContents->getElementsByTagName('file')[0]->attributes ?? array() as $attribute) {
             if ('target-language' === $attribute->nodeName) {
                 return $attribute->nodeValue;
             }

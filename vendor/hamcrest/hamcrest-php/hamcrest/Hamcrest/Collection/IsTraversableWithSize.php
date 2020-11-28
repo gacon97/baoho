@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Collection;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\FeatureMatcher;
 use Hamcrest\Matcher;
 use Hamcrest\Util;
@@ -27,16 +25,6 @@ class IsTraversableWithSize extends FeatureMatcher
         );
     }
 
-    /**
-     * Does traversable size satisfy a given matcher?
-     *
-     * @factory
-     */
-    public static function traversableWithSize($size)
-    {
-        return new self(Util::wrapValueWithIsEqual($size));
-    }
-
     protected function featureValueOf($actual)
     {
         $size = 0;
@@ -45,5 +33,15 @@ class IsTraversableWithSize extends FeatureMatcher
         }
 
         return $size;
+    }
+
+    /**
+     * Does traversable size satisfy a given matcher?
+     *
+     * @factory
+     */
+    public static function traversableWithSize($size)
+    {
+        return new self(Util::wrapValueWithIsEqual($size));
     }
 }

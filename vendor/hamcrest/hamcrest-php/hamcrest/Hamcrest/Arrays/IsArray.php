@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Arrays;
 
 /*
@@ -32,28 +31,6 @@ class IsArray extends TypeSafeMatcher
         $this->_elementMatchers = $elementMatchers;
     }
 
-    /**
-     * Evaluates to true only if each $matcher[$i] is satisfied by $array[$i].
-     *
-     * @factory ...
-     */
-    public static function anArray(/* args... */)
-    {
-        $args = func_get_args();
-
-        return new self(Util::createMatcherArray($args));
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendList(
-            $this->descriptionStart(),
-            $this->descriptionSeparator(),
-            $this->descriptionEnd(),
-            $this->_elementMatchers
-        );
-    }
-
     protected function matchesSafely($array)
     {
         if (array_keys($array) != array_keys($this->_elementMatchers)) {
@@ -78,12 +55,13 @@ class IsArray extends TypeSafeMatcher
             return;
         } elseif (array_keys($actual) != array_keys($this->_elementMatchers)) {
             $mismatchDescription->appendText('array keys were ')
-                ->appendValueList(
-                    $this->descriptionStart(),
-                    $this->descriptionSeparator(),
-                    $this->descriptionEnd(),
-                    array_keys($actual)
-                );
+                                                    ->appendValueList(
+                                                        $this->descriptionStart(),
+                                                        $this->descriptionSeparator(),
+                                                        $this->descriptionEnd(),
+                                                        array_keys($actual)
+                                                    )
+                                                    ;
 
             return;
         }
@@ -97,6 +75,28 @@ class IsArray extends TypeSafeMatcher
                 return;
             }
         }
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendList(
+            $this->descriptionStart(),
+            $this->descriptionSeparator(),
+            $this->descriptionEnd(),
+            $this->_elementMatchers
+        );
+    }
+
+    /**
+     * Evaluates to true only if each $matcher[$i] is satisfied by $array[$i].
+     *
+     * @factory ...
+     */
+    public static function anArray(/* args... */)
+    {
+        $args = func_get_args();
+
+        return new self(Util::createMatcherArray($args));
     }
 
     // -- Protected Methods

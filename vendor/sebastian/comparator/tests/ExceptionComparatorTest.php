@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use Exception;
@@ -17,9 +16,9 @@ use RuntimeException;
 /**
  * @covers \SebastianBergmann\Comparator\ExceptionComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class ExceptionComparatorTest extends TestCase
 {
@@ -27,6 +26,12 @@ final class ExceptionComparatorTest extends TestCase
      * @var ExceptionComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ExceptionComparator;
+        $this->comparator->setFactory(new Factory);
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -64,7 +69,7 @@ final class ExceptionComparatorTest extends TestCase
 
     public function assertEqualsFailsProvider()
     {
-        $typeMessage = 'not instance of expected class';
+        $typeMessage  = 'not instance of expected class';
         $equalMessage = 'Failed asserting that two objects are equal.';
 
         $exception1 = new Exception('Error', 100);
@@ -89,7 +94,7 @@ final class ExceptionComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -99,7 +104,7 @@ final class ExceptionComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -127,11 +132,5 @@ final class ExceptionComparatorTest extends TestCase
         $this->expectExceptionMessage($message);
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new ExceptionComparator;
-        $this->comparator->setFactory(new Factory);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Text;
 
 /*
@@ -31,7 +30,7 @@ class StringContainsIgnoringCase extends SubstringMatcher
 
     protected function evalSubstringOf($item)
     {
-        return (false !== stripos((string)$item, $this->_substring));
+        return (false !== stripos((string) $item, $this->_substring));
     }
 
     protected function relationship()

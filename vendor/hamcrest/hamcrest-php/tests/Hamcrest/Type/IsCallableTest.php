@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Type;
 
 class IsCallableTest extends \Hamcrest\AbstractMatcherTest
@@ -11,6 +10,11 @@ class IsCallableTest extends \Hamcrest\AbstractMatcherTest
 
     public function __invoke()
     {
+    }
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Type\IsCallable::callableValue();
     }
 
     public function testEvaluatesToTrueIfArgumentIsFunctionName()
@@ -95,10 +99,5 @@ class IsCallableTest extends \Hamcrest\AbstractMatcherTest
             callableValue(),
             'invalid-function'
         );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Type\IsCallable::callableValue();
     }
 }

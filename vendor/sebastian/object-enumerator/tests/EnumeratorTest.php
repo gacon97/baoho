@@ -23,6 +23,11 @@ class EnumeratorTest extends TestCase
      */
     private $enumerator;
 
+    protected function setUp()
+    {
+        $this->enumerator = new Enumerator;
+    }
+
     public function testEnumeratesSingleObject()
     {
         $a = new \stdClass;
@@ -130,10 +135,5 @@ class EnumeratorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $this->enumerator->enumerate([], '');
-    }
-
-    protected function setUp()
-    {
-        $this->enumerator = new Enumerator;
     }
 }

@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Type;
 
 /*
  Copyright (c) 2010 hamcrest.org
  */
-
 use Hamcrest\Core\IsTypeOf;
 
 /**
@@ -22,6 +20,11 @@ class IsCallable extends IsTypeOf
         parent::__construct('callable');
     }
 
+    public function matches($item)
+    {
+        return is_callable($item);
+    }
+
     /**
      * Is the value callable?
      *
@@ -30,10 +33,5 @@ class IsCallable extends IsTypeOf
     public static function callableValue()
     {
         return new self;
-    }
-
-    public function matches($item)
-    {
-        return is_callable($item);
     }
 }

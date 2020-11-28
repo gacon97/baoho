@@ -31,12 +31,12 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testScopeVariables()
     {
-        $one = 'banana';
-        $two = 123;
-        $three = new \StdClass();
+        $one       = 'banana';
+        $two       = 123;
+        $three     = new \StdClass();
         $__psysh__ = 'ignore this';
-        $_ = 'ignore this';
-        $_e = 'ignore this';
+        $_         = 'ignore this';
+        $_e        = 'ignore this';
 
         $shell = new Shell($this->getConfig());
         $shell->setScopeVariables(\compact('one', 'two', 'three', '__psysh__', '_', '_e', 'this'));
@@ -73,12 +73,12 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testIncludesWithScopeVariables()
     {
-        $one = 'banana';
-        $two = 123;
-        $three = new \StdClass();
+        $one       = 'banana';
+        $two       = 123;
+        $three     = new \StdClass();
         $__psysh__ = 'ignore this';
-        $_ = 'ignore this';
-        $_e = 'ignore this';
+        $_         = 'ignore this';
+        $_e        = 'ignore this';
 
         $config = $this->getConfig(['usePcntl' => false]);
 
@@ -111,7 +111,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $config = $this->getConfig([
             'defaultIncludes' => ['/file.php'],
-            'configFile' => __DIR__ . '/fixtures/empty.php',
+            'configFile'      => __DIR__ . '/fixtures/empty.php',
         ]);
 
         $shell = new Shell($config);
@@ -147,10 +147,10 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testRenderingExceptions()
     {
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $e = new ParseErrorException('message', 13);
+        $e      = new ParseErrorException('message', 13);
 
         $shell->setOutput($output);
         $shell->addCode('code');
@@ -173,7 +173,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testHandlingErrors()
     {
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $output = $this->getOutput();
         $stream = $output->getStream();
         $shell->setOutput($output);
@@ -193,8 +193,8 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $streamContents = \stream_get_contents($stream);
 
         $this->assertContains('PHP Notice:', $streamContents);
-        $this->assertContains('wheee', $streamContents);
-        $this->assertContains('line 13', $streamContents);
+        $this->assertContains('wheee',       $streamContents);
+        $this->assertContains('line 13',     $streamContents);
     }
 
     /**
@@ -202,7 +202,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotHandlingErrors()
     {
-        $shell = new Shell($this->getConfig());
+        $shell    = new Shell($this->getConfig());
         $oldLevel = \error_reporting();
         \error_reporting($oldLevel | E_USER_NOTICE);
 
@@ -289,7 +289,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeStdout("{{stdout}}\n");
@@ -304,7 +304,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeStdout('{{stdout}}');
@@ -322,7 +322,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeReturnValue($input);
@@ -345,7 +345,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeException($exception);
@@ -367,7 +367,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
         $this->assertEquals($expected, $shell->execute($input));
         \rewind($stream);
@@ -432,8 +432,8 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         \unlink($dir);
 
         $defaults = [
-            'configDir' => $dir,
-            'dataDir' => $dir,
+            'configDir'  => $dir,
+            'dataDir'    => $dir,
             'runtimeDir' => $dir,
         ];
 

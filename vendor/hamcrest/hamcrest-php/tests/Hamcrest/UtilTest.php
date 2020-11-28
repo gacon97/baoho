@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest;
 
 class UtilTest extends \PhpUnit_Framework_TestCase
@@ -38,6 +37,18 @@ class UtilTest extends \PhpUnit_Framework_TestCase
         ));
     }
 
+    private function callAndAssertCreateMatcherArray($items)
+    {
+        $matchers = \Hamcrest\Util::createMatcherArray($items);
+        $this->assertInternalType('array', $matchers);
+        $this->assertSameSize($items, $matchers);
+        foreach ($matchers as $matcher) {
+            $this->assertInstanceOf('\Hamcrest\Matcher', $matcher);
+        }
+
+        return $matchers;
+    }
+
     public function testCreateMatcherArrayLeavesMatchersUntouched()
     {
         $matcher = new \Hamcrest\Text\MatchesPattern('/fo+/');
@@ -65,17 +76,5 @@ class UtilTest extends \PhpUnit_Framework_TestCase
         $matchers = $this->callAndAssertCreateMatcherArray(array(array('foo')));
         $this->assertInstanceOf('Hamcrest\Core\IsEqual', $matchers[0]);
         $this->assertTrue($matchers[0]->matches('foo'));
-    }
-
-    private function callAndAssertCreateMatcherArray($items)
-    {
-        $matchers = \Hamcrest\Util::createMatcherArray($items);
-        $this->assertInternalType('array', $matchers);
-        $this->assertSameSize($items, $matchers);
-        foreach ($matchers as $matcher) {
-            $this->assertInstanceOf('\Hamcrest\Matcher', $matcher);
-        }
-
-        return $matchers;
     }
 }

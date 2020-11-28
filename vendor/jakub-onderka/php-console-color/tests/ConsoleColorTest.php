@@ -1,5 +1,4 @@
 <?php
-
 use JakubOnderka\PhpConsoleColor\ConsoleColor;
 
 class ConsoleColorWithForceSupport extends ConsoleColor
@@ -33,6 +32,11 @@ class ConsoleColorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ConsoleColorWithForceSupport */
     private $uut;
+
+    protected function setUp()
+    {
+        $this->uut = new ConsoleColorWithForceSupport();
+    }
 
     public function testNone()
     {
@@ -175,11 +179,6 @@ class ConsoleColorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInternalType('array', $this->uut->getPossibleStyles());
         $this->assertNotEmpty($this->uut->getPossibleStyles());
-    }
-
-    protected function setUp()
-    {
-        $this->uut = new ConsoleColorWithForceSupport();
     }
 }
 

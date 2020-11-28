@@ -111,16 +111,6 @@ class UuidFactory implements UuidFactoryInterface
     }
 
     /**
-     * Sets the random UUID generator this factory will use to generate version 4 UUIDs
-     *
-     * @param RandomGeneratorInterface $generator
-     */
-    public function setRandomGenerator(RandomGeneratorInterface $generator)
-    {
-        $this->randomGenerator = $generator;
-    }
-
-    /**
      * Returns the time-based UUID generator used by this factory
      *
      * @return TimeGeneratorInterface
@@ -148,6 +138,16 @@ class UuidFactory implements UuidFactoryInterface
     public function getNumberConverter()
     {
         return $this->numberConverter;
+    }
+
+    /**
+     * Sets the random UUID generator this factory will use to generate version 4 UUIDs
+     *
+     * @param RandomGeneratorInterface $generator
+     */
+    public function setRandomGenerator(RandomGeneratorInterface $generator)
+    {
+        $this->randomGenerator = $generator;
     }
 
     /**

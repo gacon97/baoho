@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Type;
 
 class IsArrayTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Type\IsArray::arrayValue();
+    }
 
     public function testEvaluatesToTrueIfArgumentMatchesType()
     {
@@ -27,10 +31,5 @@ class IsArrayTest extends \Hamcrest\AbstractMatcherTest
     {
         $this->assertMismatchDescription('was null', arrayValue(), null);
         $this->assertMismatchDescription('was a string "foo"', arrayValue(), 'foo');
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Type\IsArray::arrayValue();
     }
 }

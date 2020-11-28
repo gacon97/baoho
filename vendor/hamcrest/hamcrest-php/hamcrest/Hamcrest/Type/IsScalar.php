@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Type;
 
 /*
  Copyright (c) 2010 hamcrest.org
  */
-
 use Hamcrest\Core\IsTypeOf;
 
 /**
@@ -19,6 +17,11 @@ class IsScalar extends IsTypeOf
         parent::__construct('scalar');
     }
 
+    public function matches($item)
+    {
+        return is_scalar($item);
+    }
+
     /**
      * Is the value a scalar (boolean, integer, double, or string)?
      *
@@ -27,10 +30,5 @@ class IsScalar extends IsTypeOf
     public static function scalarValue()
     {
         return new self;
-    }
-
-    public function matches($item)
-    {
-        return is_scalar($item);
     }
 }

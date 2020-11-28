@@ -59,7 +59,7 @@ class ReflectionConstant_ implements \Reflector
      * Exports a reflection.
      *
      * @param string $name
-     * @param bool $return pass true to return the export, as opposed to emitting it
+     * @param bool   $return pass true to return the export, as opposed to emitting it
      *
      * @return null|string
      */

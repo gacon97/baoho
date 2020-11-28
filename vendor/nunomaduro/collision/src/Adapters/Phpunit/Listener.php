@@ -90,7 +90,7 @@ if (class_exists(\PHPUnit\Runner\Version::class) && substr(\PHPUnit\Runner\Versi
         public function addFailure(Test $test, AssertionFailedError $t, float $time): void
         {
             $this->writer->ignoreFilesIn(['/vendor/'])
-                ->showTrace(false);
+            ->showTrace(false);
 
             if ($this->exceptionFound === null) {
                 $this->exceptionFound = $t;

@@ -29,14 +29,10 @@ trait VarDumperTestTrait
         $this->assertStringMatchesFormat($this->prepareExpectation($expected, $filter), $this->getDump($data, null, $filter), $message);
     }
 
-    /**
-     * @return string|null
-     */
     protected function getDump($data, $key = null, $filter = 0)
     {
         $flags = getenv('DUMP_LIGHT_ARRAY') ? CliDumper::DUMP_LIGHT_ARRAY : 0;
         $flags |= getenv('DUMP_STRING_LENGTH') ? CliDumper::DUMP_STRING_LENGTH : 0;
-        $flags |= getenv('DUMP_COMMA_SEPARATOR') ? CliDumper::DUMP_COMMA_SEPARATOR : 0;
 
         $cloner = new VarCloner();
         $cloner->setMaxItems(-1);
@@ -44,7 +40,7 @@ trait VarDumperTestTrait
         $dumper->setColors(false);
         $data = $cloner->cloneVar($data, $filter)->withRefHandles(false);
         if (null !== $key && null === $data = $data->seek($key)) {
-            return null;
+            return;
         }
 
         return rtrim($dumper->dump($data, true));

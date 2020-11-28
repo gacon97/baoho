@@ -1,5 +1,4 @@
 <?php
-
 namespace JakubOnderka\PhpConsoleHighlighter;
 
 use JakubOnderka\PhpConsoleColor\ConsoleColor;
@@ -26,7 +25,7 @@ class Highlighter
         self::TOKEN_DEFAULT => 'default',
         self::TOKEN_HTML => 'cyan',
 
-        self::ACTUAL_LINE_MARK => 'red',
+        self::ACTUAL_LINE_MARK  => 'red',
         self::LINE_NUMBER => 'dark_gray',
     );
 
@@ -129,7 +128,7 @@ class Highlighter
                     case T_STRING:
                     case T_VARIABLE:
 
-                        // Constants
+                    // Constants
                     case T_DIR:
                     case T_FILE:
                     case T_METHOD_C:

@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Xml;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\Core\IsEqual;
 use Hamcrest\Description;
 use Hamcrest\DiagnosingMatcher;
@@ -38,35 +36,6 @@ class HasXPath extends DiagnosingMatcher
     {
         $this->_xpath = $xpath;
         $this->_matcher = $matcher;
-    }
-
-    /**
-     * Wraps <code>$matcher</code> with {@link Hamcrest\Core\IsEqual)
-     * if it's not a matcher and the XPath in <code>count()</code>
-     * if it's an integer.
-     *
-     * @factory
-     */
-    public static function hasXPath($xpath, $matcher = null)
-    {
-        if ($matcher === null || $matcher instanceof Matcher) {
-            return new self($xpath, $matcher);
-        } elseif (is_int($matcher) && strpos($xpath, 'count(') !== 0) {
-            $xpath = 'count(' . $xpath . ')';
-        }
-
-        return new self($xpath, IsEqual::equalTo($matcher));
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendText('XML or HTML document with XPath "')
-            ->appendText($this->_xpath)
-            ->appendText('"');
-        if ($this->_matcher !== null) {
-            $description->appendText(' ');
-            $this->_matcher->describeTo($description);
-        }
     }
 
     /**
@@ -162,7 +131,7 @@ class HasXPath extends DiagnosingMatcher
                 $content[] = $node->textContent;
             }
             $mismatchDescription->appendText('XPath returned ')
-                ->appendValue($content);
+                                                    ->appendValue($content);
         }
 
         return false;
@@ -183,7 +152,7 @@ class HasXPath extends DiagnosingMatcher
                 return true;
             }
             $mismatchDescription->appendText('XPath expression result was ')
-                ->appendValue($result);
+                                                    ->appendValue($result);
         } else {
             if ($this->_matcher->matches($result)) {
                 return true;
@@ -193,5 +162,34 @@ class HasXPath extends DiagnosingMatcher
         }
 
         return false;
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendText('XML or HTML document with XPath "')
+                                ->appendText($this->_xpath)
+                                ->appendText('"');
+        if ($this->_matcher !== null) {
+            $description->appendText(' ');
+            $this->_matcher->describeTo($description);
+        }
+    }
+
+    /**
+     * Wraps <code>$matcher</code> with {@link Hamcrest\Core\IsEqual)
+     * if it's not a matcher and the XPath in <code>count()</code>
+     * if it's an integer.
+     *
+     * @factory
+     */
+    public static function hasXPath($xpath, $matcher = null)
+    {
+        if ($matcher === null || $matcher instanceof Matcher) {
+            return new self($xpath, $matcher);
+        } elseif (is_int($matcher) && strpos($xpath, 'count(') !== 0) {
+            $xpath = 'count(' . $xpath . ')';
+        }
+
+        return new self($xpath, IsEqual::equalTo($matcher));
     }
 }

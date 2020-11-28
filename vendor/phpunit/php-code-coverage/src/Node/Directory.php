@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Node;
 
 use SebastianBergmann\CodeCoverage\InvalidArgumentException;
@@ -141,7 +140,7 @@ final class Directory extends AbstractNode implements \IteratorAggregate
     {
         $directory = new self($name, $this);
 
-        $this->children[] = $directory;
+        $this->children[]    = $directory;
         $this->directories[] = &$this->children[\count($this->children) - 1];
 
         return $directory;
@@ -157,10 +156,10 @@ final class Directory extends AbstractNode implements \IteratorAggregate
         $file = new File($name, $this, $coverageData, $testData, $cacheTokens);
 
         $this->children[] = $file;
-        $this->files[] = &$this->children[\count($this->children) - 1];
+        $this->files[]    = &$this->children[\count($this->children) - 1];
 
         $this->numExecutableLines = -1;
-        $this->numExecutedLines = -1;
+        $this->numExecutedLines   = -1;
 
         return $file;
     }

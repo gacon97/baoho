@@ -39,10 +39,10 @@ class Pivot extends Model
     /**
      * Create a new pivot model instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Model $parent
-     * @param  array $attributes
-     * @param  string $table
-     * @param  bool $exists
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  array   $attributes
+     * @param  string  $table
+     * @param  bool    $exists
      * @return static
      */
     public static function fromAttributes(Model $parent, $attributes, $table, $exists = false)
@@ -53,9 +53,9 @@ class Pivot extends Model
         // for the instance. This allows it work for any intermediate tables for the
         // many to many relationship that are defined by this developer's classes.
         $instance->setConnection($parent->getConnectionName())
-            ->setTable($table)
-            ->forceFill($attributes)
-            ->syncOriginal();
+                ->setTable($table)
+                ->forceFill($attributes)
+                ->syncOriginal();
 
         // We store off the parent instance so we will access the timestamp column names
         // for the model, since the pivot model timestamps aren't easily configurable
@@ -72,10 +72,10 @@ class Pivot extends Model
     /**
      * Create a new pivot model from raw values returned from a query.
      *
-     * @param  \Illuminate\Database\Eloquent\Model $parent
-     * @param  array $attributes
-     * @param  string $table
-     * @param  bool $exists
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  array   $attributes
+     * @param  string  $table
+     * @param  bool    $exists
      * @return static
      */
     public static function fromRawAttributes(Model $parent, $attributes, $table, $exists = false)
@@ -87,6 +87,27 @@ class Pivot extends Model
         $instance->timestamps = $instance->hasTimestampAttributes();
 
         return $instance;
+    }
+
+    /**
+     * Set the keys for a save update query.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function setKeysForSaveQuery(Builder $query)
+    {
+        if (isset($this->attributes[$this->getKeyName()])) {
+            return parent::setKeysForSaveQuery($query);
+        }
+
+        $query->where($this->foreignKey, $this->getOriginal(
+            $this->foreignKey, $this->getAttribute($this->foreignKey)
+        ));
+
+        return $query->where($this->relatedKey, $this->getOriginal(
+            $this->relatedKey, $this->getAttribute($this->relatedKey)
+        ));
     }
 
     /**
@@ -104,13 +125,26 @@ class Pivot extends Model
     }
 
     /**
+     * Get the query builder for a delete operation on the pivot.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function getDeleteQuery()
+    {
+        return $this->newQuery()->where([
+            $this->foreignKey => $this->getOriginal($this->foreignKey, $this->getAttribute($this->foreignKey)),
+            $this->relatedKey => $this->getOriginal($this->relatedKey, $this->getAttribute($this->relatedKey)),
+        ]);
+    }
+
+    /**
      * Get the table associated with the model.
      *
      * @return string
      */
     public function getTable()
     {
-        if (!isset($this->table)) {
+        if (! isset($this->table)) {
             $this->setTable(str_replace(
                 '\\', '', Str::snake(Str::singular(class_basename($this)))
             ));
@@ -152,8 +186,8 @@ class Pivot extends Model
     /**
      * Set the key names for the pivot model instance.
      *
-     * @param  string $foreignKey
-     * @param  string $relatedKey
+     * @param  string  $foreignKey
+     * @param  string  $relatedKey
      * @return $this
      */
     public function setPivotKeys($foreignKey, $relatedKey)
@@ -183,8 +217,8 @@ class Pivot extends Model
     public function getCreatedAtColumn()
     {
         return ($this->pivotParent)
-            ? $this->pivotParent->getCreatedAtColumn()
-            : parent::getCreatedAtColumn();
+                        ? $this->pivotParent->getCreatedAtColumn()
+                        : parent::getCreatedAtColumn();
     }
 
     /**
@@ -195,8 +229,8 @@ class Pivot extends Model
     public function getUpdatedAtColumn()
     {
         return ($this->pivotParent)
-            ? $this->pivotParent->getUpdatedAtColumn()
-            : parent::getUpdatedAtColumn();
+                        ? $this->pivotParent->getUpdatedAtColumn()
+                        : parent::getUpdatedAtColumn();
     }
 
     /**
@@ -220,7 +254,7 @@ class Pivot extends Model
     /**
      * Get a new query to restore one or more models by their queueable IDs.
      *
-     * @param  array|int $ids
+     * @param  array|int  $ids
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function newQueryForRestoration($ids)
@@ -229,60 +263,26 @@ class Pivot extends Model
             return $this->newQueryForCollectionRestoration($ids);
         }
 
-        if (!Str::contains($ids, ':')) {
+        if (! Str::contains($ids, ':')) {
             return parent::newQueryForRestoration($ids);
         }
 
         $segments = explode(':', $ids);
 
         return $this->newQueryWithoutScopes()
-            ->where($segments[0], $segments[1])
-            ->where($segments[2], $segments[3]);
-    }
-
-    /**
-     * Set the keys for a save update query.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    protected function setKeysForSaveQuery(Builder $query)
-    {
-        if (isset($this->attributes[$this->getKeyName()])) {
-            return parent::setKeysForSaveQuery($query);
-        }
-
-        $query->where($this->foreignKey, $this->getOriginal(
-            $this->foreignKey, $this->getAttribute($this->foreignKey)
-        ));
-
-        return $query->where($this->relatedKey, $this->getOriginal(
-            $this->relatedKey, $this->getAttribute($this->relatedKey)
-        ));
-    }
-
-    /**
-     * Get the query builder for a delete operation on the pivot.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    protected function getDeleteQuery()
-    {
-        return $this->newQuery()->where([
-            $this->foreignKey => $this->getOriginal($this->foreignKey, $this->getAttribute($this->foreignKey)),
-            $this->relatedKey => $this->getOriginal($this->relatedKey, $this->getAttribute($this->relatedKey)),
-        ]);
+                        ->where($segments[0], $segments[1])
+                        ->where($segments[2], $segments[3]);
     }
 
     /**
      * Get a new query to restore multiple models by their queueable IDs.
      *
-     * @param  array|int $ids
+     * @param  array|int  $ids
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function newQueryForCollectionRestoration(array $ids)
     {
-        if (!Str::contains($ids[0], ':')) {
+        if (! Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);
         }
 
@@ -293,7 +293,7 @@ class Pivot extends Model
 
             $query->orWhere(function ($query) use ($segments) {
                 return $query->where($segments[0], $segments[1])
-                    ->where($segments[2], $segments[3]);
+                             ->where($segments[2], $segments[3]);
             });
         }
 

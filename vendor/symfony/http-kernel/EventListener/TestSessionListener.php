@@ -24,7 +24,7 @@ class TestSessionListener extends AbstractTestSessionListener
 {
     private $container;
 
-    public function __construct(ContainerInterface $container, array $sessionOptions = [])
+    public function __construct(ContainerInterface $container, array $sessionOptions = array())
     {
         $this->container = $container;
         parent::__construct($sessionOptions);
@@ -33,7 +33,7 @@ class TestSessionListener extends AbstractTestSessionListener
     protected function getSession()
     {
         if (!$this->container->has('session')) {
-            return null;
+            return;
         }
 
         return $this->container->get('session');

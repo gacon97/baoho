@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -15,15 +14,15 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\ComparisonFailure
  *
- * @uses   \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\Factory
  */
 final class ComparisonFailureTest extends TestCase
 {
     public function testComparisonFailure(): void
     {
-        $actual = "\nB\n";
+        $actual   = "\nB\n";
         $expected = "\nA\n";
-        $message = 'Test message';
+        $message  = 'Test message';
 
         $failure = new ComparisonFailure(
             $expected,

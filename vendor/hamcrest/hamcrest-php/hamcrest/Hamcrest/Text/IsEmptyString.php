@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Text;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\BaseMatcher;
 use Hamcrest\Core\AnyOf;
 use Hamcrest\Core\IsNull;
@@ -26,6 +24,18 @@ class IsEmptyString extends BaseMatcher
     public function __construct($empty = true)
     {
         $this->_empty = $empty;
+    }
+
+    public function matches($item)
+    {
+        return $this->_empty
+            ? ($item === '')
+            : is_string($item) && $item !== '';
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendText($this->_empty ? 'an empty string' : 'a non-empty string');
     }
 
     /**
@@ -71,17 +81,5 @@ class IsEmptyString extends BaseMatcher
         }
 
         return self::$_NOT_INSTANCE;
-    }
-
-    public function matches($item)
-    {
-        return $this->_empty
-            ? ($item === '')
-            : is_string($item) && $item !== '';
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendText($this->_empty ? 'an empty string' : 'a non-empty string');
     }
 }

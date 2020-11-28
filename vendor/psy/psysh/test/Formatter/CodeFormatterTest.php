@@ -16,11 +16,6 @@ use Psy\Test\Formatter\Fixtures\SomeClass;
 
 class CodeFormatterTest extends \PHPUnit\Framework\TestCase
 {
-    private static function trimLines($code)
-    {
-        return \rtrim(\implode("\n", \array_map('rtrim', \explode("\n", $code))));
-    }
-
     /**
      * @dataProvider reflectors
      */
@@ -125,5 +120,10 @@ EOS;
         }
 
         return [[null], ['not a file']];
+    }
+
+    private static function trimLines($code)
+    {
+        return \rtrim(\implode("\n", \array_map('rtrim', \explode("\n", $code))));
     }
 }

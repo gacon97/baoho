@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Node;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -16,9 +15,9 @@ final class Builder
 {
     public function build(CodeCoverage $coverage): Directory
     {
-        $files = $coverage->getData();
+        $files      = $coverage->getData();
         $commonPath = $this->reducePaths($files);
-        $root = new Directory(
+        $root       = new Directory(
             $commonPath,
             null
         );
@@ -94,9 +93,9 @@ final class Builder
         $result = [];
 
         foreach ($files as $path => $file) {
-            $path = \explode(\DIRECTORY_SEPARATOR, $path);
+            $path    = \explode(\DIRECTORY_SEPARATOR, $path);
             $pointer = &$result;
-            $max = \count($path);
+            $max     = \count($path);
 
             for ($i = 0; $i < $max; $i++) {
                 $type = '';
@@ -158,10 +157,10 @@ final class Builder
         }
 
         $commonPath = '';
-        $paths = \array_keys($files);
+        $paths      = \array_keys($files);
 
         if (\count($files) === 1) {
-            $commonPath = \dirname($paths[0]) . \DIRECTORY_SEPARATOR;
+            $commonPath                  = \dirname($paths[0]) . \DIRECTORY_SEPARATOR;
             $files[\basename($paths[0])] = $files[$paths[0]];
 
             unset($files[$paths[0]]);
@@ -185,7 +184,7 @@ final class Builder
         }
 
         $done = false;
-        $max = \count($paths);
+        $max  = \count($paths);
 
         while (!$done) {
             for ($i = 0; $i < $max - 1; $i++) {
@@ -212,7 +211,7 @@ final class Builder
         }
 
         $original = \array_keys($files);
-        $max = \count($original);
+        $max      = \count($original);
 
         for ($i = 0; $i < $max; $i++) {
             $files[\implode(\DIRECTORY_SEPARATOR, $paths[$i])] = $files[$original[$i]];

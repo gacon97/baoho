@@ -22,7 +22,7 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 class OutputFormatter implements WrappableOutputFormatterInterface
 {
     private $decorated;
-    private $styles = [];
+    private $styles = array();
     private $styleStack;
 
     /**
@@ -66,7 +66,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
      * @param bool                            $decorated Whether this formatter should actually decorate strings
      * @param OutputFormatterStyleInterface[] $styles    Array of "name => FormatterStyle" instances
      */
-    public function __construct(bool $decorated = false, array $styles = [])
+    public function __construct(bool $decorated = false, array $styles = array())
     {
         $this->decorated = $decorated;
 
@@ -141,7 +141,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
     {
         $offset = 0;
         $output = '';
-        $tagRegex = '[a-z][^<>]*+';
+        $tagRegex = '[a-z][a-z0-9,_=;-]*+';
         $currentLineLength = 0;
         preg_match_all("#<(($tagRegex) | /($tagRegex)?)>#ix", $message, $matches, PREG_OFFSET_CAPTURE);
         foreach ($matches[0] as $i => $match) {
@@ -178,7 +178,7 @@ class OutputFormatter implements WrappableOutputFormatterInterface
         $output .= $this->applyCurrentStyle(substr($message, $offset), $output, $width, $currentLineLength);
 
         if (false !== strpos($output, "\0")) {
-            return strtr($output, ["\0" => '\\', '\\<' => '<']);
+            return strtr($output, array("\0" => '\\', '\\<' => '<'));
         }
 
         return str_replace('\\<', '<', $output);
@@ -216,8 +216,6 @@ class OutputFormatter implements WrappableOutputFormatterInterface
                 $style->setForeground(strtolower($match[1]));
             } elseif ('bg' == $match[0]) {
                 $style->setBackground(strtolower($match[1]));
-            } elseif ('href' === $match[0]) {
-                $style->setHref($match[1]);
             } elseif ('options' === $match[0]) {
                 preg_match_all('([^,;]+)', strtolower($match[1]), $options);
                 $options = array_shift($options);
@@ -265,12 +263,8 @@ class OutputFormatter implements WrappableOutputFormatterInterface
         }
 
         $lines = explode("\n", $text);
-
-        foreach ($lines as $line) {
-            $currentLineLength += \strlen($line);
-            if ($width <= $currentLineLength) {
-                $currentLineLength = 0;
-            }
+        if ($width === $currentLineLength = \strlen(end($lines))) {
+            $currentLineLength = 0;
         }
 
         if ($this->isDecorated()) {

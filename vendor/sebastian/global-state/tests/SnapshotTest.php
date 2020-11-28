@@ -28,6 +28,11 @@ class SnapshotTest extends TestCase
      */
     private $blacklist;
 
+    protected function setUp()
+    {
+        $this->blacklist = $this->createMock(Blacklist::class);
+    }
+
     public function testStaticAttributes()
     {
         $this->blacklist->method('isStaticAttributeBlacklisted')->willReturnCallback(
@@ -42,9 +47,9 @@ class SnapshotTest extends TestCase
 
         $expected = [
             SnapshotClass::class => [
-                'string' => 'snapshot',
+                'string'      => 'snapshot',
                 'arrayObject' => new ArrayObject([1, 2, 3]),
-                'stdClass' => new \stdClass(),
+                'stdClass'    => new \stdClass(),
             ]
         ];
 
@@ -60,7 +65,7 @@ class SnapshotTest extends TestCase
 
     public function testFunctions()
     {
-        $snapshot = new Snapshot($this->blacklist, false, false, false, true, false, false, false, false, false);
+        $snapshot  = new Snapshot($this->blacklist, false, false, false, true, false, false, false, false, false);
         $functions = $snapshot->functions();
 
         $this->assertContains('sebastianbergmann\globalstate\testfixture\snapshotfunction', $functions);
@@ -70,7 +75,7 @@ class SnapshotTest extends TestCase
     public function testClasses()
     {
         $snapshot = new Snapshot($this->blacklist, false, false, false, false, true, false, false, false, false);
-        $classes = $snapshot->classes();
+        $classes  = $snapshot->classes();
 
         $this->assertContains(TestCase::class, $classes);
         $this->assertNotContains(Exception::class, $classes);
@@ -78,7 +83,7 @@ class SnapshotTest extends TestCase
 
     public function testInterfaces()
     {
-        $snapshot = new Snapshot($this->blacklist, false, false, false, false, false, true, false, false, false);
+        $snapshot   = new Snapshot($this->blacklist, false, false, false, false, false, true, false, false, false);
         $interfaces = $snapshot->interfaces();
 
         $this->assertContains(BlacklistedInterface::class, $interfaces);
@@ -96,7 +101,7 @@ class SnapshotTest extends TestCase
 
     public function testIniSettings()
     {
-        $snapshot = new Snapshot($this->blacklist, false, false, false, false, false, false, false, true, false);
+        $snapshot    = new Snapshot($this->blacklist, false, false, false, false, false, false, false, true, false);
         $iniSettings = $snapshot->iniSettings();
 
         $this->assertArrayHasKey('date.timezone', $iniSettings);
@@ -107,10 +112,5 @@ class SnapshotTest extends TestCase
     {
         $snapshot = new Snapshot($this->blacklist, false, false, false, false, false, false, false, false, true);
         $this->assertContains(__FILE__, $snapshot->includedFiles());
-    }
-
-    protected function setUp()
-    {
-        $this->blacklist = $this->createMock(Blacklist::class);
     }
 }

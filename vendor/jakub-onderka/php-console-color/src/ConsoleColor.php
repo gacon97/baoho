@@ -1,5 +1,4 @@
 <?php
-
 namespace JakubOnderka\PhpConsoleColor;
 
 class ConsoleColor
@@ -123,7 +122,7 @@ class ConsoleColor
      */
     public function setForceStyle($forceStyle)
     {
-        $this->forceStyle = (bool)$forceStyle;
+        $this->forceStyle = (bool) $forceStyle;
     }
 
     /**
@@ -132,6 +131,19 @@ class ConsoleColor
     public function isStyleForced()
     {
         return $this->forceStyle;
+    }
+
+    /**
+     * @param array $themes
+     * @throws InvalidStyleException
+     * @throws \InvalidArgumentException
+     */
+    public function setThemes(array $themes)
+    {
+        $this->themes = array();
+        foreach ($themes as $name => $styles) {
+            $this->addTheme($name, $styles);
+        }
     }
 
     /**
@@ -164,19 +176,6 @@ class ConsoleColor
     public function getThemes()
     {
         return $this->themes;
-    }
-
-    /**
-     * @param array $themes
-     * @throws InvalidStyleException
-     * @throws \InvalidArgumentException
-     */
-    public function setThemes(array $themes)
-    {
-        $this->themes = array();
-        foreach ($themes as $name => $styles) {
-            $this->addTheme($name, $styles);
-        }
     }
 
     /**

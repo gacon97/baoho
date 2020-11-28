@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Node;
 
 /**
@@ -105,8 +104,8 @@ final class File extends AbstractNode
         parent::__construct($name, $parent);
 
         $this->coverageData = $coverageData;
-        $this->testData = $testData;
-        $this->cacheTokens = $cacheTokens;
+        $this->testData     = $testData;
+        $this->cacheTokens  = $cacheTokens;
 
         $this->calculateStatistics();
     }
@@ -472,7 +471,7 @@ final class File extends AbstractNode
     private function processClasses(\PHP_Token_Stream $tokens): void
     {
         $classes = $tokens->getClasses();
-        $link = $this->getId() . '.html#';
+        $link    = $this->getId() . '.html#';
 
         foreach ($classes as $className => $class) {
             if (\strpos($className, 'anonymous') === 0) {
@@ -484,16 +483,16 @@ final class File extends AbstractNode
             }
 
             $this->classes[$className] = [
-                'className' => $className,
-                'methods' => [],
-                'startLine' => $class['startLine'],
+                'className'       => $className,
+                'methods'         => [],
+                'startLine'       => $class['startLine'],
                 'executableLines' => 0,
-                'executedLines' => 0,
-                'ccn' => 0,
-                'coverage' => 0,
-                'crap' => 0,
-                'package' => $class['package'],
-                'link' => $link . $class['startLine'],
+                'executedLines'   => 0,
+                'ccn'             => 0,
+                'coverage'        => 0,
+                'crap'            => 0,
+                'package'         => $class['package'],
+                'link'            => $link . $class['startLine'],
             ];
 
             foreach ($class['methods'] as $methodName => $method) {
@@ -516,20 +515,20 @@ final class File extends AbstractNode
     private function processTraits(\PHP_Token_Stream $tokens): void
     {
         $traits = $tokens->getTraits();
-        $link = $this->getId() . '.html#';
+        $link   = $this->getId() . '.html#';
 
         foreach ($traits as $traitName => $trait) {
             $this->traits[$traitName] = [
-                'traitName' => $traitName,
-                'methods' => [],
-                'startLine' => $trait['startLine'],
+                'traitName'       => $traitName,
+                'methods'         => [],
+                'startLine'       => $trait['startLine'],
                 'executableLines' => 0,
-                'executedLines' => 0,
-                'ccn' => 0,
-                'coverage' => 0,
-                'crap' => 0,
-                'package' => $trait['package'],
-                'link' => $link . $trait['startLine'],
+                'executedLines'   => 0,
+                'ccn'             => 0,
+                'coverage'        => 0,
+                'crap'            => 0,
+                'package'         => $trait['package'],
+                'link'            => $link . $trait['startLine'],
             ];
 
             foreach ($trait['methods'] as $methodName => $method) {
@@ -552,7 +551,7 @@ final class File extends AbstractNode
     private function processFunctions(\PHP_Token_Stream $tokens): void
     {
         $functions = $tokens->getFunctions();
-        $link = $this->getId() . '.html#';
+        $link      = $this->getId() . '.html#';
 
         foreach ($functions as $functionName => $function) {
             if (\strpos($functionName, 'anonymous') === 0) {
@@ -560,15 +559,15 @@ final class File extends AbstractNode
             }
 
             $this->functions[$functionName] = [
-                'functionName' => $functionName,
-                'signature' => $function['signature'],
-                'startLine' => $function['startLine'],
+                'functionName'    => $functionName,
+                'signature'       => $function['signature'],
+                'startLine'       => $function['startLine'],
                 'executableLines' => 0,
-                'executedLines' => 0,
-                'ccn' => $function['ccn'],
-                'coverage' => 0,
-                'crap' => 0,
-                'link' => $link . $function['startLine'],
+                'executedLines'   => 0,
+                'ccn'             => $function['ccn'],
+                'coverage'        => 0,
+                'crap'            => 0,
+                'link'            => $link . $function['startLine'],
             ];
 
             foreach (\range($function['startLine'], $function['endLine']) as $lineNumber) {
@@ -580,11 +579,11 @@ final class File extends AbstractNode
     private function crap(int $ccn, float $coverage): string
     {
         if ($coverage === 0) {
-            return (string)($ccn ** 2 + $ccn);
+            return (string) ($ccn ** 2 + $ccn);
         }
 
         if ($coverage >= 95) {
-            return (string)$ccn;
+            return (string) $ccn;
         }
 
         return \sprintf(
@@ -596,17 +595,17 @@ final class File extends AbstractNode
     private function newMethod(string $methodName, array $method, string $link): array
     {
         return [
-            'methodName' => $methodName,
-            'visibility' => $method['visibility'],
-            'signature' => $method['signature'],
-            'startLine' => $method['startLine'],
-            'endLine' => $method['endLine'],
+            'methodName'      => $methodName,
+            'visibility'      => $method['visibility'],
+            'signature'       => $method['signature'],
+            'startLine'       => $method['startLine'],
+            'endLine'         => $method['endLine'],
             'executableLines' => 0,
-            'executedLines' => 0,
-            'ccn' => $method['ccn'],
-            'coverage' => 0,
-            'crap' => 0,
-            'link' => $link . $method['startLine'],
+            'executedLines'   => 0,
+            'ccn'             => $method['ccn'],
+            'coverage'        => 0,
+            'crap'            => 0,
+            'link'            => $link . $method['startLine'],
         ];
     }
 }

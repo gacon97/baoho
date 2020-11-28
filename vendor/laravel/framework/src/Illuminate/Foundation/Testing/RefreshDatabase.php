@@ -14,8 +14,52 @@ trait RefreshDatabase
     public function refreshDatabase()
     {
         $this->usingInMemoryDatabase()
-            ? $this->refreshInMemoryDatabase()
-            : $this->refreshTestDatabase();
+                        ? $this->refreshInMemoryDatabase()
+                        : $this->refreshTestDatabase();
+    }
+
+    /**
+     * Determine if an in-memory database is being used.
+     *
+     * @return bool
+     */
+    protected function usingInMemoryDatabase()
+    {
+        return config('database.connections')[
+            config('database.default')
+        ]['database'] == ':memory:';
+    }
+
+    /**
+     * Refresh the in-memory database.
+     *
+     * @return void
+     */
+    protected function refreshInMemoryDatabase()
+    {
+        $this->artisan('migrate');
+
+        $this->app[Kernel::class]->setArtisan(null);
+    }
+
+    /**
+     * Refresh a conventional test database.
+     *
+     * @return void
+     */
+    protected function refreshTestDatabase()
+    {
+        if (! RefreshDatabaseState::$migrated) {
+            $this->artisan('migrate:fresh', $this->shouldDropViews() ? [
+                '--drop-views' => true,
+            ] : []);
+
+            $this->app[Kernel::class]->setArtisan(null);
+
+            RefreshDatabaseState::$migrated = true;
+        }
+
+        $this->beginDatabaseTransaction();
     }
 
     /**
@@ -50,48 +94,6 @@ trait RefreshDatabase
     }
 
     /**
-     * Determine if an in-memory database is being used.
-     *
-     * @return bool
-     */
-    protected function usingInMemoryDatabase()
-    {
-        return config('database.connections')[config('database.default')]['database'] == ':memory:';
-    }
-
-    /**
-     * Refresh the in-memory database.
-     *
-     * @return void
-     */
-    protected function refreshInMemoryDatabase()
-    {
-        $this->artisan('migrate');
-
-        $this->app[Kernel::class]->setArtisan(null);
-    }
-
-    /**
-     * Refresh a conventional test database.
-     *
-     * @return void
-     */
-    protected function refreshTestDatabase()
-    {
-        if (!RefreshDatabaseState::$migrated) {
-            $this->artisan('migrate:fresh', $this->shouldDropViews() ? [
-                '--drop-views' => true,
-            ] : []);
-
-            $this->app[Kernel::class]->setArtisan(null);
-
-            RefreshDatabaseState::$migrated = true;
-        }
-
-        $this->beginDatabaseTransaction();
-    }
-
-    /**
      * The database connections that should have transactions.
      *
      * @return array
@@ -99,7 +101,7 @@ trait RefreshDatabase
     protected function connectionsToTransact()
     {
         return property_exists($this, 'connectionsToTransact')
-            ? $this->connectionsToTransact : [null];
+                            ? $this->connectionsToTransact : [null];
     }
 
     /**
@@ -110,6 +112,6 @@ trait RefreshDatabase
     protected function shouldDropViews()
     {
         return property_exists($this, 'dropViews')
-            ? $this->dropViews : false;
+                            ? $this->dropViews : false;
     }
 }

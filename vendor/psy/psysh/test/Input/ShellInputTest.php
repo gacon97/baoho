@@ -165,9 +165,9 @@ class ShellInputTest extends \PHPUnit\Framework\TestCase
 
             [
                 '-a',
-                [['-a', '-a']],
-                '->tokenize() parses short options',
-            ],
+                 [['-a', '-a']],
+                 '->tokenize() parses short options',
+             ],
             [
                 '-azc',
                 [['-azc', '-azc']],

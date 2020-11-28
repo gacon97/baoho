@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Core;
 
 class DummyToStringClass
@@ -19,6 +18,11 @@ class DummyToStringClass
 
 class IsEqualTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Core\IsEqual::equalTo('irrelevant');
+    }
 
     public function testComparesObjectsUsingEqualityOperator()
     {
@@ -88,16 +92,11 @@ class IsEqualTest extends \Hamcrest\AbstractMatcherTest
     public function testReturnsAnObviousDescriptionIfCreatedWithANestedMatcherByMistake()
     {
         $innerMatcher = equalTo('NestedMatcher');
-        $this->assertDescription('<' . (string)$innerMatcher . '>', equalTo($innerMatcher));
+        $this->assertDescription('<' . (string) $innerMatcher . '>', equalTo($innerMatcher));
     }
 
     public function testReturnsGoodDescriptionIfCreatedWithNullReference()
     {
         $this->assertDescription('null', equalTo(null));
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Core\IsEqual::equalTo('irrelevant');
     }
 }

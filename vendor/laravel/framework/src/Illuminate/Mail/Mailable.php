@@ -69,48 +69,14 @@ class Mailable implements MailableContract, Renderable
      * @var string
      */
     public $subject;
-    /**
-     * The view to use for the message.
-     *
-     * @var string
-     */
-    public $view;
-    /**
-     * The plain text view to use for the message.
-     *
-     * @var string
-     */
-    public $textView;
-    /**
-     * The view data for the message.
-     *
-     * @var array
-     */
-    public $viewData = [];
-    /**
-     * The attachments for the message.
-     *
-     * @var array
-     */
-    public $attachments = [];
-    /**
-     * The raw attachments for the message.
-     *
-     * @var array
-     */
-    public $rawAttachments = [];
-    /**
-     * The callbacks for the message.
-     *
-     * @var array
-     */
-    public $callbacks = [];
+
     /**
      * The Markdown template for the message (if applicable).
      *
      * @var string
      */
     protected $markdown;
+
     /**
      * The HTML to use for the message.
      *
@@ -119,9 +85,51 @@ class Mailable implements MailableContract, Renderable
     protected $html;
 
     /**
+     * The view to use for the message.
+     *
+     * @var string
+     */
+    public $view;
+
+    /**
+     * The plain text view to use for the message.
+     *
+     * @var string
+     */
+    public $textView;
+
+    /**
+     * The view data for the message.
+     *
+     * @var array
+     */
+    public $viewData = [];
+
+    /**
+     * The attachments for the message.
+     *
+     * @var array
+     */
+    public $attachments = [];
+
+    /**
+     * The raw attachments for the message.
+     *
+     * @var array
+     */
+    public $rawAttachments = [];
+
+    /**
+     * The callbacks for the message.
+     *
+     * @var array
+     */
+    public $callbacks = [];
+
+    /**
      * Send the message using the given mailer.
      *
-     * @param  \Illuminate\Contracts\Mail\Mailer $mailer
+     * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
      * @return void
      */
     public function send(MailerContract $mailer)
@@ -133,10 +141,10 @@ class Mailable implements MailableContract, Renderable
 
             $mailer->send($this->buildView(), $this->buildViewData(), function ($message) {
                 $this->buildFrom($message)
-                    ->buildRecipients($message)
-                    ->buildSubject($message)
-                    ->runCallbacks($message)
-                    ->buildAttachments($message);
+                     ->buildRecipients($message)
+                     ->buildSubject($message)
+                     ->runCallbacks($message)
+                     ->buildAttachments($message);
             });
         });
     }
@@ -144,7 +152,7 @@ class Mailable implements MailableContract, Renderable
     /**
      * Queue the message for sending.
      *
-     * @param  \Illuminate\Contracts\Queue\Factory $queue
+     * @param  \Illuminate\Contracts\Queue\Factory  $queue
      * @return mixed
      */
     public function queue(Queue $queue)
@@ -165,8 +173,8 @@ class Mailable implements MailableContract, Renderable
     /**
      * Deliver the queued message after the given delay.
      *
-     * @param  \DateTimeInterface|\DateInterval|int $delay
-     * @param  \Illuminate\Contracts\Queue\Factory $queue
+     * @param  \DateTimeInterface|\DateInterval|int  $delay
+     * @param  \Illuminate\Contracts\Queue\Factory  $queue
      * @return mixed
      */
     public function later($delay, Queue $queue)
@@ -192,357 +200,6 @@ class Mailable implements MailableContract, Renderable
         return Container::getInstance()->make('mailer')->render(
             $this->buildView(), $this->buildViewData()
         );
-    }
-
-    /**
-     * Build the view data for the message.
-     *
-     * @return array
-     */
-    public function buildViewData()
-    {
-        $data = $this->viewData;
-
-        foreach ((new ReflectionClass($this))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            if ($property->getDeclaringClass()->getName() !== self::class) {
-                $data[$property->getName()] = $property->getValue($this);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Set the locale of the message.
-     *
-     * @param  string $locale
-     * @return $this
-     */
-    public function locale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * Set the priority of this message.
-     *
-     * The value is an integer where 1 is the highest priority and 5 is the lowest.
-     *
-     * @param  int $level
-     * @return $this
-     */
-    public function priority($level = 3)
-    {
-        $this->callbacks[] = function ($message) use ($level) {
-            $message->setPriority($level);
-        };
-
-        return $this;
-    }
-
-    /**
-     * Set the sender of the message.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return $this
-     */
-    public function from($address, $name = null)
-    {
-        return $this->setAddress($address, $name, 'from');
-    }
-
-    /**
-     * Determine if the given recipient is set on the mailable.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return bool
-     */
-    public function hasFrom($address, $name = null)
-    {
-        return $this->hasRecipient($address, $name, 'from');
-    }
-
-    /**
-     * Set the recipients of the message.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return $this
-     */
-    public function to($address, $name = null)
-    {
-        return $this->setAddress($address, $name, 'to');
-    }
-
-    /**
-     * Determine if the given recipient is set on the mailable.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return bool
-     */
-    public function hasTo($address, $name = null)
-    {
-        return $this->hasRecipient($address, $name, 'to');
-    }
-
-    /**
-     * Set the recipients of the message.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return $this
-     */
-    public function cc($address, $name = null)
-    {
-        return $this->setAddress($address, $name, 'cc');
-    }
-
-    /**
-     * Determine if the given recipient is set on the mailable.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return bool
-     */
-    public function hasCc($address, $name = null)
-    {
-        return $this->hasRecipient($address, $name, 'cc');
-    }
-
-    /**
-     * Set the recipients of the message.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return $this
-     */
-    public function bcc($address, $name = null)
-    {
-        return $this->setAddress($address, $name, 'bcc');
-    }
-
-    /**
-     * Determine if the given recipient is set on the mailable.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return bool
-     */
-    public function hasBcc($address, $name = null)
-    {
-        return $this->hasRecipient($address, $name, 'bcc');
-    }
-
-    /**
-     * Set the "reply to" address of the message.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return $this
-     */
-    public function replyTo($address, $name = null)
-    {
-        return $this->setAddress($address, $name, 'replyTo');
-    }
-
-    /**
-     * Determine if the given recipient is set on the mailable.
-     *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @return bool
-     */
-    public function hasReplyTo($address, $name = null)
-    {
-        return $this->hasRecipient($address, $name, 'replyTo');
-    }
-
-    /**
-     * Set the subject of the message.
-     *
-     * @param  string $subject
-     * @return $this
-     */
-    public function subject($subject)
-    {
-        $this->subject = $subject;
-
-        return $this;
-    }
-
-    /**
-     * Set the Markdown template for the message.
-     *
-     * @param  string $view
-     * @param  array $data
-     * @return $this
-     */
-    public function markdown($view, array $data = [])
-    {
-        $this->markdown = $view;
-        $this->viewData = array_merge($this->viewData, $data);
-
-        return $this;
-    }
-
-    /**
-     * Set the view and view data for the message.
-     *
-     * @param  string $view
-     * @param  array $data
-     * @return $this
-     */
-    public function view($view, array $data = [])
-    {
-        $this->view = $view;
-        $this->viewData = array_merge($this->viewData, $data);
-
-        return $this;
-    }
-
-    /**
-     * Set the rendered HTML content for the message.
-     *
-     * @param  string $html
-     * @return $this
-     */
-    public function html($html)
-    {
-        $this->html = $html;
-
-        return $this;
-    }
-
-    /**
-     * Set the plain text view for the message.
-     *
-     * @param  string $textView
-     * @param  array $data
-     * @return $this
-     */
-    public function text($textView, array $data = [])
-    {
-        $this->textView = $textView;
-        $this->viewData = array_merge($this->viewData, $data);
-
-        return $this;
-    }
-
-    /**
-     * Set the view data for the message.
-     *
-     * @param  string|array $key
-     * @param  mixed $value
-     * @return $this
-     */
-    public function with($key, $value = null)
-    {
-        if (is_array($key)) {
-            $this->viewData = array_merge($this->viewData, $key);
-        } else {
-            $this->viewData[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Attach a file to the message.
-     *
-     * @param  string $file
-     * @param  array $options
-     * @return $this
-     */
-    public function attach($file, array $options = [])
-    {
-        $this->attachments[] = compact('file', 'options');
-
-        return $this;
-    }
-
-    /**
-     * Attach a file to the message from storage.
-     *
-     * @param  string $path
-     * @param  string $name
-     * @param  array $options
-     * @return $this
-     */
-    public function attachFromStorage($path, $name = null, array $options = [])
-    {
-        return $this->attachFromStorageDisk(null, $path, $name, $options);
-    }
-
-    /**
-     * Attach a file to the message from storage.
-     *
-     * @param  string $disk
-     * @param  string $path
-     * @param  string $name
-     * @param  array $options
-     * @return $this
-     */
-    public function attachFromStorageDisk($disk, $path, $name = null, array $options = [])
-    {
-        $storage = Container::getInstance()->make(FilesystemFactory::class)->disk($disk);
-
-        return $this->attachData(
-            $storage->get($path), $name ?? basename($path),
-            array_merge(['mime' => $storage->mimeType($path)], $options)
-        );
-    }
-
-    /**
-     * Attach in-memory data as an attachment.
-     *
-     * @param  string $data
-     * @param  string $name
-     * @param  array $options
-     * @return $this
-     */
-    public function attachData($data, $name, array $options = [])
-    {
-        $this->rawAttachments[] = compact('data', 'name', 'options');
-
-        return $this;
-    }
-
-    /**
-     * Register a callback to be called with the Swift message instance.
-     *
-     * @param  callable $callback
-     * @return $this
-     */
-    public function withSwiftMessage($callback)
-    {
-        $this->callbacks[] = $callback;
-
-        return $this;
-    }
-
-    /**
-     * Dynamically bind parameters to the message.
-     *
-     * @param  string $method
-     * @param  array $parameters
-     * @return $this
-     *
-     * @throws \BadMethodCallException
-     */
-    public function __call($method, $parameters)
-    {
-        if (Str::startsWith($method, 'with')) {
-            return $this->with(Str::snake(substr($method, 4)), $parameters[0]);
-        }
-
-        throw new BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', static::class, $method
-        ));
     }
 
     /**
@@ -594,27 +251,45 @@ class Mailable implements MailableContract, Renderable
     }
 
     /**
+     * Build the view data for the message.
+     *
+     * @return array
+     */
+    public function buildViewData()
+    {
+        $data = $this->viewData;
+
+        foreach ((new ReflectionClass($this))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if ($property->getDeclaringClass()->getName() !== self::class) {
+                $data[$property->getName()] = $property->getValue($this);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Build the text view for a Markdown message.
      *
-     * @param  \Illuminate\Mail\Markdown $markdown
-     * @param  array $data
+     * @param  \Illuminate\Mail\Markdown  $markdown
+     * @param  array  $data
      * @return string
      */
     protected function buildMarkdownText($markdown, $data)
     {
         return $this->textView
-            ?? $markdown->renderText($this->markdown, $data);
+                ?? $markdown->renderText($this->markdown, $data);
     }
 
     /**
      * Add the sender to the message.
      *
-     * @param  \Illuminate\Mail\Message $message
+     * @param  \Illuminate\Mail\Message  $message
      * @return $this
      */
     protected function buildFrom($message)
     {
-        if (!empty($this->from)) {
+        if (! empty($this->from)) {
             $message->from($this->from[0]['address'], $this->from[0]['name']);
         }
 
@@ -624,7 +299,7 @@ class Mailable implements MailableContract, Renderable
     /**
      * Add all of the recipients to the message.
      *
-     * @param  \Illuminate\Mail\Message $message
+     * @param  \Illuminate\Mail\Message  $message
      * @return $this
      */
     protected function buildRecipients($message)
@@ -641,7 +316,7 @@ class Mailable implements MailableContract, Renderable
     /**
      * Set the subject for the message.
      *
-     * @param  \Illuminate\Mail\Message $message
+     * @param  \Illuminate\Mail\Message  $message
      * @return $this
      */
     protected function buildSubject($message)
@@ -658,7 +333,7 @@ class Mailable implements MailableContract, Renderable
     /**
      * Add all of the attachments to the message.
      *
-     * @param  \Illuminate\Mail\Message $message
+     * @param  \Illuminate\Mail\Message  $message
      * @return $this
      */
     protected function buildAttachments($message)
@@ -679,7 +354,7 @@ class Mailable implements MailableContract, Renderable
     /**
      * Run the callbacks for the message.
      *
-     * @param  \Illuminate\Mail\Message $message
+     * @param  \Illuminate\Mail\Message  $message
      * @return $this
      */
     protected function runCallbacks($message)
@@ -692,13 +367,163 @@ class Mailable implements MailableContract, Renderable
     }
 
     /**
+     * Set the locale of the message.
+     *
+     * @param  string  $locale
+     * @return $this
+     */
+    public function locale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Set the priority of this message.
+     *
+     * The value is an integer where 1 is the highest priority and 5 is the lowest.
+     *
+     * @param  int  $level
+     * @return $this
+     */
+    public function priority($level = 3)
+    {
+        $this->callbacks[] = function ($message) use ($level) {
+            $message->setPriority($level);
+        };
+
+        return $this;
+    }
+
+    /**
+     * Set the sender of the message.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return $this
+     */
+    public function from($address, $name = null)
+    {
+        return $this->setAddress($address, $name, 'from');
+    }
+
+    /**
+     * Determine if the given recipient is set on the mailable.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return bool
+     */
+    public function hasFrom($address, $name = null)
+    {
+        return $this->hasRecipient($address, $name, 'from');
+    }
+
+    /**
+     * Set the recipients of the message.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return $this
+     */
+    public function to($address, $name = null)
+    {
+        return $this->setAddress($address, $name, 'to');
+    }
+
+    /**
+     * Determine if the given recipient is set on the mailable.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return bool
+     */
+    public function hasTo($address, $name = null)
+    {
+        return $this->hasRecipient($address, $name, 'to');
+    }
+
+    /**
+     * Set the recipients of the message.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return $this
+     */
+    public function cc($address, $name = null)
+    {
+        return $this->setAddress($address, $name, 'cc');
+    }
+
+    /**
+     * Determine if the given recipient is set on the mailable.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return bool
+     */
+    public function hasCc($address, $name = null)
+    {
+        return $this->hasRecipient($address, $name, 'cc');
+    }
+
+    /**
+     * Set the recipients of the message.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return $this
+     */
+    public function bcc($address, $name = null)
+    {
+        return $this->setAddress($address, $name, 'bcc');
+    }
+
+    /**
+     * Determine if the given recipient is set on the mailable.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return bool
+     */
+    public function hasBcc($address, $name = null)
+    {
+        return $this->hasRecipient($address, $name, 'bcc');
+    }
+
+    /**
+     * Set the "reply to" address of the message.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return $this
+     */
+    public function replyTo($address, $name = null)
+    {
+        return $this->setAddress($address, $name, 'replyTo');
+    }
+
+    /**
+     * Determine if the given recipient is set on the mailable.
+     *
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @return bool
+     */
+    public function hasReplyTo($address, $name = null)
+    {
+        return $this->hasRecipient($address, $name, 'replyTo');
+    }
+
+    /**
      * Set the recipients of the message.
      *
      * All recipients are stored internally as [['name' => ?, 'address' => ?]]
      *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @param  string $property
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @param  string  $property
      * @return $this
      */
     protected function setAddress($address, $name = null, $property = 'to')
@@ -718,13 +543,13 @@ class Mailable implements MailableContract, Renderable
     /**
      * Convert the given recipient arguments to an array.
      *
-     * @param  object|array|string $address
-     * @param  string|null $name
+     * @param  object|array|string  $address
+     * @param  string|null  $name
      * @return array
      */
     protected function addressesToArray($address, $name)
     {
-        if (!is_array($address) && !$address instanceof Collection) {
+        if (! is_array($address) && ! $address instanceof Collection) {
             $address = is_string($name) ? [['name' => $name, 'email' => $address]] : [$address];
         }
 
@@ -734,15 +559,15 @@ class Mailable implements MailableContract, Renderable
     /**
      * Convert the given recipient into an object.
      *
-     * @param  mixed $recipient
+     * @param  mixed  $recipient
      * @return object
      */
     protected function normalizeRecipient($recipient)
     {
         if (is_array($recipient)) {
-            return (object)$recipient;
+            return (object) $recipient;
         } elseif (is_string($recipient)) {
-            return (object)['email' => $recipient];
+            return (object) ['email' => $recipient];
         }
 
         return $recipient;
@@ -751,9 +576,9 @@ class Mailable implements MailableContract, Renderable
     /**
      * Determine if the given recipient is set on the mailable.
      *
-     * @param  object|array|string $address
-     * @param  string|null $name
-     * @param  string $property
+     * @param  object|array|string  $address
+     * @param  string|null  $name
+     * @param  string  $property
      * @return bool
      */
     protected function hasRecipient($address, $name = null, $property = 'to')
@@ -768,11 +593,194 @@ class Mailable implements MailableContract, Renderable
         ];
 
         return collect($this->{$property})->contains(function ($actual) use ($expected) {
-            if (!isset($expected['name'])) {
+            if (! isset($expected['name'])) {
                 return $actual['address'] == $expected['address'];
             }
 
             return $actual == $expected;
         });
+    }
+
+    /**
+     * Set the subject of the message.
+     *
+     * @param  string  $subject
+     * @return $this
+     */
+    public function subject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * Set the Markdown template for the message.
+     *
+     * @param  string  $view
+     * @param  array  $data
+     * @return $this
+     */
+    public function markdown($view, array $data = [])
+    {
+        $this->markdown = $view;
+        $this->viewData = array_merge($this->viewData, $data);
+
+        return $this;
+    }
+
+    /**
+     * Set the view and view data for the message.
+     *
+     * @param  string  $view
+     * @param  array  $data
+     * @return $this
+     */
+    public function view($view, array $data = [])
+    {
+        $this->view = $view;
+        $this->viewData = array_merge($this->viewData, $data);
+
+        return $this;
+    }
+
+    /**
+     * Set the rendered HTML content for the message.
+     *
+     * @param  string  $html
+     * @return $this
+     */
+    public function html($html)
+    {
+        $this->html = $html;
+
+        return $this;
+    }
+
+    /**
+     * Set the plain text view for the message.
+     *
+     * @param  string  $textView
+     * @param  array  $data
+     * @return $this
+     */
+    public function text($textView, array $data = [])
+    {
+        $this->textView = $textView;
+        $this->viewData = array_merge($this->viewData, $data);
+
+        return $this;
+    }
+
+    /**
+     * Set the view data for the message.
+     *
+     * @param  string|array  $key
+     * @param  mixed   $value
+     * @return $this
+     */
+    public function with($key, $value = null)
+    {
+        if (is_array($key)) {
+            $this->viewData = array_merge($this->viewData, $key);
+        } else {
+            $this->viewData[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Attach a file to the message.
+     *
+     * @param  string  $file
+     * @param  array  $options
+     * @return $this
+     */
+    public function attach($file, array $options = [])
+    {
+        $this->attachments[] = compact('file', 'options');
+
+        return $this;
+    }
+
+    /**
+     * Attach a file to the message from storage.
+     *
+     * @param  string  $path
+     * @param  string  $name
+     * @param  array  $options
+     * @return $this
+     */
+    public function attachFromStorage($path, $name = null, array $options = [])
+    {
+        return $this->attachFromStorageDisk(null, $path, $name, $options);
+    }
+
+    /**
+     * Attach a file to the message from storage.
+     *
+     * @param  string  $disk
+     * @param  string  $path
+     * @param  string  $name
+     * @param  array  $options
+     * @return $this
+     */
+    public function attachFromStorageDisk($disk, $path, $name = null, array $options = [])
+    {
+        $storage = Container::getInstance()->make(FilesystemFactory::class)->disk($disk);
+
+        return $this->attachData(
+            $storage->get($path), $name ?? basename($path),
+            array_merge(['mime' => $storage->mimeType($path)], $options)
+        );
+    }
+
+    /**
+     * Attach in-memory data as an attachment.
+     *
+     * @param  string  $data
+     * @param  string  $name
+     * @param  array  $options
+     * @return $this
+     */
+    public function attachData($data, $name, array $options = [])
+    {
+        $this->rawAttachments[] = compact('data', 'name', 'options');
+
+        return $this;
+    }
+
+    /**
+     * Register a callback to be called with the Swift message instance.
+     *
+     * @param  callable  $callback
+     * @return $this
+     */
+    public function withSwiftMessage($callback)
+    {
+        $this->callbacks[] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Dynamically bind parameters to the message.
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return $this
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $parameters)
+    {
+        if (Str::startsWith($method, 'with')) {
+            return $this->with(Str::snake(substr($method, 4)), $parameters[0]);
+        }
+
+        throw new BadMethodCallException(sprintf(
+            'Method %s::%s does not exist.', static::class, $method
+        ));
     }
 }

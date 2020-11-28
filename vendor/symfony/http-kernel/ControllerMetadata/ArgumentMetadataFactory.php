@@ -23,7 +23,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
      */
     public function createArgumentMetadata($controller)
     {
-        $arguments = [];
+        $arguments = array();
 
         if (\is_array($controller)) {
             $reflection = new \ReflectionMethod($controller[0], $controller[1]);
@@ -42,11 +42,15 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
 
     /**
      * Returns an associated type to the given parameter if available.
+     *
+     * @param \ReflectionParameter $parameter
+     *
+     * @return string|null
      */
-    private function getType(\ReflectionParameter $parameter, \ReflectionFunctionAbstract $function): ?string
+    private function getType(\ReflectionParameter $parameter, \ReflectionFunctionAbstract $function)
     {
         if (!$type = $parameter->getType()) {
-            return null;
+            return;
         }
         $name = $type->getName();
         $lcName = strtolower($name);
@@ -55,7 +59,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
             return $name;
         }
         if (!$function instanceof \ReflectionMethod) {
-            return null;
+            return;
         }
         if ('self' === $lcName) {
             return $function->getDeclaringClass()->name;
@@ -63,7 +67,5 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
         if ($parent = $function->getDeclaringClass()->getParentClass()) {
             return $parent->name;
         }
-
-        return null;
     }
 }

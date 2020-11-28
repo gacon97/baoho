@@ -16,6 +16,8 @@ namespace Psy\Reflection;
  */
 class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
 {
+    public $keyword;
+
     /**
      * Language construct parameter definitions.
      */
@@ -23,7 +25,7 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
         'isset' => [
             'var' => [],
             '...' => [
-                'isOptional' => true,
+                'isOptional'   => true,
                 'defaultValue' => null,
             ],
         ],
@@ -31,7 +33,7 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
         'unset' => [
             'var' => [],
             '...' => [
-                'isOptional' => true,
+                'isOptional'   => true,
                 'defaultValue' => null,
             ],
         ],
@@ -42,8 +44,8 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
 
         'echo' => [
             'arg1' => [],
-            '...' => [
-                'isOptional' => true,
+            '...'  => [
+                'isOptional'   => true,
                 'defaultValue' => null,
             ],
         ],
@@ -54,19 +56,18 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
 
         'die' => [
             'status' => [
-                'isOptional' => true,
+                'isOptional'   => true,
                 'defaultValue' => 0,
             ],
         ],
 
         'exit' => [
             'status' => [
-                'isOptional' => true,
+                'isOptional'   => true,
                 'defaultValue' => 0,
             ],
         ],
     ];
-    public $keyword;
 
     /**
      * Construct a ReflectionLanguageConstruct object.
@@ -90,18 +91,6 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
     public static function export($name)
     {
         throw new \RuntimeException('Not yet implemented because it\'s unclear what I should do here :)');
-    }
-
-    /**
-     * Check whether keyword is a (known) language construct.
-     *
-     * @param string $keyword
-     *
-     * @return bool
-     */
-    public static function isLanguageConstruct($keyword)
-    {
-        return \array_key_exists($keyword, self::$languageConstructs);
     }
 
     /**
@@ -159,5 +148,17 @@ class ReflectionLanguageConstruct extends \ReflectionFunctionAbstract
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Check whether keyword is a (known) language construct.
+     *
+     * @param string $keyword
+     *
+     * @return bool
+     */
+    public static function isLanguageConstruct($keyword)
+    {
+        return \array_key_exists($keyword, self::$languageConstructs);
     }
 }

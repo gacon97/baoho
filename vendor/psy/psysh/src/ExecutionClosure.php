@@ -70,19 +70,23 @@ class ExecutionClosure
     }
 
     /**
-     * Decide whether to bind the execution closure.
+     * Set the closure instance.
      *
-     * @return bool
+     * @param Shell    $psysh
+     * @param \Closure $closure
      */
-    protected static function shouldBindClosure()
+    protected function setClosure(Shell $shell, \Closure $closure)
     {
-        // skip binding on HHVM < 3.5.0
-        // see https://github.com/facebook/hhvm/issues/1203
-        if (\defined('HHVM_VERSION')) {
-            return \version_compare(HHVM_VERSION, '3.5.0', '>=');
+        if (self::shouldBindClosure()) {
+            $that = $shell->getBoundObject();
+            if (\is_object($that)) {
+                $closure = $closure->bindTo($that, \get_class($that));
+            } else {
+                $closure = $closure->bindTo(null, $shell->getBoundClass());
+            }
         }
 
-        return true;
+        $this->closure = $closure;
     }
 
     /**
@@ -98,22 +102,18 @@ class ExecutionClosure
     }
 
     /**
-     * Set the closure instance.
+     * Decide whether to bind the execution closure.
      *
-     * @param Shell $psysh
-     * @param \Closure $closure
+     * @return bool
      */
-    protected function setClosure(Shell $shell, \Closure $closure)
+    protected static function shouldBindClosure()
     {
-        if (self::shouldBindClosure()) {
-            $that = $shell->getBoundObject();
-            if (\is_object($that)) {
-                $closure = $closure->bindTo($that, \get_class($that));
-            } else {
-                $closure = $closure->bindTo(null, $shell->getBoundClass());
-            }
+        // skip binding on HHVM < 3.5.0
+        // see https://github.com/facebook/hhvm/issues/1203
+        if (\defined('HHVM_VERSION')) {
+            return \version_compare(HHVM_VERSION, '3.5.0', '>=');
         }
 
-        $this->closure = $closure;
+        return true;
     }
 }

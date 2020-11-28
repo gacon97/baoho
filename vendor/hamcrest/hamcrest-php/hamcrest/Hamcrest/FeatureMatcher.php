@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest;
 
 /*
@@ -36,13 +35,22 @@ abstract class FeatureMatcher extends TypeSafeDiagnosingMatcher
         $this->_featureName = $featureName;
     }
 
+    /**
+     * Implement this to extract the interesting feature.
+     *
+     * @param mixed $actual the target object
+     *
+     * @return mixed the feature to be matched
+     */
+    abstract protected function featureValueOf($actual);
+
     public function matchesSafelyWithDiagnosticDescription($actual, Description $mismatchDescription)
     {
         $featureValue = $this->featureValueOf($actual);
 
         if (!$this->_subMatcher->matches($featureValue)) {
             $mismatchDescription->appendText($this->_featureName)
-                ->appendText(' was ')->appendValue($featureValue);
+                                                    ->appendText(' was ')->appendValue($featureValue);
 
             return false;
         }
@@ -53,15 +61,7 @@ abstract class FeatureMatcher extends TypeSafeDiagnosingMatcher
     final public function describeTo(Description $description)
     {
         $description->appendText($this->_featureDescription)->appendText(' ')
-            ->appendDescriptionOf($this->_subMatcher);
+                                ->appendDescriptionOf($this->_subMatcher)
+                             ;
     }
-
-    /**
-     * Implement this to extract the interesting feature.
-     *
-     * @param mixed $actual the target object
-     *
-     * @return mixed the feature to be matched
-     */
-    abstract protected function featureValueOf($actual);
 }

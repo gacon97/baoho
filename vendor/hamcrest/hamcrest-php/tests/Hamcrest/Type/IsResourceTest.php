@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Type;
 
 class IsResourceTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Type\IsResource::resourceValue();
+    }
 
     public function testEvaluatesToTrueIfArgumentMatchesType()
     {
@@ -26,10 +30,5 @@ class IsResourceTest extends \Hamcrest\AbstractMatcherTest
     {
         $this->assertMismatchDescription('was null', resourceValue(), null);
         $this->assertMismatchDescription('was a string "foo"', resourceValue(), 'foo');
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Type\IsResource::resourceValue();
     }
 }

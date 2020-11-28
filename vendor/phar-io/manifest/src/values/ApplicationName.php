@@ -10,8 +10,7 @@
 
 namespace PharIo\Manifest;
 
-class ApplicationName
-{
+class ApplicationName {
     /**
      * @var string
      */
@@ -24,8 +23,7 @@ class ApplicationName
      *
      * @throws InvalidApplicationNameException
      */
-    public function __construct($name)
-    {
+    public function __construct($name) {
         $this->ensureIsString($name);
         $this->ensureValidFormat($name);
         $this->name = $name;
@@ -34,13 +32,11 @@ class ApplicationName
     /**
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->name;
     }
 
-    public function isEqual(ApplicationName $name)
-    {
+    public function isEqual(ApplicationName $name) {
         return $this->name === $name->name;
     }
 
@@ -49,8 +45,7 @@ class ApplicationName
      *
      * @throws InvalidApplicationNameException
      */
-    private function ensureValidFormat($name)
-    {
+    private function ensureValidFormat($name) {
         if (!preg_match('#\w/\w#', $name)) {
             throw new InvalidApplicationNameException(
                 sprintf('Format of name "%s" is not valid - expected: vendor/packagename', $name),
@@ -59,8 +54,7 @@ class ApplicationName
         }
     }
 
-    private function ensureIsString($name)
-    {
+    private function ensureIsString($name) {
         if (!is_string($name)) {
             throw new InvalidApplicationNameException(
                 'Name must be a string',

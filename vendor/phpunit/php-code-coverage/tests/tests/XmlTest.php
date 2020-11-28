@@ -23,6 +23,18 @@ class XmlTest extends TestCase
         self::$TEST_REPORT_PATH_SOURCE = TEST_FILES_PATH . 'Report' . DIRECTORY_SEPARATOR . 'XML';
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $tmpFilesIterator = new \FilesystemIterator(self::$TEST_TMP_PATH);
+
+        foreach ($tmpFilesIterator as $path => $fileInfo) {
+            /* @var \SplFileInfo $fileInfo */
+            unlink($fileInfo->getPathname());
+        }
+    }
+
     public function testForBankAccountTest()
     {
         $expectedFilesPath = self::$TEST_REPORT_PATH_SOURCE . DIRECTORY_SEPARATOR . 'CoverageForBankAccount';
@@ -53,18 +65,6 @@ class XmlTest extends TestCase
         $this->assertFilesEquals($expectedFilesPath, self::$TEST_TMP_PATH);
     }
 
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $tmpFilesIterator = new \FilesystemIterator(self::$TEST_TMP_PATH);
-
-        foreach ($tmpFilesIterator as $path => $fileInfo) {
-            /* @var \SplFileInfo $fileInfo */
-            unlink($fileInfo->getPathname());
-        }
-    }
-
     /**
      * @param string $expectedFilesPath
      * @param string $actualFilesPath
@@ -72,7 +72,7 @@ class XmlTest extends TestCase
     private function assertFilesEquals($expectedFilesPath, $actualFilesPath)
     {
         $expectedFilesIterator = new \FilesystemIterator($expectedFilesPath);
-        $actualFilesIterator = new \FilesystemIterator($actualFilesPath);
+        $actualFilesIterator   = new \FilesystemIterator($actualFilesPath);
 
         $this->assertEquals(
             iterator_count($expectedFilesIterator),

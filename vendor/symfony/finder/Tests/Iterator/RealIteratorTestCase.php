@@ -16,11 +16,11 @@ abstract class RealIteratorTestCase extends IteratorTestCase
     protected static $tmpDir;
     protected static $files;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         self::$tmpDir = realpath(sys_get_temp_dir()).\DIRECTORY_SEPARATOR.'symfony_finder';
 
-        self::$files = [
+        self::$files = array(
             '.git/',
             '.foo/',
             '.foo/.bar',
@@ -42,7 +42,7 @@ abstract class RealIteratorTestCase extends IteratorTestCase
             'qux/',
             'qux/baz_1_2.py',
             'qux/baz_100_1.py',
-        ];
+        );
 
         self::$files = self::toAbsolute(self::$files);
 
@@ -63,13 +63,11 @@ abstract class RealIteratorTestCase extends IteratorTestCase
         file_put_contents(self::toAbsolute('test.php'), str_repeat(' ', 800));
         file_put_contents(self::toAbsolute('test.py'), str_repeat(' ', 2000));
 
-        file_put_contents(self::toAbsolute('.gitignore'), '*.php');
-
         touch(self::toAbsolute('foo/bar.tmp'), strtotime('2005-10-15'));
         touch(self::toAbsolute('test.php'), strtotime('2005-10-15'));
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass()
     {
         $paths = new \RecursiveIteratorIterator(
              new \RecursiveDirectoryIterator(self::$tmpDir, \RecursiveDirectoryIterator::SKIP_DOTS),
@@ -99,7 +97,7 @@ abstract class RealIteratorTestCase extends IteratorTestCase
         }
 
         if (\is_array($files)) {
-            $f = [];
+            $f = array();
             foreach ($files as $file) {
                 if (\is_array($file)) {
                     $f[] = self::toAbsolute($file);
@@ -120,7 +118,7 @@ abstract class RealIteratorTestCase extends IteratorTestCase
 
     protected static function toAbsoluteFixtures($files)
     {
-        $f = [];
+        $f = array();
         foreach ($files as $file) {
             $f[] = realpath(__DIR__.\DIRECTORY_SEPARATOR.'..'.\DIRECTORY_SEPARATOR.'Fixtures'.\DIRECTORY_SEPARATOR.$file);
         }

@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Tests\Fixtures\ResettableService;
 
 class ServicesResetterTest extends TestCase
 {
-    protected function setUp(): void
+    protected function setUp()
     {
         ResettableService::$counter = 0;
         ClearableService::$counter = 0;
@@ -26,13 +26,13 @@ class ServicesResetterTest extends TestCase
 
     public function testResetServices()
     {
-        $resetter = new ServicesResetter(new \ArrayIterator([
+        $resetter = new ServicesResetter(new \ArrayIterator(array(
             'id1' => new ResettableService(),
             'id2' => new ClearableService(),
-        ]), [
+        )), array(
             'id1' => 'reset',
             'id2' => 'clear',
-        ]);
+        ));
 
         $resetter->reset();
 

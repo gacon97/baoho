@@ -2,8 +2,7 @@
 
 namespace PharIo\Version;
 
-class VersionConstraintValue
-{
+class VersionConstraintValue {
     /**
      * @var VersionNumber
      */
@@ -37,8 +36,7 @@ class VersionConstraintValue
     /**
      * @param string $versionString
      */
-    public function __construct($versionString)
-    {
+    public function __construct($versionString) {
         $this->versionString = $versionString;
 
         $this->parseVersion($versionString);
@@ -47,56 +45,49 @@ class VersionConstraintValue
     /**
      * @return string
      */
-    public function getLabel()
-    {
+    public function getLabel() {
         return $this->label;
     }
 
     /**
      * @return string
      */
-    public function getBuildMetaData()
-    {
+    public function getBuildMetaData() {
         return $this->buildMetaData;
     }
 
     /**
      * @return string
      */
-    public function getVersionString()
-    {
+    public function getVersionString() {
         return $this->versionString;
     }
 
     /**
      * @return VersionNumber
      */
-    public function getMajor()
-    {
+    public function getMajor() {
         return $this->major;
     }
 
     /**
      * @return VersionNumber
      */
-    public function getMinor()
-    {
+    public function getMinor() {
         return $this->minor;
     }
 
     /**
      * @return VersionNumber
      */
-    public function getPatch()
-    {
+    public function getPatch() {
         return $this->patch;
     }
 
     /**
      * @param $versionString
      */
-    private function parseVersion($versionString)
-    {
+    private function parseVersion($versionString) {
         $this->extractBuildMetaData($versionString);
         $this->extractLabel($versionString);
 
@@ -113,8 +104,7 @@ class VersionConstraintValue
     /**
      * @param string $versionString
      */
-    private function extractBuildMetaData(&$versionString)
-    {
+    private function extractBuildMetaData(&$versionString) {
         if (preg_match('/\+(.*)/', $versionString, $matches) == 1) {
             $this->buildMetaData = $matches[1];
             $versionString = str_replace($matches[0], '', $versionString);
@@ -124,8 +114,7 @@ class VersionConstraintValue
     /**
      * @param string $versionString
      */
-    private function extractLabel(&$versionString)
-    {
+    private function extractLabel(&$versionString) {
         if (preg_match('/\-(.*)/', $versionString, $matches) == 1) {
             $this->label = $matches[1];
             $versionString = str_replace($matches[0], '', $versionString);

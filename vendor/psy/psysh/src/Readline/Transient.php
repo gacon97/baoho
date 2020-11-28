@@ -24,17 +24,6 @@ class Transient implements Readline
     private $stdin;
 
     /**
-     * Transient Readline constructor.
-     */
-    public function __construct($historyFile = null, $historySize = 0, $eraseDups = false)
-    {
-        // don't do anything with the history file...
-        $this->history = [];
-        $this->historySize = $historySize;
-        $this->eraseDups = $eraseDups;
-    }
-
-    /**
      * Transient Readline is always supported.
      *
      * {@inheritdoc}
@@ -42,6 +31,17 @@ class Transient implements Readline
     public static function isSupported()
     {
         return true;
+    }
+
+    /**
+     * Transient Readline constructor.
+     */
+    public function __construct($historyFile = null, $historySize = 0, $eraseDups = false)
+    {
+        // don't do anything with the history file...
+        $this->history     = [];
+        $this->historySize = $historySize;
+        $this->eraseDups   = $eraseDups;
     }
 
     /**

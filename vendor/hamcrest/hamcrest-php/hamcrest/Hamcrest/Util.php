@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest;
 
 /*
@@ -15,7 +14,7 @@ class Util
 {
     public static function registerGlobalFunctions()
     {
-        require_once __DIR__ . '/../Hamcrest.php';
+        require_once __DIR__.'/../Hamcrest.php';
     }
 
     /**
@@ -28,7 +27,8 @@ class Util
     {
         return ($item instanceof Matcher)
             ? $item
-            : Core\IsEqual::equalTo($item);
+            : Core\IsEqual::equalTo($item)
+            ;
     }
 
     /**

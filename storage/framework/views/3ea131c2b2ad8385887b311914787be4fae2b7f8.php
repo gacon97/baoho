@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('content'); ?>
     <div class="container">
         <div class="row justify-content-center">
@@ -15,10 +17,10 @@
 
                                 <div class="col-md-6">
                                     <input id="name" type="text"
-                                           class="form-control<?php echo e($errors->has('name') ? ' is-invalid' : ''); ?>"
-                                           name="name" value="<?php echo e(old('name')); ?>" required autofocus>
+                                           class="form-control<?php echo e($errors->has('email') ? ' is-invalid' : ''); ?>"
+                                           name="email" value="<?php echo e(old('email')); ?>" required autofocus>
 
-                                    <?php if ($errors->has('name')): ?>
+                                    <?php if($errors->has('name')): ?>
                                         <span class="invalid-feedback">
                                         <strong><?php echo e($errors->first('name')); ?></strong>
                                     </span>
@@ -35,7 +37,7 @@
                                            class="form-control<?php echo e($errors->has('password') ? ' is-invalid' : ''); ?>"
                                            name="password" required>
 
-                                    <?php if ($errors->has('password')): ?>
+                                    <?php if($errors->has('password')): ?>
                                         <span class="invalid-feedback">
                                         <strong><?php echo e($errors->first('password')); ?></strong>
                                     </span>

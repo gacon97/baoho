@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -17,9 +16,9 @@ use stdClass;
 /**
  * @covers \SebastianBergmann\Comparator\SplObjectStorageComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class SplObjectStorageComparatorTest extends TestCase
 {
@@ -27,6 +26,11 @@ final class SplObjectStorageComparatorTest extends TestCase
      * @var SplObjectStorageComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new SplObjectStorageComparator;
+    }
 
     public function acceptsFailsProvider()
     {
@@ -85,10 +89,10 @@ final class SplObjectStorageComparatorTest extends TestCase
     public function testAcceptsSucceeds(): void
     {
         $this->assertTrue(
-            $this->comparator->accepts(
-                new SplObjectStorage,
-                new SplObjectStorage
-            )
+          $this->comparator->accepts(
+            new SplObjectStorage,
+            new SplObjectStorage
+          )
         );
     }
 
@@ -98,7 +102,7 @@ final class SplObjectStorageComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -137,10 +141,5 @@ final class SplObjectStorageComparatorTest extends TestCase
         $t->attach(new \stdClass());
 
         $this->comparator->assertEquals($t, new \SplObjectStorage());
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new SplObjectStorageComparator;
     }
 }

@@ -26,7 +26,7 @@ class CacheWarmerAggregate implements CacheWarmerInterface
     private $optionalsEnabled = false;
     private $onlyOptionalsEnabled = false;
 
-    public function __construct(iterable $warmers = [], bool $debug = false, string $deprecationLogsFilepath = null)
+    public function __construct(iterable $warmers = array(), bool $debug = false, string $deprecationLogsFilepath = null)
     {
         $this->warmers = $warmers;
         $this->debug = $debug;
@@ -50,9 +50,10 @@ class CacheWarmerAggregate implements CacheWarmerInterface
      */
     public function warmUp($cacheDir)
     {
-        if ($collectDeprecations = $this->debug && !\defined('PHPUNIT_COMPOSER_INSTALL')) {
-            $collectedLogs = [];
-            $previousHandler = set_error_handler(function ($type, $message, $file, $line) use (&$collectedLogs, &$previousHandler) {
+        if ($this->debug) {
+            $collectedLogs = array();
+            $previousHandler = \defined('PHPUNIT_COMPOSER_INSTALL');
+            $previousHandler = $previousHandler ?: set_error_handler(function ($type, $message, $file, $line) use (&$collectedLogs, &$previousHandler) {
                 if (E_USER_DEPRECATED !== $type && E_DEPRECATED !== $type) {
                     return $previousHandler ? $previousHandler($type, $message, $file, $line) : false;
                 }
@@ -60,7 +61,7 @@ class CacheWarmerAggregate implements CacheWarmerInterface
                 if (isset($collectedLogs[$message])) {
                     ++$collectedLogs[$message]['count'];
 
-                    return null;
+                    return;
                 }
 
                 $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
@@ -72,16 +73,14 @@ class CacheWarmerAggregate implements CacheWarmerInterface
                     }
                 }
 
-                $collectedLogs[$message] = [
+                $collectedLogs[$message] = array(
                     'type' => $type,
                     'message' => $message,
                     'file' => $file,
                     'line' => $line,
                     'trace' => $backtrace,
                     'count' => 1,
-                ];
-
-                return null;
+                );
             });
         }
 
@@ -97,7 +96,7 @@ class CacheWarmerAggregate implements CacheWarmerInterface
                 $warmer->warmUp($cacheDir);
             }
         } finally {
-            if ($collectDeprecations) {
+            if ($this->debug && true !== $previousHandler) {
                 restore_error_handler();
 
                 if (file_exists($this->deprecationLogsFilepath)) {

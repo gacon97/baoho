@@ -47,8 +47,6 @@ class ContainerControllerResolver extends ControllerResolver
      */
     protected function instantiateController($class)
     {
-        $class = ltrim($class, '\\');
-
         if ($this->container->has($class)) {
             return $this->container->get($class);
         }

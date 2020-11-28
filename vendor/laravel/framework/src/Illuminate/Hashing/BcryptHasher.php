@@ -17,7 +17,7 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Create a new hasher instance.
      *
-     * @param  array $options
+     * @param  array  $options
      * @return void
      */
     public function __construct(array $options = [])
@@ -28,8 +28,8 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Hash the given value.
      *
-     * @param  string $value
-     * @param  array $options
+     * @param  string  $value
+     * @param  array   $options
      * @return string
      *
      * @throws \RuntimeException
@@ -50,8 +50,8 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Check if the given hash has been hashed using the given options.
      *
-     * @param  string $hashedValue
-     * @param  array $options
+     * @param  string  $hashedValue
+     * @param  array   $options
      * @return bool
      */
     public function needsRehash($hashedValue, array $options = [])
@@ -64,12 +64,12 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Set the default password work factor.
      *
-     * @param  int $rounds
+     * @param  int  $rounds
      * @return $this
      */
     public function setRounds($rounds)
     {
-        $this->rounds = (int)$rounds;
+        $this->rounds = (int) $rounds;
 
         return $this;
     }
@@ -77,7 +77,7 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Extract the cost value from the options array.
      *
-     * @param  array $options
+     * @param  array  $options
      * @return int
      */
     protected function cost(array $options = [])

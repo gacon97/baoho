@@ -20,19 +20,19 @@ class ResponseFunctionalTest extends TestCase
 {
     private static $server;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
-        $spec = [
-            1 => ['file', '/dev/null', 'w'],
-            2 => ['file', '/dev/null', 'w'],
-        ];
+        $spec = array(
+            1 => array('file', '/dev/null', 'w'),
+            2 => array('file', '/dev/null', 'w'),
+        );
         if (!self::$server = @proc_open('exec php -S localhost:8054', $spec, $pipes, __DIR__.'/Fixtures/response-functional')) {
             self::markTestSkipped('PHP server unable to start.');
         }
         sleep(1);
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass()
     {
         if (self::$server) {
             proc_terminate(self::$server);
@@ -52,7 +52,7 @@ class ResponseFunctionalTest extends TestCase
     public function provideCookie()
     {
         foreach (glob(__DIR__.'/Fixtures/response-functional/*.php') as $file) {
-            yield [pathinfo($file, PATHINFO_FILENAME)];
+            yield array(pathinfo($file, PATHINFO_FILENAME));
         }
     }
 }

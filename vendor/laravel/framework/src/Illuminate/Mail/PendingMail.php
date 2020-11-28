@@ -44,7 +44,7 @@ class PendingMail
     /**
      * Create a new mailable mailer instance.
      *
-     * @param  \Illuminate\Mail\Mailer $mailer
+     * @param  \Illuminate\Mail\Mailer  $mailer
      * @return void
      */
     public function __construct(Mailer $mailer)
@@ -55,7 +55,7 @@ class PendingMail
     /**
      * Set the locale of the message.
      *
-     * @param  string $locale
+     * @param  string  $locale
      * @return $this
      */
     public function locale($locale)
@@ -68,7 +68,7 @@ class PendingMail
     /**
      * Set the recipients of the message.
      *
-     * @param  mixed $users
+     * @param  mixed  $users
      * @return $this
      */
     public function to($users)
@@ -81,7 +81,7 @@ class PendingMail
     /**
      * Set the recipients of the message.
      *
-     * @param  mixed $users
+     * @param  mixed  $users
      * @return $this
      */
     public function cc($users)
@@ -94,7 +94,7 @@ class PendingMail
     /**
      * Set the recipients of the message.
      *
-     * @param  mixed $users
+     * @param  mixed  $users
      * @return $this
      */
     public function bcc($users)
@@ -107,7 +107,7 @@ class PendingMail
     /**
      * Send a new mailable message instance.
      *
-     * @param  \Illuminate\Mail\Mailable $mailable
+     * @param  \Illuminate\Mail\Mailable  $mailable
      * @return mixed
      */
     public function send(Mailable $mailable)
@@ -122,7 +122,7 @@ class PendingMail
     /**
      * Send a mailable message immediately.
      *
-     * @param  \Illuminate\Mail\Mailable $mailable
+     * @param  \Illuminate\Mail\Mailable  $mailable
      * @return mixed
      */
     public function sendNow(Mailable $mailable)
@@ -133,7 +133,7 @@ class PendingMail
     /**
      * Push the given mailable onto the queue.
      *
-     * @param  \Illuminate\Mail\Mailable $mailable
+     * @param  \Illuminate\Mail\Mailable  $mailable
      * @return mixed
      */
     public function queue(Mailable $mailable)
@@ -150,8 +150,8 @@ class PendingMail
     /**
      * Deliver the queued message after the given delay.
      *
-     * @param  \DateTimeInterface|\DateInterval|int $delay
-     * @param  \Illuminate\Mail\Mailable $mailable
+     * @param  \DateTimeInterface|\DateInterval|int  $delay
+     * @param  \Illuminate\Mail\Mailable  $mailable
      * @return mixed
      */
     public function later($delay, Mailable $mailable)
@@ -162,14 +162,14 @@ class PendingMail
     /**
      * Populate the mailable with the addresses.
      *
-     * @param  \Illuminate\Mail\Mailable $mailable
+     * @param  \Illuminate\Mail\Mailable  $mailable
      * @return \Illuminate\Mail\Mailable
      */
     protected function fill(Mailable $mailable)
     {
         return $mailable->to($this->to)
-            ->cc($this->cc)
-            ->bcc($this->bcc)
-            ->locale($this->locale);
+                        ->cc($this->cc)
+                        ->bcc($this->bcc)
+                        ->locale($this->locale);
     }
 }

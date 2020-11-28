@@ -58,28 +58,13 @@ abstract class TestCase extends BaseTestCase
     abstract public function createApplication();
 
     /**
-     * Register a callback to be run after the application is created.
-     *
-     * @param  callable $callback
-     * @return void
-     */
-    public function afterApplicationCreated(callable $callback)
-    {
-        $this->afterApplicationCreatedCallbacks[] = $callback;
-
-        if ($this->setUpHasRun) {
-            call_user_func($callback);
-        }
-    }
-
-    /**
      * Setup the test environment.
      *
      * @return void
      */
     protected function setUp()
     {
-        if (!$this->app) {
+        if (! $this->app) {
             $this->refreshApplication();
         }
 
@@ -188,9 +173,24 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Register a callback to be run after the application is created.
+     *
+     * @param  callable  $callback
+     * @return void
+     */
+    public function afterApplicationCreated(callable $callback)
+    {
+        $this->afterApplicationCreatedCallbacks[] = $callback;
+
+        if ($this->setUpHasRun) {
+            call_user_func($callback);
+        }
+    }
+
+    /**
      * Register a callback to be run before the application is destroyed.
      *
-     * @param  callable $callback
+     * @param  callable  $callback
      * @return void
      */
     protected function beforeApplicationDestroyed(callable $callback)

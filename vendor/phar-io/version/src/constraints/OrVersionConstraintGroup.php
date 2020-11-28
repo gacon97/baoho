@@ -10,8 +10,7 @@
 
 namespace PharIo\Version;
 
-class OrVersionConstraintGroup extends AbstractVersionConstraint
-{
+class OrVersionConstraintGroup extends AbstractVersionConstraint {
     /**
      * @var VersionConstraint[]
      */
@@ -21,8 +20,7 @@ class OrVersionConstraintGroup extends AbstractVersionConstraint
      * @param string $originalValue
      * @param VersionConstraint[] $constraints
      */
-    public function __construct($originalValue, array $constraints)
-    {
+    public function __construct($originalValue, array $constraints) {
         parent::__construct($originalValue);
 
         $this->constraints = $constraints;
@@ -33,8 +31,7 @@ class OrVersionConstraintGroup extends AbstractVersionConstraint
      *
      * @return bool
      */
-    public function complies(Version $version)
-    {
+    public function complies(Version $version) {
         foreach ($this->constraints as $constraint) {
             if ($constraint->complies($version)) {
                 return true;

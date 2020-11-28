@@ -79,8 +79,8 @@ class ConfigPaths
     /**
      * Find real config files in config directories.
      *
-     * @param string[] $names Config file names
-     * @param string $configDir Optionally use a specific config directory
+     * @param string[] $names     Config file names
+     * @param string   $configDir Optionally use a specific config directory
      *
      * @return string[]
      */
@@ -113,8 +113,8 @@ class ConfigPaths
     /**
      * Find real data files in config directories.
      *
-     * @param string[] $names Config file names
-     * @param string $dataDir Optionally use a specific config directory
+     * @param string[] $names   Config file names
+     * @param string   $dataDir Optionally use a specific config directory
      *
      * @return string[]
      */
@@ -152,45 +152,6 @@ class ConfigPaths
         \restore_error_handler();
 
         return \strtr($runtimeDir, '\\', '/') . '/psysh';
-    }
-
-    /**
-     * Ensure that $file exists and is writable, make the parent directory if necessary.
-     *
-     * Generates E_USER_NOTICE error if either $file or its directory is not writable.
-     *
-     * @param string $file
-     *
-     * @return string|false Full path to $file, or false if file is not writable
-     */
-    public static function touchFileWithMkdir($file)
-    {
-        if (\file_exists($file)) {
-            if (\is_writable($file)) {
-                return $file;
-            }
-
-            \trigger_error(\sprintf('Writing to %s is not allowed.', $file), E_USER_NOTICE);
-
-            return false;
-        }
-
-        $dir = \dirname($file);
-
-        if (!\is_dir($dir)) {
-            // Just try making it and see if it works
-            @\mkdir($dir, 0700, true);
-        }
-
-        if (!\is_dir($dir) || !\is_writable($dir)) {
-            \trigger_error(\sprintf('Writing to %s is not allowed.', $dir), E_USER_NOTICE);
-
-            return false;
-        }
-
-        \touch($file);
-
-        return $file;
     }
 
     private static function getDirNames(array $baseDirs)
@@ -233,5 +194,44 @@ class ConfigPaths
         }
 
         return $files;
+    }
+
+    /**
+     * Ensure that $file exists and is writable, make the parent directory if necessary.
+     *
+     * Generates E_USER_NOTICE error if either $file or its directory is not writable.
+     *
+     * @param string $file
+     *
+     * @return string|false Full path to $file, or false if file is not writable
+     */
+    public static function touchFileWithMkdir($file)
+    {
+        if (\file_exists($file)) {
+            if (\is_writable($file)) {
+                return $file;
+            }
+
+            \trigger_error(\sprintf('Writing to %s is not allowed.', $file), E_USER_NOTICE);
+
+            return false;
+        }
+
+        $dir = \dirname($file);
+
+        if (!\is_dir($dir)) {
+            // Just try making it and see if it works
+            @\mkdir($dir, 0700, true);
+        }
+
+        if (!\is_dir($dir) || !\is_writable($dir)) {
+            \trigger_error(\sprintf('Writing to %s is not allowed.', $dir), E_USER_NOTICE);
+
+            return false;
+        }
+
+        \touch($file);
+
+        return $file;
     }
 }

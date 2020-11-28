@@ -25,16 +25,16 @@ class CallbackEvent extends Event
     /**
      * Create a new event instance.
      *
-     * @param  \Illuminate\Console\Scheduling\EventMutex $mutex
-     * @param  string $callback
-     * @param  array $parameters
+     * @param  \Illuminate\Console\Scheduling\EventMutex  $mutex
+     * @param  string  $callback
+     * @param  array  $parameters
      * @return void
      *
      * @throws \InvalidArgumentException
      */
     public function __construct(EventMutex $mutex, $callback, array $parameters = [])
     {
-        if (!is_string($callback) && !is_callable($callback)) {
+        if (! is_string($callback) && ! is_callable($callback)) {
             throw new InvalidArgumentException(
                 'Invalid scheduled callback event. Must be a string or callable.'
             );
@@ -48,7 +48,7 @@ class CallbackEvent extends Event
     /**
      * Run the given event.
      *
-     * @param  \Illuminate\Contracts\Container\Container $container
+     * @param  \Illuminate\Contracts\Container\Container  $container
      * @return mixed
      *
      * @throws \Exception
@@ -56,7 +56,7 @@ class CallbackEvent extends Event
     public function run(Container $container)
     {
         if ($this->description && $this->withoutOverlapping &&
-            !$this->mutex->create($this)) {
+            ! $this->mutex->create($this)) {
             return;
         }
 
@@ -82,16 +82,28 @@ class CallbackEvent extends Event
     }
 
     /**
+     * Clear the mutex for the event.
+     *
+     * @return void
+     */
+    protected function removeMutex()
+    {
+        if ($this->description) {
+            $this->mutex->forget($this);
+        }
+    }
+
+    /**
      * Do not allow the event to overlap each other.
      *
-     * @param  int $expiresAt
+     * @param  int  $expiresAt
      * @return $this
      *
      * @throws \LogicException
      */
     public function withoutOverlapping($expiresAt = 1440)
     {
-        if (!isset($this->description)) {
+        if (! isset($this->description)) {
             throw new LogicException(
                 "A scheduled event name is required to prevent overlapping. Use the 'name' method before 'withoutOverlapping'."
             );
@@ -115,7 +127,7 @@ class CallbackEvent extends Event
      */
     public function onOneServer()
     {
-        if (!isset($this->description)) {
+        if (! isset($this->description)) {
             throw new LogicException(
                 "A scheduled event name is required to only run on one server. Use the 'name' method before 'onOneServer'."
             );
@@ -133,7 +145,7 @@ class CallbackEvent extends Event
      */
     public function mutexName()
     {
-        return 'framework/schedule-' . sha1($this->description);
+        return 'framework/schedule-'.sha1($this->description);
     }
 
     /**
@@ -148,17 +160,5 @@ class CallbackEvent extends Event
         }
 
         return is_string($this->callback) ? $this->callback : 'Closure';
-    }
-
-    /**
-     * Clear the mutex for the event.
-     *
-     * @return void
-     */
-    protected function removeMutex()
-    {
-        if ($this->description) {
-            $this->mutex->forget($this);
-        }
     }
 }

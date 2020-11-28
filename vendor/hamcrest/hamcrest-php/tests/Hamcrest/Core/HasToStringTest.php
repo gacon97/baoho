@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Core;
 
 class PhpForm
@@ -33,6 +32,11 @@ class BothForms
 
 class HasToStringTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Core\HasToString::hasToString('foo');
+    }
 
     public function testMatchesWhenToStringMatches()
     {
@@ -100,10 +104,5 @@ class HasToStringTest extends \Hamcrest\AbstractMatcherTest
             'an object with toString() "php"',
             hasToString(equalTo('php'))
         );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Core\HasToString::hasToString('foo');
     }
 }

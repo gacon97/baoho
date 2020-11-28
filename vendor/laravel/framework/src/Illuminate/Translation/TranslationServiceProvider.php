@@ -39,16 +39,6 @@ class TranslationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['translator', 'translation.loader'];
-    }
-
-    /**
      * Register the translation line loader.
      *
      * @return void
@@ -58,5 +48,15 @@ class TranslationServiceProvider extends ServiceProvider
         $this->app->singleton('translation.loader', function ($app) {
             return new FileLoader($app['files'], $app['path.lang']);
         });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['translator', 'translation.loader'];
     }
 }

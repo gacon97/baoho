@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Number;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\Description;
 use Hamcrest\TypeSafeMatcher;
 
@@ -27,6 +25,28 @@ class IsCloseTo extends TypeSafeMatcher
         $this->_delta = $delta;
     }
 
+    protected function matchesSafely($item)
+    {
+        return $this->_actualDelta($item) <= 0.0;
+    }
+
+    protected function describeMismatchSafely($item, Description $mismatchDescription)
+    {
+        $mismatchDescription->appendValue($item)
+                                                ->appendText(' differed by ')
+                                                ->appendValue($this->_actualDelta($item))
+                                                ;
+    }
+
+    public function describeTo(Description $description)
+    {
+        $description->appendText('a numeric value within ')
+                                ->appendValue($this->_delta)
+                                ->appendText(' of ')
+                                ->appendValue($this->_value)
+                                ;
+    }
+
     /**
      * Matches if value is a number equal to $value within some range of
      * acceptable error $delta.
@@ -36,26 +56,6 @@ class IsCloseTo extends TypeSafeMatcher
     public static function closeTo($value, $delta)
     {
         return new self($value, $delta);
-    }
-
-    public function describeTo(Description $description)
-    {
-        $description->appendText('a numeric value within ')
-            ->appendValue($this->_delta)
-            ->appendText(' of ')
-            ->appendValue($this->_value);
-    }
-
-    protected function matchesSafely($item)
-    {
-        return $this->_actualDelta($item) <= 0.0;
-    }
-
-    protected function describeMismatchSafely($item, Description $mismatchDescription)
-    {
-        $mismatchDescription->appendValue($item)
-            ->appendText(' differed by ')
-            ->appendValue($this->_actualDelta($item));
     }
 
     // -- Private Methods

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -15,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\ArrayComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class ArrayComparatorTest extends TestCase
 {
@@ -25,6 +24,12 @@ final class ArrayComparatorTest extends TestCase
      * @var ArrayComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ArrayComparator;
+        $this->comparator->setFactory(new Factory);
+    }
 
     public function acceptsFailsProvider()
     {
@@ -114,7 +119,7 @@ final class ArrayComparatorTest extends TestCase
     public function testAcceptsSucceeds(): void
     {
         $this->assertTrue(
-            $this->comparator->accepts([], [])
+          $this->comparator->accepts([], [])
         );
     }
 
@@ -124,7 +129,7 @@ final class ArrayComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -152,11 +157,5 @@ final class ArrayComparatorTest extends TestCase
         $this->expectExceptionMessage('Failed asserting that two arrays are equal');
 
         $this->comparator->assertEquals($expected, $actual, $delta, $canonicalize);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new ArrayComparator;
-        $this->comparator->setFactory(new Factory);
     }
 }

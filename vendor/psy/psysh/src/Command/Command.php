@@ -72,68 +72,6 @@ abstract class Command extends BaseCommand
     }
 
     /**
-     * These arguments will be excluded from help output.
-     *
-     * @return array
-     */
-    protected function getHiddenArguments()
-    {
-        return ['command'];
-    }
-
-    /**
-     * These options will be excluded from help output.
-     *
-     * @return array
-     */
-    protected function getHiddenOptions()
-    {
-        return ['verbose'];
-    }
-
-    /**
-     * Get a Table instance.
-     *
-     * Falls back to legacy TableHelper.
-     *
-     * @return Table|TableHelper
-     */
-    protected function getTable(OutputInterface $output)
-    {
-        if (!\class_exists('Symfony\Component\Console\Helper\Table')) {
-            return $this->getTableHelper();
-        }
-
-        $style = new TableStyle();
-        $style
-            ->setVerticalBorderChar(' ')
-            ->setHorizontalBorderChar('')
-            ->setCrossingChar('');
-
-        $table = new Table($output);
-
-        return $table
-            ->setRows([])
-            ->setStyle($style);
-    }
-
-    /**
-     * Legacy fallback for getTable.
-     *
-     * @return TableHelper
-     */
-    protected function getTableHelper()
-    {
-        $table = $this->getApplication()->getHelperSet()->get('table');
-
-        return $table
-            ->setRows([])
-            ->setLayout(TableHelper::LAYOUT_BORDERLESS)
-            ->setHorizontalBorderChar('')
-            ->setCrossingChar('');
-    }
-
-    /**
      * {@inheritdoc}
      */
     private function getArguments()
@@ -146,6 +84,16 @@ abstract class Command extends BaseCommand
     }
 
     /**
+     * These arguments will be excluded from help output.
+     *
+     * @return array
+     */
+    protected function getHiddenArguments()
+    {
+        return ['command'];
+    }
+
+    /**
      * {@inheritdoc}
      */
     private function getOptions()
@@ -155,6 +103,16 @@ abstract class Command extends BaseCommand
         return \array_filter($this->getNativeDefinition()->getOptions(), function ($option) use ($hidden) {
             return !\in_array($option->getName(), $hidden);
         });
+    }
+
+    /**
+     * These options will be excluded from help output.
+     *
+     * @return array
+     */
+    protected function getHiddenOptions()
+    {
+        return ['verbose'];
     }
 
     /**
@@ -278,5 +236,47 @@ abstract class Command extends BaseCommand
         }
 
         return \str_replace("\n", '', \var_export($default, true));
+    }
+
+    /**
+     * Get a Table instance.
+     *
+     * Falls back to legacy TableHelper.
+     *
+     * @return Table|TableHelper
+     */
+    protected function getTable(OutputInterface $output)
+    {
+        if (!\class_exists('Symfony\Component\Console\Helper\Table')) {
+            return $this->getTableHelper();
+        }
+
+        $style = new TableStyle();
+        $style
+            ->setVerticalBorderChar(' ')
+            ->setHorizontalBorderChar('')
+            ->setCrossingChar('');
+
+        $table = new Table($output);
+
+        return $table
+            ->setRows([])
+            ->setStyle($style);
+    }
+
+    /**
+     * Legacy fallback for getTable.
+     *
+     * @return TableHelper
+     */
+    protected function getTableHelper()
+    {
+        $table = $this->getApplication()->getHelperSet()->get('table');
+
+        return $table
+            ->setRows([])
+            ->setLayout(TableHelper::LAYOUT_BORDERLESS)
+            ->setHorizontalBorderChar('')
+            ->setCrossingChar('');
     }
 }

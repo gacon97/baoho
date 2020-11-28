@@ -33,7 +33,7 @@ namespace Illuminate\Support\Facades;
  * @method static \Symfony\Component\Finder\SplFileInfo[] files(string $directory, bool $hidden = false)
  * @method static \Symfony\Component\Finder\SplFileInfo[] allFiles(string $directory, bool $hidden = false)
  * @method static array directories(string $directory)
- * @method static bool makeDirectory(string $path, int $mode = 0755, bool $recursive = false, bool $force = false)
+ * @method static bool makeDirectory(string $path, int $mode = 0755,  bool $recursive = false, bool $force = false)
  * @method static bool moveDirectory(string $from, string $to, bool $overwrite = false)
  * @method static bool copyDirectory(string $directory, string $destination, int $options = null)
  * @method static bool deleteDirectory(string $directory, bool $preserve = false)

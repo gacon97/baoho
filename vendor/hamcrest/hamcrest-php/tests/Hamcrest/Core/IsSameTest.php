@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Core;
 
 class IsSameTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Core\IsSame::sameInstance(new \stdClass());
+    }
 
     public function testEvaluatesToTrueIfArgumentIsReferenceToASpecifiedObject()
     {
@@ -22,10 +26,5 @@ class IsSameTest extends \Hamcrest\AbstractMatcherTest
     public function testReturnsReadableDescriptionFromToStringWhenInitialisedWithNull()
     {
         $this->assertDescription('sameInstance(null)', sameInstance(null));
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Core\IsSame::sameInstance(new \stdClass());
     }
 }

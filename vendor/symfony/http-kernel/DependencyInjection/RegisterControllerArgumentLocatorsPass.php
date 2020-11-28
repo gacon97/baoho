@@ -34,24 +34,22 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
     private $resolverServiceId;
     private $controllerTag;
     private $controllerLocator;
-    private $notTaggedControllerResolverServiceId;
 
-    public function __construct(string $resolverServiceId = 'argument_resolver.service', string $controllerTag = 'controller.service_arguments', string $controllerLocator = 'argument_resolver.controller_locator', string $notTaggedControllerResolverServiceId = 'argument_resolver.not_tagged_controller')
+    public function __construct(string $resolverServiceId = 'argument_resolver.service', string $controllerTag = 'controller.service_arguments', string $controllerLocator = 'argument_resolver.controller_locator')
     {
         $this->resolverServiceId = $resolverServiceId;
         $this->controllerTag = $controllerTag;
         $this->controllerLocator = $controllerLocator;
-        $this->notTaggedControllerResolverServiceId = $notTaggedControllerResolverServiceId;
     }
 
     public function process(ContainerBuilder $container)
     {
-        if (false === $container->hasDefinition($this->resolverServiceId) && false === $container->hasDefinition($this->notTaggedControllerResolverServiceId)) {
+        if (false === $container->hasDefinition($this->resolverServiceId)) {
             return;
         }
 
         $parameterBag = $container->getParameterBag();
-        $controllers = [];
+        $controllers = array();
 
         foreach ($container->findTaggedServiceIds($this->controllerTag, true) as $id => $tags) {
             $def = $container->getDefinition($id);
@@ -74,14 +72,14 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
             $isContainerAware = $r->implementsInterface(ContainerAwareInterface::class) || is_subclass_of($class, AbstractController::class);
 
             // get regular public methods
-            $methods = [];
-            $arguments = [];
+            $methods = array();
+            $arguments = array();
             foreach ($r->getMethods(\ReflectionMethod::IS_PUBLIC) as $r) {
                 if ('setContainer' === $r->name && $isContainerAware) {
                     continue;
                 }
                 if (!$r->isConstructor() && !$r->isDestructor() && !$r->isAbstract()) {
-                    $methods[strtolower($r->name)] = [$r, $r->getParameters()];
+                    $methods[strtolower($r->name)] = array($r, $r->getParameters());
                 }
             }
 
@@ -91,7 +89,7 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                     $autowire = true;
                     continue;
                 }
-                foreach (['action', 'argument', 'id'] as $k) {
+                foreach (array('action', 'argument', 'id') as $k) {
                     if (!isset($attributes[$k][0])) {
                         throw new InvalidArgumentException(sprintf('Missing "%s" attribute on tag "%s" %s for service "%s".', $k, $this->controllerTag, json_encode($attributes, JSON_UNESCAPED_UNICODE), $id));
                     }
@@ -121,7 +119,7 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                 /** @var \ReflectionMethod $r */
 
                 // create a per-method map of argument-names to service/type-references
-                $args = [];
+                $args = array();
                 foreach ($parameters as $p) {
                     /** @var \ReflectionParameter $p */
                     $type = ltrim($target = ProxyHelper::getTypeHint($r, $p), '\\');
@@ -139,14 +137,14 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                     } elseif (isset($bindings[$bindingName = $type.' $'.$p->name]) || isset($bindings[$bindingName = '$'.$p->name]) || isset($bindings[$bindingName = $type])) {
                         $binding = $bindings[$bindingName];
 
-                        list($bindingValue, $bindingId, , $bindingType, $bindingFile) = $binding->getValues();
-                        $binding->setValues([$bindingValue, $bindingId, true, $bindingType, $bindingFile]);
+                        list($bindingValue, $bindingId) = $binding->getValues();
+                        $binding->setValues(array($bindingValue, $bindingId, true));
 
                         if (!$bindingValue instanceof Reference) {
                             $args[$p->name] = new Reference('.value.'.$container->hash($bindingValue));
                             $container->register((string) $args[$p->name], 'mixed')
                                 ->setFactory('current')
-                                ->addArgument([$bindingValue]);
+                                ->addArgument(array($bindingValue));
                         } else {
                             $args[$p->name] = $bindingValue;
                         }
@@ -183,17 +181,8 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
             }
         }
 
-        $controllerLocatorRef = ServiceLocatorTagPass::register($container, $controllers);
-
-        if ($container->hasDefinition($this->resolverServiceId)) {
-            $container->getDefinition($this->resolverServiceId)
-                ->replaceArgument(0, $controllerLocatorRef);
-        }
-
-        if ($container->hasDefinition($this->notTaggedControllerResolverServiceId)) {
-            $container->getDefinition($this->notTaggedControllerResolverServiceId)
-                ->replaceArgument(0, $controllerLocatorRef);
-        }
+        $container->getDefinition($this->resolverServiceId)
+            ->replaceArgument(0, $controllerLocatorRef = ServiceLocatorTagPass::register($container, $controllers));
 
         $container->setAlias($this->controllerLocator, (string) $controllerLocatorRef);
     }

@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Type;
 
 /*
  Copyright (c) 2010 hamcrest.org
  */
-
 use Hamcrest\Core\IsTypeOf;
 
 /**

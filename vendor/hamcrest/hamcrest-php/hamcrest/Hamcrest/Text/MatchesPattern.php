@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Text;
 
 /*
@@ -31,7 +30,7 @@ class MatchesPattern extends SubstringMatcher
 
     protected function evalSubstringOf($item)
     {
-        return preg_match($this->_substring, (string)$item) >= 1;
+        return preg_match($this->_substring, (string) $item) >= 1;
     }
 
     protected function relationship()

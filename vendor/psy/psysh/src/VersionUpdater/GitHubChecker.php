@@ -48,6 +48,20 @@ class GitHubChecker implements Checker
     }
 
     /**
+     * @return string|null
+     */
+    private function getVersionFromTag()
+    {
+        $contents = $this->fetchLatestRelease();
+        if (!$contents || !isset($contents->tag_name)) {
+            throw new \InvalidArgumentException('Unable to check for updates');
+        }
+        $this->setLatest($contents->tag_name);
+
+        return $this->getLatest();
+    }
+
+    /**
      * Set to public to make testing easier.
      *
      * @return mixed
@@ -57,7 +71,7 @@ class GitHubChecker implements Checker
         $context = \stream_context_create([
             'http' => [
                 'user_agent' => 'PsySH/' . Shell::VERSION,
-                'timeout' => 3,
+                'timeout'    => 3,
             ],
         ]);
 
@@ -71,19 +85,5 @@ class GitHubChecker implements Checker
         \restore_error_handler();
 
         return \json_decode($result);
-    }
-
-    /**
-     * @return string|null
-     */
-    private function getVersionFromTag()
-    {
-        $contents = $this->fetchLatestRelease();
-        if (!$contents || !isset($contents->tag_name)) {
-            throw new \InvalidArgumentException('Unable to check for updates');
-        }
-        $this->setLatest($contents->tag_name);
-
-        return $this->getLatest();
     }
 }

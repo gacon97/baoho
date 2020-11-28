@@ -23,9 +23,9 @@ use Psy\Util\Mirror;
  */
 abstract class ReflectingCommand extends Command implements ContextAware
 {
-    const CLASS_OR_FUNC = '/^[\\\\\w]+$/';
-    const CLASS_MEMBER = '/^([\\\\\w]+)::(\w+)$/';
-    const CLASS_STATIC = '/^([\\\\\w]+)::\$(\w+)$/';
+    const CLASS_OR_FUNC   = '/^[\\\\\w]+$/';
+    const CLASS_MEMBER    = '/^([\\\\\w]+)::(\w+)$/';
+    const CLASS_STATIC    = '/^([\\\\\w]+)::\$(\w+)$/';
     const INSTANCE_MEMBER = '/^(\$\w+)(::|->)(\w+)$/';
 
     /**
@@ -57,7 +57,7 @@ abstract class ReflectingCommand extends Command implements ContextAware
     protected function getTarget($valueName)
     {
         $valueName = \trim($valueName);
-        $matches = [];
+        $matches   = [];
         switch (true) {
             case \preg_match(self::CLASS_OR_FUNC, $valueName, $matches):
                 return [$this->resolveName($matches[0], true), null, 0];
@@ -88,7 +88,7 @@ abstract class ReflectingCommand extends Command implements ContextAware
      * @throws ErrorException when `self` or `static` is used in a non-class scope
      *
      * @param string $name
-     * @param bool $includeFunctions (default: false)
+     * @param bool   $includeFunctions (default: false)
      *
      * @return string
      */
@@ -158,6 +158,26 @@ abstract class ReflectingCommand extends Command implements ContextAware
 
         if (!isset($value) || $value instanceof NoReturnValue) {
             throw new RuntimeException('Unknown target: ' . $code);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Resolve code to an object in the current scope.
+     *
+     * @throws RuntimeException when the code resolves to a non-object value
+     *
+     * @param string $code
+     *
+     * @return object Variable instance
+     */
+    private function resolveObject($code)
+    {
+        $value = $this->resolveCode($code);
+
+        if (!\is_object($value)) {
+            throw new RuntimeException('Unable to inspect a non-object');
         }
 
         return $value;
@@ -244,7 +264,7 @@ abstract class ReflectingCommand extends Command implements ContextAware
                 if ($fileName = $reflector->getExecutingFile()) {
                     $vars['__file'] = $fileName;
                     $vars['__line'] = $reflector->getExecutingLine();
-                    $vars['__dir'] = \dirname($fileName);
+                    $vars['__dir']  = \dirname($fileName);
                 }
                 break;
 
@@ -259,7 +279,7 @@ abstract class ReflectingCommand extends Command implements ContextAware
                 // no line for these, but this'll do
                 if ($fileName = $reflector->getDeclaringClass()->getFileName()) {
                     $vars['__file'] = $fileName;
-                    $vars['__dir'] = \dirname($fileName);
+                    $vars['__dir']  = \dirname($fileName);
                 }
                 break;
 
@@ -274,30 +294,10 @@ abstract class ReflectingCommand extends Command implements ContextAware
             if ($fileName = $reflector->getFileName()) {
                 $vars['__file'] = $fileName;
                 $vars['__line'] = $reflector->getStartLine();
-                $vars['__dir'] = \dirname($fileName);
+                $vars['__dir']  = \dirname($fileName);
             }
         }
 
         $this->context->setCommandScopeVariables($vars);
-    }
-
-    /**
-     * Resolve code to an object in the current scope.
-     *
-     * @throws RuntimeException when the code resolves to a non-object value
-     *
-     * @param string $code
-     *
-     * @return object Variable instance
-     */
-    private function resolveObject($code)
-    {
-        $value = $this->resolveCode($code);
-
-        if (!\is_object($value)) {
-            throw new RuntimeException('Unable to inspect a non-object');
-        }
-
-        return $value;
     }
 }

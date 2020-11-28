@@ -106,7 +106,7 @@ abstract class Job
     /**
      * Release the job back into the queue.
      *
-     * @param  int $delay
+     * @param  int   $delay
      * @return void
      */
     public function release($delay = 0)
@@ -157,7 +157,7 @@ abstract class Job
     /**
      * Process an exception that caused the job to fail.
      *
-     * @param  \Exception $e
+     * @param  \Exception  $e
      * @return void
      */
     public function failed($e)
@@ -171,6 +171,17 @@ abstract class Job
         if (method_exists($this->instance = $this->resolve($class), 'failed')) {
             $this->instance->failed($payload['data'], $e);
         }
+    }
+
+    /**
+     * Resolve the given class.
+     *
+     * @param  string  $class
+     * @return mixed
+     */
+    protected function resolve($class)
+    {
+        return $this->container->make($class);
     }
 
     /**
@@ -263,16 +274,5 @@ abstract class Job
     public function getContainer()
     {
         return $this->container;
-    }
-
-    /**
-     * Resolve the given class.
-     *
-     * @param  string $class
-     * @return mixed
-     */
-    protected function resolve($class)
-    {
-        return $this->container->make($class);
     }
 }

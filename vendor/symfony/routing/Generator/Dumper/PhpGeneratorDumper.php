@@ -11,17 +11,13 @@
 
 namespace Symfony\Component\Routing\Generator\Dumper;
 
-@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.3, use "CompiledUrlGeneratorDumper" instead.', PhpGeneratorDumper::class), E_USER_DEPRECATED);
-
-use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
+use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
 
 /**
  * PhpGeneratorDumper creates a PHP class able to generate URLs for a given set of routes.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Tobias Schultze <http://tobion.de>
- *
- * @deprecated since Symfony 4.3, use CompiledUrlGeneratorDumper instead.
  */
 class PhpGeneratorDumper extends GeneratorDumper
 {
@@ -37,12 +33,12 @@ class PhpGeneratorDumper extends GeneratorDumper
      *
      * @return string A PHP class representing the generator class
      */
-    public function dump(array $options = [])
+    public function dump(array $options = array())
     {
-        $options = array_merge([
+        $options = array_merge(array(
             'class' => 'ProjectUrlGenerator',
             'base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
-        ], $options);
+        ), $options);
 
         return <<<EOF
 <?php
@@ -84,11 +80,11 @@ EOF;
      */
     private function generateDeclaredRoutes()
     {
-        $routes = "[\n";
+        $routes = "array(\n";
         foreach ($this->getRoutes()->all() as $name => $route) {
             $compiledRoute = $route->compile();
 
-            $properties = [];
+            $properties = array();
             $properties[] = $compiledRoute->getVariables();
             $properties[] = $route->getDefaults();
             $properties[] = $route->getRequirements();
@@ -96,9 +92,9 @@ EOF;
             $properties[] = $compiledRoute->getHostTokens();
             $properties[] = $route->getSchemes();
 
-            $routes .= sprintf("        '%s' => %s,\n", $name, CompiledUrlMatcherDumper::export($properties));
+            $routes .= sprintf("        '%s' => %s,\n", $name, PhpMatcherDumper::export($properties));
         }
-        $routes .= '    ]';
+        $routes .= '    )';
 
         return $routes;
     }
@@ -111,7 +107,7 @@ EOF;
     private function generateGenerateMethod()
     {
         return <<<'EOF'
-    public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
+    public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
     {
         $locale = $parameters['_locale']
             ?? $this->context->getParameter('_locale')

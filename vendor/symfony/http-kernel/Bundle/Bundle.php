@@ -18,7 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
- * An implementation of BundleInterface that adds a few conventions for DependencyInjection extensions.
+ * An implementation of BundleInterface that adds a few conventions
+ * for DependencyInjection extensions and Console commands.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
@@ -86,7 +87,9 @@ abstract class Bundle implements BundleInterface
             }
         }
 
-        return $this->extension ?: null;
+        if ($this->extension) {
+            return $this->extension;
+        }
     }
 
     /**
@@ -151,7 +154,9 @@ abstract class Bundle implements BundleInterface
      */
     protected function createContainerExtension()
     {
-        return class_exists($class = $this->getContainerExtensionClass()) ? new $class() : null;
+        if (class_exists($class = $this->getContainerExtensionClass())) {
+            return new $class();
+        }
     }
 
     private function parseClassName()

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -15,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\NumericComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class NumericComparatorTest extends TestCase
 {
@@ -25,6 +24,11 @@ final class NumericComparatorTest extends TestCase
      * @var NumericComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new NumericComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -77,7 +81,7 @@ final class NumericComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -87,7 +91,7 @@ final class NumericComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -115,10 +119,5 @@ final class NumericComparatorTest extends TestCase
         $this->expectExceptionMessage('matches expected');
 
         $this->comparator->assertEquals($expected, $actual, $delta);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new NumericComparator;
     }
 }

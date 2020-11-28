@@ -1,9 +1,13 @@
 <?php
-
 namespace Hamcrest\Core;
 
 class AnyOfTest extends \Hamcrest\AbstractMatcherTest
 {
+
+    protected function createMatcher()
+    {
+        return \Hamcrest\Core\AnyOf::anyOf('irrelevant');
+    }
 
     public function testAnyOfEvaluatesToTheLogicalDisjunctionOfTwoOtherMatchers()
     {
@@ -71,10 +75,5 @@ class AnyOfTest extends \Hamcrest\AbstractMatcherTest
             'not ("good" or "bad" or "ugly")',
             noneOf('good', 'bad', 'ugly')
         );
-    }
-
-    protected function createMatcher()
-    {
-        return \Hamcrest\Core\AnyOf::anyOf('irrelevant');
     }
 }

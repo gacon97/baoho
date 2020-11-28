@@ -28,20 +28,6 @@ class GNUReadline implements Readline
     protected $eraseDups;
 
     /**
-     * GNU Readline constructor.
-     *
-     * @param string|false $historyFile
-     * @param int $historySize
-     * @param bool $eraseDups
-     */
-    public function __construct($historyFile = null, $historySize = 0, $eraseDups = false)
-    {
-        $this->historyFile = ($historyFile !== null) ? $historyFile : false;
-        $this->historySize = $historySize;
-        $this->eraseDups = $eraseDups;
-    }
-
-    /**
      * GNU Readline is supported iff `readline_list_history` is defined. PHP
      * decided it would be awesome to swap out GNU Readline for Libedit, but
      * they ended up shipping an incomplete implementation. So we've got this.
@@ -51,6 +37,20 @@ class GNUReadline implements Readline
     public static function isSupported()
     {
         return \function_exists('readline_list_history');
+    }
+
+    /**
+     * GNU Readline constructor.
+     *
+     * @param string|false $historyFile
+     * @param int          $historySize
+     * @param bool         $eraseDups
+     */
+    public function __construct($historyFile = null, $historySize = 0, $eraseDups = false)
+    {
+        $this->historyFile = ($historyFile !== null) ? $historyFile : false;
+        $this->historySize = $historySize;
+        $this->eraseDups   = $eraseDups;
     }
 
     /**

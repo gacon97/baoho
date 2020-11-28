@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Core;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\BaseMatcher;
 use Hamcrest\Description;
 use Hamcrest\Matcher;
@@ -28,20 +26,6 @@ class Is extends BaseMatcher
         $this->_matcher = $matcher;
     }
 
-    /**
-     * Decorates another Matcher, retaining the behavior but allowing tests
-     * to be slightly more expressive.
-     *
-     * For example:  assertThat($cheese, equalTo($smelly))
-     *          vs.  assertThat($cheese, is(equalTo($smelly)))
-     *
-     * @factory
-     */
-    public static function is($value)
-    {
-        return new self(Util::wrapValueWithIsEqual($value));
-    }
-
     public function matches($arg)
     {
         return $this->_matcher->matches($arg);
@@ -55,5 +39,19 @@ class Is extends BaseMatcher
     public function describeMismatch($item, Description $mismatchDescription)
     {
         $this->_matcher->describeMismatch($item, $mismatchDescription);
+    }
+
+    /**
+     * Decorates another Matcher, retaining the behavior but allowing tests
+     * to be slightly more expressive.
+     *
+     * For example:  assertThat($cheese, equalTo($smelly))
+     *          vs.  assertThat($cheese, is(equalTo($smelly)))
+     *
+     * @factory
+     */
+    public static function is($value)
+    {
+        return new self(Util::wrapValueWithIsEqual($value));
     }
 }

@@ -1,6 +1,2 @@
 <?php
-
-class
-{
-CLASS
-}
+class {CLASS}

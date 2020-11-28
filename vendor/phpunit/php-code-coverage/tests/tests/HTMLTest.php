@@ -23,6 +23,22 @@ class HTMLTest extends TestCase
         self::$TEST_REPORT_PATH_SOURCE = TEST_FILES_PATH . 'Report' . DIRECTORY_SEPARATOR . 'HTML';
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $tmpFilesIterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(self::$TEST_TMP_PATH, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($tmpFilesIterator as $path => $fileInfo) {
+            /* @var \SplFileInfo $fileInfo */
+            $pathname = $fileInfo->getPathname();
+            $fileInfo->isDir() ? rmdir($pathname) : unlink($pathname);
+        }
+    }
+
     public function testForBankAccountTest()
     {
         $expectedFilesPath = self::$TEST_REPORT_PATH_SOURCE . DIRECTORY_SEPARATOR . 'CoverageForBankAccount';
@@ -54,22 +70,6 @@ class HTMLTest extends TestCase
         $this->assertFilesEquals($expectedFilesPath, self::$TEST_TMP_PATH);
     }
 
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $tmpFilesIterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(self::$TEST_TMP_PATH, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($tmpFilesIterator as $path => $fileInfo) {
-            /* @var \SplFileInfo $fileInfo */
-            $pathname = $fileInfo->getPathname();
-            $fileInfo->isDir() ? rmdir($pathname) : unlink($pathname);
-        }
-    }
-
     /**
      * @param string $expectedFilesPath
      * @param string $actualFilesPath
@@ -77,7 +77,7 @@ class HTMLTest extends TestCase
     private function assertFilesEquals($expectedFilesPath, $actualFilesPath)
     {
         $expectedFilesIterator = new \FilesystemIterator($expectedFilesPath);
-        $actualFilesIterator = new \RegexIterator(new \FilesystemIterator($actualFilesPath), '/.html/');
+        $actualFilesIterator   = new \RegexIterator(new \FilesystemIterator($actualFilesPath), '/.html/');
 
         $this->assertEquals(
             iterator_count($expectedFilesIterator),

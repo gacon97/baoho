@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Text;
 
 class StringContainsInOrderTest extends \Hamcrest\AbstractMatcherTest
@@ -10,6 +9,11 @@ class StringContainsInOrderTest extends \Hamcrest\AbstractMatcherTest
     public function setUp()
     {
         $this->_m = \Hamcrest\Text\StringContainsInOrder::stringContainsInOrder(array('a', 'b', 'c'));
+    }
+
+    protected function createMatcher()
+    {
+        return $this->_m;
     }
 
     public function testMatchesOnlyIfStringContainsGivenSubstringsInTheSameOrder()
@@ -34,10 +38,5 @@ class StringContainsInOrderTest extends \Hamcrest\AbstractMatcherTest
             'a string containing "a", "b", "c" in order',
             $this->_m
         );
-    }
-
-    protected function createMatcher()
-    {
-        return $this->_m;
     }
 }

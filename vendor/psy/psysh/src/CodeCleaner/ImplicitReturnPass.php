@@ -28,24 +28,6 @@ use PhpParser\Node\Stmt\Switch_;
 class ImplicitReturnPass extends CodeCleanerPass
 {
     /**
-     * Check whether a given node is a non-expression statement.
-     *
-     * As of PHP Parser 4.x, Expressions are now instances of Stmt as well, so
-     * we'll exclude them here.
-     *
-     * @param Node $node
-     *
-     * @return bool
-     */
-    private static function isNonExpressionStmt(Node $node)
-    {
-        return $node instanceof Stmt &&
-            !$node instanceof Expression &&
-            !$node instanceof Return_ &&
-            !$node instanceof Namespace_;
-    }
-
-    /**
      * @param array $nodes
      *
      * @return array
@@ -96,14 +78,14 @@ class ImplicitReturnPass extends CodeCleanerPass
             // @codeCoverageIgnoreStart
             $nodes[\count($nodes) - 1] = new Return_($last, [
                 'startLine' => $last->getLine(),
-                'endLine' => $last->getLine(),
+                'endLine'   => $last->getLine(),
             ]);
-            // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
         } elseif ($last instanceof Expression && !($last->expr instanceof Exit_)) {
             // For PHP Parser 4.x
             $nodes[\count($nodes) - 1] = new Return_($last->expr, [
                 'startLine' => $last->getLine(),
-                'endLine' => $last->getLine(),
+                'endLine'   => $last->getLine(),
             ]);
         } elseif ($last instanceof Namespace_) {
             $last->stmts = $this->addImplicitReturn($last->stmts);
@@ -124,5 +106,23 @@ class ImplicitReturnPass extends CodeCleanerPass
         }
 
         return $nodes;
+    }
+
+    /**
+     * Check whether a given node is a non-expression statement.
+     *
+     * As of PHP Parser 4.x, Expressions are now instances of Stmt as well, so
+     * we'll exclude them here.
+     *
+     * @param Node $node
+     *
+     * @return bool
+     */
+    private static function isNonExpressionStmt(Node $node)
+    {
+        return $node instanceof Stmt &&
+            !$node instanceof Expression &&
+            !$node instanceof Return_ &&
+            !$node instanceof Namespace_;
     }
 }

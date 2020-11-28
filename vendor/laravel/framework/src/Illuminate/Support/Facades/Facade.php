@@ -29,7 +29,7 @@ abstract class Facade
      */
     public static function spy()
     {
-        if (!static::isMock()) {
+        if (! static::isMock()) {
             $class = static::getMockableClass();
 
             return tap($class ? Mockery::spy($class) : Mockery::spy(), function ($spy) {
@@ -48,97 +48,10 @@ abstract class Facade
         $name = static::getFacadeAccessor();
 
         $mock = static::isMock()
-            ? static::$resolvedInstance[$name]
-            : static::createFreshMockInstance();
+                    ? static::$resolvedInstance[$name]
+                    : static::createFreshMockInstance();
 
         return $mock->shouldReceive(...func_get_args());
-    }
-
-    /**
-     * Hotswap the underlying instance behind the facade.
-     *
-     * @param  mixed $instance
-     * @return void
-     */
-    public static function swap($instance)
-    {
-        static::$resolvedInstance[static::getFacadeAccessor()] = $instance;
-
-        if (isset(static::$app)) {
-            static::$app->instance(static::getFacadeAccessor(), $instance);
-        }
-    }
-
-    /**
-     * Get the root object behind the facade.
-     *
-     * @return mixed
-     */
-    public static function getFacadeRoot()
-    {
-        return static::resolveFacadeInstance(static::getFacadeAccessor());
-    }
-
-    /**
-     * Clear a resolved facade instance.
-     *
-     * @param  string $name
-     * @return void
-     */
-    public static function clearResolvedInstance($name)
-    {
-        unset(static::$resolvedInstance[$name]);
-    }
-
-    /**
-     * Clear all of the resolved instances.
-     *
-     * @return void
-     */
-    public static function clearResolvedInstances()
-    {
-        static::$resolvedInstance = [];
-    }
-
-    /**
-     * Get the application instance behind the facade.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application
-     */
-    public static function getFacadeApplication()
-    {
-        return static::$app;
-    }
-
-    /**
-     * Set the application instance.
-     *
-     * @param  \Illuminate\Contracts\Foundation\Application $app
-     * @return void
-     */
-    public static function setFacadeApplication($app)
-    {
-        static::$app = $app;
-    }
-
-    /**
-     * Handle dynamic, static calls to the object.
-     *
-     * @param  string $method
-     * @param  array $args
-     * @return mixed
-     *
-     * @throws \RuntimeException
-     */
-    public static function __callStatic($method, $args)
-    {
-        $instance = static::getFacadeRoot();
-
-        if (!$instance) {
-            throw new RuntimeException('A facade root has not been set.');
-        }
-
-        return $instance->$method(...$args);
     }
 
     /**
@@ -177,7 +90,7 @@ abstract class Facade
         $name = static::getFacadeAccessor();
 
         return isset(static::$resolvedInstance[$name]) &&
-            static::$resolvedInstance[$name] instanceof MockInterface;
+               static::$resolvedInstance[$name] instanceof MockInterface;
     }
 
     /**
@@ -190,6 +103,31 @@ abstract class Facade
         if ($root = static::getFacadeRoot()) {
             return get_class($root);
         }
+    }
+
+    /**
+     * Hotswap the underlying instance behind the facade.
+     *
+     * @param  mixed  $instance
+     * @return void
+     */
+    public static function swap($instance)
+    {
+        static::$resolvedInstance[static::getFacadeAccessor()] = $instance;
+
+        if (isset(static::$app)) {
+            static::$app->instance(static::getFacadeAccessor(), $instance);
+        }
+    }
+
+    /**
+     * Get the root object behind the facade.
+     *
+     * @return mixed
+     */
+    public static function getFacadeRoot()
+    {
+        return static::resolveFacadeInstance(static::getFacadeAccessor());
     }
 
     /**
@@ -207,7 +145,7 @@ abstract class Facade
     /**
      * Resolve the facade root instance from the container.
      *
-     * @param  string|object $name
+     * @param  string|object  $name
      * @return mixed
      */
     protected static function resolveFacadeInstance($name)
@@ -221,5 +159,67 @@ abstract class Facade
         }
 
         return static::$resolvedInstance[$name] = static::$app[$name];
+    }
+
+    /**
+     * Clear a resolved facade instance.
+     *
+     * @param  string  $name
+     * @return void
+     */
+    public static function clearResolvedInstance($name)
+    {
+        unset(static::$resolvedInstance[$name]);
+    }
+
+    /**
+     * Clear all of the resolved instances.
+     *
+     * @return void
+     */
+    public static function clearResolvedInstances()
+    {
+        static::$resolvedInstance = [];
+    }
+
+    /**
+     * Get the application instance behind the facade.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application
+     */
+    public static function getFacadeApplication()
+    {
+        return static::$app;
+    }
+
+    /**
+     * Set the application instance.
+     *
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
+     */
+    public static function setFacadeApplication($app)
+    {
+        static::$app = $app;
+    }
+
+    /**
+     * Handle dynamic, static calls to the object.
+     *
+     * @param  string  $method
+     * @param  array   $args
+     * @return mixed
+     *
+     * @throws \RuntimeException
+     */
+    public static function __callStatic($method, $args)
+    {
+        $instance = static::getFacadeRoot();
+
+        if (! $instance) {
+            throw new RuntimeException('A facade root has not been set.');
+        }
+
+        return $instance->$method(...$args);
     }
 }

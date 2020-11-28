@@ -34,8 +34,8 @@ class RedisManager implements Factory
     /**
      * Create a new Redis manager instance.
      *
-     * @param  string $driver
-     * @param  array $config
+     * @param  string  $driver
+     * @param  array  $config
      * @return void
      */
     public function __construct($driver, array $config)
@@ -47,7 +47,7 @@ class RedisManager implements Factory
     /**
      * Get a Redis connection by name.
      *
-     * @param  string|null $name
+     * @param  string|null  $name
      * @return \Illuminate\Redis\Connections\Connection
      */
     public function connection($name = null)
@@ -64,7 +64,7 @@ class RedisManager implements Factory
     /**
      * Resolve the given connection by name.
      *
-     * @param  string|null $name
+     * @param  string|null  $name
      * @return \Illuminate\Redis\Connections\Connection
      *
      * @throws \InvalidArgumentException
@@ -87,31 +87,9 @@ class RedisManager implements Factory
     }
 
     /**
-     * Return all of the created connections.
-     *
-     * @return array
-     */
-    public function connections()
-    {
-        return $this->connections;
-    }
-
-    /**
-     * Pass methods onto the default Redis connection.
-     *
-     * @param  string $method
-     * @param  array $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return $this->connection()->{$method}(...$parameters);
-    }
-
-    /**
      * Resolve the given cluster connection by name.
      *
-     * @param  string $name
+     * @param  string  $name
      * @return \Illuminate\Redis\Connections\Connection
      */
     protected function resolveCluster($name)
@@ -136,5 +114,27 @@ class RedisManager implements Factory
             case 'phpredis':
                 return new Connectors\PhpRedisConnector;
         }
+    }
+
+    /**
+     * Return all of the created connections.
+     *
+     * @return array
+     */
+    public function connections()
+    {
+        return $this->connections;
+    }
+
+    /**
+     * Pass methods onto the default Redis connection.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->connection()->{$method}(...$parameters);
     }
 }

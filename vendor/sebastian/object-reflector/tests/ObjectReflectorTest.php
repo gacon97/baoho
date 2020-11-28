@@ -26,6 +26,11 @@ class ObjectReflectorTest extends TestCase
      */
     private $objectReflector;
 
+    protected function setUp()/*: void */
+    {
+        $this->objectReflector = new ObjectReflector;
+    }
+
     public function testReflectsAttributesOfObject()/*: void */
     {
         $o = new ChildClass;
@@ -61,10 +66,5 @@ class ObjectReflectorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $this->objectReflector->getAttributes(null);
-    }
-
-    protected function setUp()/*: void */
-    {
-        $this->objectReflector = new ObjectReflector;
     }
 }

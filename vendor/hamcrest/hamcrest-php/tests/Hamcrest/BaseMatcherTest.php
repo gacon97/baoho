@@ -1,9 +1,7 @@
 <?php
-
 namespace Hamcrest;
 
 /* Test-specific subclass only */
-
 class BaseMatcherTest extends \Hamcrest\BaseMatcher
 {
 
@@ -20,6 +18,6 @@ class BaseMatcherTest extends \Hamcrest\BaseMatcher
     public function testDescribesItselfWithToStringMethod()
     {
         $someMatcher = new \Hamcrest\SomeMatcher();
-        $this->assertEquals('SOME DESCRIPTION', (string)$someMatcher);
+        $this->assertEquals('SOME DESCRIPTION', (string) $someMatcher);
     }
 }

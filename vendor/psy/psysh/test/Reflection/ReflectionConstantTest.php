@@ -26,7 +26,7 @@ class ReflectionConstantTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Psy\\Test\\Reflection', $refl->getNamespaceName());
         $this->assertEquals('yep', $refl->getValue());
         $this->assertTrue($refl->inNamespace());
-        $this->assertEquals('Psy\\Test\\Reflection\\SOME_CONSTANT', (string)$refl);
+        $this->assertEquals('Psy\\Test\\Reflection\\SOME_CONSTANT', (string) $refl);
         $this->assertNull($refl->getFileName());
     }
 
@@ -35,7 +35,7 @@ class ReflectionConstantTest extends \PHPUnit\Framework\TestCase
         $refl = new ReflectionConstant_('PHP_VERSION');
 
         $this->assertEquals('PHP_VERSION', $refl->getName());
-        $this->assertEquals('PHP_VERSION', (string)$refl);
+        $this->assertEquals('PHP_VERSION', (string) $refl);
         $this->assertEquals(PHP_VERSION, $refl->getValue());
         $this->assertFalse($refl->inNamespace());
         $this->assertSame('', $refl->getNamespaceName());

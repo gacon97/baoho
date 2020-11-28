@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Html;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -41,10 +40,10 @@ final class Facade
 
     public function __construct(int $lowUpperBound = 50, int $highLowerBound = 90, string $generator = '')
     {
-        $this->generator = $generator;
+        $this->generator      = $generator;
         $this->highLowerBound = $highLowerBound;
-        $this->lowUpperBound = $lowUpperBound;
-        $this->templatePath = __DIR__ . '/Renderer/Template/';
+        $this->lowUpperBound  = $lowUpperBound;
+        $this->templatePath   = __DIR__ . '/Renderer/Template/';
     }
 
     /**

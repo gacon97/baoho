@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Core;
 
 /*
  Copyright (c) 2010 hamcrest.org
  */
-
 use Hamcrest\BaseMatcher;
 use Hamcrest\Description;
 
@@ -31,26 +29,6 @@ class Set extends BaseMatcher
     {
         $this->_property = $property;
         $this->_not = $not;
-    }
-
-    /**
-     * Matches if value (class, object, or array) has named $property.
-     *
-     * @factory
-     */
-    public static function set($property)
-    {
-        return new self($property);
-    }
-
-    /**
-     * Matches if value (class, object, or array) does not have named $property.
-     *
-     * @factory
-     */
-    public static function notSet($property)
-    {
-        return new self($property, true);
     }
 
     public function matches($item)
@@ -93,5 +71,25 @@ class Set extends BaseMatcher
             }
             parent::describeMismatch($value, $description);
         }
+    }
+
+    /**
+     * Matches if value (class, object, or array) has named $property.
+     *
+     * @factory
+     */
+    public static function set($property)
+    {
+        return new self($property);
+    }
+
+    /**
+     * Matches if value (class, object, or array) does not have named $property.
+     *
+     * @factory
+     */
+    public static function notSet($property)
+    {
+        return new self($property, true);
     }
 }

@@ -22,6 +22,11 @@ class WizardTest extends TestCase
      */
     private $wizard;
 
+    protected function setUp()
+    {
+        $this->wizard = new Wizard;
+    }
+
     public function testMethodCanBeLookedUp()
     {
         $this->assertEquals(
@@ -36,10 +41,5 @@ class WizardTest extends TestCase
             'file.php:1',
             $this->wizard->lookup('file.php', 1)
         );
-    }
-
-    protected function setUp()
-    {
-        $this->wizard = new Wizard;
     }
 }

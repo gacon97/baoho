@@ -11,6 +11,16 @@ use Illuminate\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 class SQLiteConnection extends Connection
 {
     /**
+     * Get the default query grammar instance.
+     *
+     * @return \Illuminate\Database\Query\Grammars\SQLiteGrammar
+     */
+    protected function getDefaultQueryGrammar()
+    {
+        return $this->withTablePrefix(new QueryGrammar);
+    }
+
+    /**
      * Get a schema builder instance for the connection.
      *
      * @return \Illuminate\Database\Schema\SQLiteBuilder
@@ -22,16 +32,6 @@ class SQLiteConnection extends Connection
         }
 
         return new SQLiteBuilder($this);
-    }
-
-    /**
-     * Get the default query grammar instance.
-     *
-     * @return \Illuminate\Database\Query\Grammars\SQLiteGrammar
-     */
-    protected function getDefaultQueryGrammar()
-    {
-        return $this->withTablePrefix(new QueryGrammar);
     }
 
     /**

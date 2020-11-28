@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use DOMDocument;
@@ -17,9 +16,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\DOMNodeComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class DOMNodeComparatorTest extends TestCase
 {
@@ -28,10 +27,15 @@ final class DOMNodeComparatorTest extends TestCase
      */
     private $comparator;
 
+    protected function setUp(): void
+    {
+        $this->comparator = new DOMNodeComparator;
+    }
+
     public function acceptsSucceedsProvider()
     {
         $document = new DOMDocument;
-        $node = new DOMNode;
+        $node     = new DOMNode;
 
         return [
             [$document, $document],
@@ -123,7 +127,7 @@ final class DOMNodeComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -133,7 +137,7 @@ final class DOMNodeComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -145,7 +149,7 @@ final class DOMNodeComparatorTest extends TestCase
         $exception = null;
 
         try {
-            $delta = 0.0;
+            $delta        = 0.0;
             $canonicalize = false;
             $this->comparator->assertEquals($expected, $actual, $delta, $canonicalize, $ignoreCase);
         } catch (ComparisonFailure $exception) {
@@ -165,14 +169,9 @@ final class DOMNodeComparatorTest extends TestCase
         $this->comparator->assertEquals($expected, $actual);
     }
 
-    protected function setUp(): void
-    {
-        $this->comparator = new DOMNodeComparator;
-    }
-
     private function createDOMDocument($content)
     {
-        $document = new DOMDocument;
+        $document                     = new DOMDocument;
         $document->preserveWhiteSpace = false;
         $document->loadXML($content);
 

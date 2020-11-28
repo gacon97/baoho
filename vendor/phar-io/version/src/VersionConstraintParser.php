@@ -10,8 +10,7 @@
 
 namespace PharIo\Version;
 
-class VersionConstraintParser
-{
+class VersionConstraintParser {
     /**
      * @param string $value
      *
@@ -19,8 +18,7 @@ class VersionConstraintParser
      *
      * @throws UnsupportedVersionConstraintException
      */
-    public function parse($value)
-    {
+    public function parse($value) {
 
         if (strpos($value, '||') !== false) {
             return $this->handleOrGroup($value);
@@ -68,8 +66,7 @@ class VersionConstraintParser
      *
      * @return OrVersionConstraintGroup
      */
-    private function handleOrGroup($value)
-    {
+    private function handleOrGroup($value) {
         $constraints = [];
 
         foreach (explode('||', $value) as $groupSegment) {
@@ -84,8 +81,7 @@ class VersionConstraintParser
      *
      * @return AndVersionConstraintGroup
      */
-    private function handleTildeOperator($value)
-    {
+    private function handleTildeOperator($value) {
         $version = new Version(substr($value, 1));
         $constraints = [
             new GreaterThanOrEqualToVersionConstraint($value, $version)
@@ -112,8 +108,7 @@ class VersionConstraintParser
      *
      * @return AndVersionConstraintGroup
      */
-    private function handleCaretOperator($value)
-    {
+    private function handleCaretOperator($value) {
         $version = new Version(substr($value, 1));
 
         return new AndVersionConstraintGroup(

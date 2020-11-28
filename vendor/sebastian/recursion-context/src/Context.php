@@ -31,7 +31,7 @@ final class Context
      */
     public function __construct()
     {
-        $this->arrays = array();
+        $this->arrays  = array();
         $this->objects = new \SplObjectStorage;
     }
 
@@ -79,16 +79,6 @@ final class Context
         );
     }
 
-    public function __destruct()
-    {
-        foreach ($this->arrays as &$array) {
-            if (is_array($array)) {
-                array_pop($array);
-                array_pop($array);
-            }
-        }
-    }
-
     /**
      * @param array $array
      *
@@ -102,7 +92,7 @@ final class Context
             return $key;
         }
 
-        $key = count($this->arrays);
+        $key            = count($this->arrays);
         $this->arrays[] = &$array;
 
         if (!isset($array[PHP_INT_MAX]) && !isset($array[PHP_INT_MAX - 1])) {
@@ -163,5 +153,15 @@ final class Context
         }
 
         return false;
+    }
+
+    public function __destruct()
+    {
+        foreach ($this->arrays as &$array) {
+            if (is_array($array)) {
+                array_pop($array);
+                array_pop($array);
+            }
+        }
     }
 }

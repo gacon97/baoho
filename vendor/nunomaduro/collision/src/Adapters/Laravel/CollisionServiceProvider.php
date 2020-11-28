@@ -37,7 +37,7 @@ class CollisionServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if ($this->app->runningInConsole() && !$this->app->runningUnitTests()) {
+        if ($this->app->runningInConsole() && ! $this->app->runningUnitTests()) {
             $this->app->singleton(ListenerContract::class, Listener::class);
             $this->app->bind(ProviderContract::class, Provider::class);
 

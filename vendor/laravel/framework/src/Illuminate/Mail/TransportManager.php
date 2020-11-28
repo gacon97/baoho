@@ -20,27 +20,6 @@ use Swift_SendmailTransport as SendmailTransport;
 class TransportManager extends Manager
 {
     /**
-     * Get the default mail driver name.
-     *
-     * @return string
-     */
-    public function getDefaultDriver()
-    {
-        return $this->app['config']['mail.driver'];
-    }
-
-    /**
-     * Set the default mail driver name.
-     *
-     * @param  string $name
-     * @return void
-     */
-    public function setDefaultDriver($name)
-    {
-        $this->app['config']['mail.driver'] = $name;
-    }
-
-    /**
      * Create an instance of the SMTP Swift Transport driver.
      *
      * @return \Swift_SmtpTransport
@@ -106,7 +85,7 @@ class TransportManager extends Manager
     /**
      * Add the SES credentials to the configuration array.
      *
-     * @param  array $config
+     * @param  array  $config
      * @return array
      */
     protected function addSesCredentials(array $config)
@@ -194,7 +173,7 @@ class TransportManager extends Manager
     /**
      * Get a fresh Guzzle HTTP client instance.
      *
-     * @param  array $config
+     * @param  array  $config
      * @return \GuzzleHttp\Client
      */
     protected function guzzle($config)
@@ -202,5 +181,26 @@ class TransportManager extends Manager
         return new HttpClient(Arr::add(
             $config['guzzle'] ?? [], 'connect_timeout', 60
         ));
+    }
+
+    /**
+     * Get the default mail driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+        return $this->app['config']['mail.driver'];
+    }
+
+    /**
+     * Set the default mail driver name.
+     *
+     * @param  string  $name
+     * @return void
+     */
+    public function setDefaultDriver($name)
+    {
+        $this->app['config']['mail.driver'] = $name;
     }
 }

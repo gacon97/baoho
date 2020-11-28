@@ -25,8 +25,8 @@ class Composer
     /**
      * Create a new Composer manager instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem $files
-     * @param  string|null $workingPath
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param  string|null  $workingPath
      * @return void
      */
     public function __construct(Filesystem $files, $workingPath = null)
@@ -38,14 +38,14 @@ class Composer
     /**
      * Regenerate the Composer autoloader files.
      *
-     * @param  string $extra
+     * @param  string  $extra
      * @return void
      */
     public function dumpAutoloads($extra = '')
     {
         $process = $this->getProcess();
 
-        $process->setCommandLine(trim($this->findComposer() . ' dump-autoload ' . $extra));
+        $process->setCommandLine(trim($this->findComposer().' dump-autoload '.$extra));
 
         $process->run();
     }
@@ -61,27 +61,14 @@ class Composer
     }
 
     /**
-     * Set the working path used by the class.
-     *
-     * @param  string $path
-     * @return $this
-     */
-    public function setWorkingPath($path)
-    {
-        $this->workingPath = realpath($path);
-
-        return $this;
-    }
-
-    /**
      * Get the composer command for the environment.
      *
      * @return string
      */
     protected function findComposer()
     {
-        if ($this->files->exists($this->workingPath . '/composer.phar')) {
-            return ProcessUtils::escapeArgument((new PhpExecutableFinder)->find(false)) . ' composer.phar';
+        if ($this->files->exists($this->workingPath.'/composer.phar')) {
+            return ProcessUtils::escapeArgument((new PhpExecutableFinder)->find(false)).' composer.phar';
         }
 
         return 'composer';
@@ -95,5 +82,18 @@ class Composer
     protected function getProcess()
     {
         return (new Process('', $this->workingPath))->setTimeout(null);
+    }
+
+    /**
+     * Set the working path used by the class.
+     *
+     * @param  string  $path
+     * @return $this
+     */
+    public function setWorkingPath($path)
+    {
+        $this->workingPath = realpath($path);
+
+        return $this;
     }
 }

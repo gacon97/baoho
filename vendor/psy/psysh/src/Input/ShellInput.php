@@ -50,7 +50,7 @@ class ShellInput extends StringInput
         $hasCodeArgument = false;
 
         if ($definition->getArgumentCount() > 0) {
-            $args = $definition->getArguments();
+            $args    = $definition->getArguments();
             $lastArg = \array_pop($args);
             foreach ($args as $arg) {
                 if ($arg instanceof CodeArgument) {
@@ -67,32 +67,6 @@ class ShellInput extends StringInput
         $this->hasCodeArgument = $hasCodeArgument;
 
         return parent::bind($definition);
-    }
-
-    /**
-     * Same as parent, but with some bonus handling for code arguments.
-     */
-    protected function parse()
-    {
-        $parseOptions = true;
-        $this->parsed = $this->tokenPairs;
-        while (null !== $tokenPair = \array_shift($this->parsed)) {
-            // token is what you'd expect. rest is the remainder of the input
-            // string, including token, and will be used if this is a code arg.
-            list($token, $rest) = $tokenPair;
-
-            if ($parseOptions && '' === $token) {
-                $this->parseShellArgument($token, $rest);
-            } elseif ($parseOptions && '--' === $token) {
-                $parseOptions = false;
-            } elseif ($parseOptions && 0 === \strpos($token, '--')) {
-                $this->parseLongOption($token);
-            } elseif ($parseOptions && '-' === $token[0] && '-' !== $token) {
-                $this->parseShortOption($token);
-            } else {
-                $this->parseShellArgument($token, $rest);
-            }
-        }
     }
 
     /**
@@ -143,10 +117,36 @@ class ShellInput extends StringInput
     }
 
     /**
+     * Same as parent, but with some bonus handling for code arguments.
+     */
+    protected function parse()
+    {
+        $parseOptions = true;
+        $this->parsed = $this->tokenPairs;
+        while (null !== $tokenPair = \array_shift($this->parsed)) {
+            // token is what you'd expect. rest is the remainder of the input
+            // string, including token, and will be used if this is a code arg.
+            list($token, $rest) = $tokenPair;
+
+            if ($parseOptions && '' === $token) {
+                $this->parseShellArgument($token, $rest);
+            } elseif ($parseOptions && '--' === $token) {
+                $parseOptions = false;
+            } elseif ($parseOptions && 0 === \strpos($token, '--')) {
+                $this->parseLongOption($token);
+            } elseif ($parseOptions && '-' === $token[0] && '-' !== $token) {
+                $this->parseShortOption($token);
+            } else {
+                $this->parseShellArgument($token, $rest);
+            }
+        }
+    }
+
+    /**
      * Parses an argument, with bonus handling for code arguments.
      *
      * @param string $token The current token
-     * @param string $rest The remaining unparsed input, including the current token
+     * @param string $rest  The remaining unparsed input, including the current token
      *
      * @throws \RuntimeException When too many arguments are given
      */
@@ -270,7 +270,7 @@ class ShellInput extends StringInput
      * Adds a short option value.
      *
      * @param string $shortcut The short option key
-     * @param mixed $value The value for the option
+     * @param mixed  $value    The value for the option
      *
      * @throws \RuntimeException When option given doesn't exist
      */
@@ -286,8 +286,8 @@ class ShellInput extends StringInput
     /**
      * Adds a long option value.
      *
-     * @param string $name The long option key
-     * @param mixed $value The value for the option
+     * @param string $name  The long option key
+     * @param mixed  $value The value for the option
      *
      * @throws \RuntimeException When option given doesn't exist
      */

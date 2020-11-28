@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
@@ -15,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \SebastianBergmann\Comparator\ResourceComparator<extended>
  *
- * @uses   \SebastianBergmann\Comparator\Comparator
- * @uses   \SebastianBergmann\Comparator\Factory
- * @uses   \SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
 final class ResourceComparatorTest extends TestCase
 {
@@ -25,6 +24,11 @@ final class ResourceComparatorTest extends TestCase
      * @var ResourceComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ResourceComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -77,7 +81,7 @@ final class ResourceComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -87,7 +91,7 @@ final class ResourceComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -114,10 +118,5 @@ final class ResourceComparatorTest extends TestCase
         $this->expectException(ComparisonFailure::class);
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp(): void
-    {
-        $this->comparator = new ResourceComparator;
     }
 }

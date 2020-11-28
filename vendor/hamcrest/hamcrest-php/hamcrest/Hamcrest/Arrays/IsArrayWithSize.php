@@ -1,11 +1,9 @@
 <?php
-
 namespace Hamcrest\Arrays;
 
 /*
  Copyright (c) 2009 hamcrest.org
  */
-
 use Hamcrest\Core\DescribedAs;
 use Hamcrest\Core\IsNot;
 use Hamcrest\FeatureMatcher;
@@ -27,6 +25,11 @@ class IsArrayWithSize extends FeatureMatcher
             'an array with size',
             'array size'
         );
+    }
+
+    protected function featureValueOf($array)
+    {
+        return count($array);
     }
 
     /**
@@ -66,10 +69,5 @@ class IsArrayWithSize extends FeatureMatcher
             'a non-empty array',
             self::arrayWithSize(IsNot::not(0))
         );
-    }
-
-    protected function featureValueOf($array)
-    {
-        return count($array);
     }
 }

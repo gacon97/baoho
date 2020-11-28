@@ -13,7 +13,6 @@ namespace Symfony\Component\Console\Helper;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\WrappableOutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,17 +41,17 @@ class Table
     /**
      * Table headers.
      */
-    private $headers = [];
+    private $headers = array();
 
     /**
      * Table rows.
      */
-    private $rows = [];
+    private $rows = array();
 
     /**
      * Column widths cache.
      */
-    private $effectiveColumnWidths = [];
+    private $effectiveColumnWidths = array();
 
     /**
      * Number of columns cache.
@@ -74,15 +73,15 @@ class Table
     /**
      * @var array
      */
-    private $columnStyles = [];
+    private $columnStyles = array();
 
     /**
      * User set column widths.
      *
      * @var array
      */
-    private $columnWidths = [];
-    private $columnMaxWidths = [];
+    private $columnWidths = array();
+    private $columnMaxWidths = array();
 
     private static $styles;
 
@@ -207,11 +206,13 @@ class Table
     /**
      * Sets the minimum width of all columns.
      *
+     * @param array $widths
+     *
      * @return $this
      */
     public function setColumnWidths(array $widths)
     {
-        $this->columnWidths = [];
+        $this->columnWidths = array();
         foreach ($widths as $index => $width) {
             $this->setColumnWidth($index, $width);
         }
@@ -242,7 +243,7 @@ class Table
     {
         $headers = array_values($headers);
         if (!empty($headers) && !\is_array($headers[0])) {
-            $headers = [$headers];
+            $headers = array($headers);
         }
 
         $this->headers = $headers;
@@ -252,7 +253,7 @@ class Table
 
     public function setRows(array $rows)
     {
-        $this->rows = [];
+        $this->rows = array();
 
         return $this->addRows($rows);
     }
@@ -338,7 +339,7 @@ class Table
      */
     public function render()
     {
-        $rows = array_merge($this->headers, [$divider = new TableSeparator()], $this->rows);
+        $rows = array_merge($this->headers, array($divider = new TableSeparator()), $this->rows);
         $this->calculateNumberOfColumns($rows);
 
         $rows = $this->buildTableRows($rows);
@@ -399,13 +400,13 @@ class Table
 
         $crossings = $this->style->getCrossingChars();
         if (self::SEPARATOR_MID === $type) {
-            list($horizontal, $leftChar, $midChar, $rightChar) = [$borders[2], $crossings[8], $crossings[0], $crossings[4]];
+            list($horizontal, $leftChar, $midChar, $rightChar) = array($borders[2], $crossings[8], $crossings[0], $crossings[4]);
         } elseif (self::SEPARATOR_TOP === $type) {
-            list($horizontal, $leftChar, $midChar, $rightChar) = [$borders[0], $crossings[1], $crossings[2], $crossings[3]];
+            list($horizontal, $leftChar, $midChar, $rightChar) = array($borders[0], $crossings[1], $crossings[2], $crossings[3]);
         } elseif (self::SEPARATOR_TOP_BOTTOM === $type) {
-            list($horizontal, $leftChar, $midChar, $rightChar) = [$borders[0], $crossings[9], $crossings[10], $crossings[11]];
+            list($horizontal, $leftChar, $midChar, $rightChar) = array($borders[0], $crossings[9], $crossings[10], $crossings[11]);
         } else {
-            list($horizontal, $leftChar, $midChar, $rightChar) = [$borders[0], $crossings[7], $crossings[6], $crossings[5]];
+            list($horizontal, $leftChar, $midChar, $rightChar) = array($borders[0], $crossings[7], $crossings[6], $crossings[5]);
         }
 
         $markup = $leftChar;
@@ -499,7 +500,7 @@ class Table
      */
     private function calculateNumberOfColumns($rows)
     {
-        $columns = [0];
+        $columns = array(0);
         foreach ($rows as $row) {
             if ($row instanceof TableSeparator) {
                 continue;
@@ -515,26 +516,22 @@ class Table
     {
         /** @var WrappableOutputFormatterInterface $formatter */
         $formatter = $this->output->getFormatter();
-        $unmergedRows = [];
+        $unmergedRows = array();
         for ($rowKey = 0; $rowKey < \count($rows); ++$rowKey) {
             $rows = $this->fillNextRows($rows, $rowKey);
 
             // Remove any new line breaks and replace it with a new line
             foreach ($rows[$rowKey] as $column => $cell) {
-                $colspan = $cell instanceof TableCell ? $cell->getColspan() : 1;
-
                 if (isset($this->columnMaxWidths[$column]) && Helper::strlenWithoutDecoration($formatter, $cell) > $this->columnMaxWidths[$column]) {
-                    $cell = $formatter->formatAndWrap($cell, $this->columnMaxWidths[$column] * $colspan);
+                    $cell = $formatter->formatAndWrap($cell, $this->columnMaxWidths[$column]);
                 }
                 if (!strstr($cell, "\n")) {
                     continue;
                 }
-                $escaped = implode("\n", array_map([OutputFormatter::class, 'escapeTrailingBackslash'], explode("\n", $cell)));
-                $cell = $cell instanceof TableCell ? new TableCell($escaped, ['colspan' => $cell->getColspan()]) : $escaped;
                 $lines = explode("\n", str_replace("\n", "<fg=default;bg=default>\n</>", $cell));
                 foreach ($lines as $lineKey => $line) {
-                    if ($colspan > 1) {
-                        $line = new TableCell($line, ['colspan' => $colspan]);
+                    if ($cell instanceof TableCell) {
+                        $line = new TableCell($line, array('colspan' => $cell->getColspan()));
                     }
                     if (0 === $lineKey) {
                         $rows[$rowKey][$column] = $line;
@@ -560,7 +557,7 @@ class Table
 
     private function calculateRowCount(): int
     {
-        $numberOfRows = \count(iterator_to_array($this->buildTableRows(array_merge($this->headers, [new TableSeparator()], $this->rows))));
+        $numberOfRows = \count(iterator_to_array($this->buildTableRows(array_merge($this->headers, array(new TableSeparator()), $this->rows))));
 
         if ($this->headers) {
             ++$numberOfRows; // Add row for header separator
@@ -578,27 +575,27 @@ class Table
      */
     private function fillNextRows(array $rows, int $line): array
     {
-        $unmergedRows = [];
+        $unmergedRows = array();
         foreach ($rows[$line] as $column => $cell) {
             if (null !== $cell && !$cell instanceof TableCell && !is_scalar($cell) && !(\is_object($cell) && method_exists($cell, '__toString'))) {
                 throw new InvalidArgumentException(sprintf('A cell must be a TableCell, a scalar or an object implementing __toString, %s given.', \gettype($cell)));
             }
             if ($cell instanceof TableCell && $cell->getRowspan() > 1) {
                 $nbLines = $cell->getRowspan() - 1;
-                $lines = [$cell];
+                $lines = array($cell);
                 if (strstr($cell, "\n")) {
                     $lines = explode("\n", str_replace("\n", "<fg=default;bg=default>\n</>", $cell));
                     $nbLines = \count($lines) > $nbLines ? substr_count($cell, "\n") : $nbLines;
 
-                    $rows[$line][$column] = new TableCell($lines[0], ['colspan' => $cell->getColspan()]);
+                    $rows[$line][$column] = new TableCell($lines[0], array('colspan' => $cell->getColspan()));
                     unset($lines[0]);
                 }
 
                 // create a two dimensional array (rowspan x colspan)
-                $unmergedRows = array_replace_recursive(array_fill($line + 1, $nbLines, []), $unmergedRows);
+                $unmergedRows = array_replace_recursive(array_fill($line + 1, $nbLines, array()), $unmergedRows);
                 foreach ($unmergedRows as $unmergedRowKey => $unmergedRow) {
                     $value = isset($lines[$unmergedRowKey - $line]) ? $lines[$unmergedRowKey - $line] : '';
-                    $unmergedRows[$unmergedRowKey][$column] = new TableCell($value, ['colspan' => $cell->getColspan()]);
+                    $unmergedRows[$unmergedRowKey][$column] = new TableCell($value, array('colspan' => $cell->getColspan()));
                     if ($nbLines === $unmergedRowKey - $line) {
                         break;
                     }
@@ -611,7 +608,7 @@ class Table
             if (isset($rows[$unmergedRowKey]) && \is_array($rows[$unmergedRowKey]) && ($this->getNumberOfColumns($rows[$unmergedRowKey]) + $this->getNumberOfColumns($unmergedRows[$unmergedRowKey]) <= $this->numberOfColumns)) {
                 foreach ($unmergedRow as $cellKey => $cell) {
                     // insert cell into row at cellKey position
-                    array_splice($rows[$unmergedRowKey], $cellKey, 0, [$cell]);
+                    array_splice($rows[$unmergedRowKey], $cellKey, 0, array($cell));
                 }
             } else {
                 $row = $this->copyRow($rows, $unmergedRowKey - 1);
@@ -620,7 +617,7 @@ class Table
                         $row[$column] = $unmergedRow[$column];
                     }
                 }
-                array_splice($rows, $unmergedRowKey, 0, [$row]);
+                array_splice($rows, $unmergedRowKey, 0, array($row));
             }
         }
 
@@ -632,7 +629,7 @@ class Table
      */
     private function fillCells($row)
     {
-        $newRow = [];
+        $newRow = array();
         foreach ($row as $column => $cell) {
             $newRow[] = $cell;
             if ($cell instanceof TableCell && $cell->getColspan() > 1) {
@@ -652,7 +649,7 @@ class Table
         foreach ($row as $cellKey => $cellValue) {
             $row[$cellKey] = '';
             if ($cellValue instanceof TableCell) {
-                $row[$cellKey] = new TableCell('', ['colspan' => $cellValue->getColspan()]);
+                $row[$cellKey] = new TableCell('', array('colspan' => $cellValue->getColspan()));
             }
         }
 
@@ -694,7 +691,7 @@ class Table
     private function calculateColumnsWidth(iterable $rows)
     {
         for ($column = 0; $column < $this->numberOfColumns; ++$column) {
-            $lengths = [];
+            $lengths = array();
             foreach ($rows as $row) {
                 if ($row instanceof TableSeparator) {
                     continue;
@@ -745,7 +742,7 @@ class Table
      */
     private function cleanup()
     {
-        $this->effectiveColumnWidths = [];
+        $this->effectiveColumnWidths = array();
         $this->numberOfColumns = null;
     }
 
@@ -786,14 +783,14 @@ class Table
             ->setCrossingChars('┼', '╔', '╤', '╗', '╢', '╝', '╧', '╚', '╟', '╠', '╪', '╣')
         ;
 
-        return [
+        return array(
             'default' => new TableStyle(),
             'borderless' => $borderless,
             'compact' => $compact,
             'symfony-style-guide' => $styleGuide,
             'box' => $box,
             'box-double' => $boxDouble,
-        ];
+        );
     }
 
     private function resolveStyle($name)

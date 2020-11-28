@@ -13,7 +13,6 @@ class CreateImagesTable extends Migration
      */
     public function up()
     {
-        if (Schema::hasTable('products')) {
 
             Schema::create('images', function (Blueprint $table) {
                 $table->increments('id');
@@ -22,7 +21,6 @@ class CreateImagesTable extends Migration
                 $table->timestamps();
             });
 
-        }
 
     }
 

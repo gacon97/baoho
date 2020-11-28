@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 use SebastianBergmann\CodeCoverage\Util;
@@ -47,7 +46,7 @@ final class Totals
     public function __construct(\DOMElement $container)
     {
         $this->container = $container;
-        $dom = $container->ownerDocument;
+        $dom             = $container->ownerDocument;
 
         $this->linesNode = $dom->createElementNS(
             'https://schema.phpunit.de/coverage/1.0',

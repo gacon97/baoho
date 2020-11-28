@@ -1,5 +1,4 @@
 <?php
-
 namespace Hamcrest\Text;
 
 class StringContainsIgnoringCaseTest extends \Hamcrest\AbstractMatcherTest
@@ -14,6 +13,11 @@ class StringContainsIgnoringCaseTest extends \Hamcrest\AbstractMatcherTest
         $this->_stringContains = \Hamcrest\Text\StringContainsIgnoringCase::containsStringIgnoringCase(
             strtolower(self::EXCERPT)
         );
+    }
+
+    protected function createMatcher()
+    {
+        return $this->_stringContains;
     }
 
     public function testEvaluatesToTrueIfArgumentContainsSpecifiedSubstring()
@@ -72,10 +76,5 @@ class StringContainsIgnoringCaseTest extends \Hamcrest\AbstractMatcherTest
             . strtolower(self::EXCERPT) . '"',
             $this->_stringContains
         );
-    }
-
-    protected function createMatcher()
-    {
-        return $this->_stringContains;
     }
 }

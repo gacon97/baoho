@@ -20,10 +20,10 @@ use Psy\Reflection\ReflectionConstant_;
  */
 class Mirror
 {
-    const CONSTANT = 1;
-    const METHOD = 2;
+    const CONSTANT        = 1;
+    const METHOD          = 2;
     const STATIC_PROPERTY = 4;
-    const PROPERTY = 8;
+    const PROPERTY        = 8;
 
     /**
      * Get a Reflector for a function, class or instance, constant, method or property.
@@ -36,9 +36,9 @@ class Mirror
      * @throws \Psy\Exception\RuntimeException when a $member specified but not present on $value
      * @throws \InvalidArgumentException       if $value is something other than an object or class/function name
      *
-     * @param mixed $value Class or function name, or variable instance
+     * @param mixed  $value  Class or function name, or variable instance
      * @param string $member Optional: property, constant or method name (default: null)
-     * @param int $filter (default: CONSTANT | METHOD | PROPERTY | STATIC_PROPERTY)
+     * @param int    $filter (default: CONSTANT | METHOD | PROPERTY | STATIC_PROPERTY)
      *
      * @return \Reflector
      */

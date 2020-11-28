@@ -1,6 +1,6 @@
 <?php
 
-use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherTrait;
+use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherTrait;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -9,12 +9,12 @@ use Symfony\Component\Routing\RequestContext;
  */
 class ProjectUrlMatcher extends Symfony\Component\Routing\Matcher\UrlMatcher
 {
-    use CompiledUrlMatcherTrait;
+    use PhpMatcherTrait;
 
     public function __construct(RequestContext $context)
     {
         $this->context = $context;
-        $this->regexpList = [
+        $this->regexpList = array(
             0 => '{^(?'
                     .'|/(a)(*:11)'
                 .')/?$}sD',
@@ -24,14 +24,11 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Matcher\UrlMatcher
             22 => '{^(?'
                     .'|/(.)(*:33)'
                 .')/?$}sD',
-        ];
-        $this->dynamicRoutes = [
-            11 => [[['_route' => 'a'], ['a'], null, null, false, true, null]],
-            22 => [[['_route' => 'b'], ['a'], null, null, false, true, null]],
-            33 => [
-                [['_route' => 'c'], ['a'], null, null, false, true, null],
-                [null, null, null, null, false, false, 0],
-            ],
-        ];
+        );
+        $this->dynamicRoutes = array(
+            11 => array(array(array('_route' => 'a'), array('a'), null, null, false, true, null)),
+            22 => array(array(array('_route' => 'b'), array('a'), null, null, false, true, null)),
+            33 => array(array(array('_route' => 'c'), array('a'), null, null, false, true, null)),
+        );
     }
 }
